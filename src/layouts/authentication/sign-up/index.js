@@ -64,6 +64,8 @@ import { useAuth } from "context/AuthContext";
 // Images
 import bgSignIn from "assets/images/signUpImage.png";
 
+console.log('SIGNUP COMPONENT LOADED');
+
 function SignUp() {
   const [rememberMe, setRememberMe] = useState(true);
   const [formData, setFormData] = useState({
@@ -73,7 +75,7 @@ function SignUp() {
     confirmPassword: "",
     firstName: "",
     lastName: "",
-    inviteCode: "",
+    registrationCode: "",
   });
   const [isSubmitting, setIsSubmitting] = useState(false);
   const [showPassword, setShowPassword] = useState(false);
@@ -151,19 +153,29 @@ function SignUp() {
       newErrors.lastName = "Last name must be at least 2 characters";
     }
 
+    if (!formData.registrationCode.trim()) {
+      newErrors.registrationCode = "Mã đăng ký là bắt buộc";
+    } else if (formData.registrationCode.length < 3) {
+      newErrors.registrationCode = "Mã đăng ký phải có ít nhất 3 ký tự";
+    }
+
+    console.log('DEBUG: validateForm newErrors:', newErrors);
     setErrors(newErrors);
     return Object.keys(newErrors).length === 0;
   };
 
   const handleSubmit = async (e) => {
+    console.log('HANDLE SUBMIT CALLED');
     e.preventDefault();
     setBackendError("");
     setBackendFieldErrors({});
     if (!validateForm()) {
+      console.log('DEBUG: validateForm failed');
       return;
     }
     setIsSubmitting(true);
     try {
+      console.log('DEBUG: before register call');
       const result = await register({
         username: formData.username,
         email: formData.email,
@@ -171,10 +183,13 @@ function SignUp() {
         confirmPassword: formData.confirmPassword,
         firstName: formData.firstName,
         lastName: formData.lastName,
-        inviteCode: formData.inviteCode,
+        registrationCode: formData.registrationCode,
       });
+      console.log('DEBUG: after register call, result:', result);
       if (result.success) {
         history.replace("/dashboard");
+      } else {
+        console.log('DEBUG: register result (not success):', result);
       }
     } catch (error) {
       console.log('DEBUG: Full error object:', error);
@@ -195,26 +210,78 @@ function SignUp() {
           errorMessage = error.error;
         }
         
+        // Handle registration code specific errors
+        if (error.error && error.error.message) {
+          const message = error.error.message;
+          if (message.includes('Mã đăng ký')) {
+            fieldErrors.registrationCode = message;
+          }
+        }
+        
         // Try different field error sources
         if (error.error && error.error.details) {
-          fieldErrors = error.error.details;
+          // Handle array of error messages
+          if (Array.isArray(error.error.details)) {
+            error.error.details.forEach(detail => {
+              if (detail.includes('Mã đăng ký')) {
+                fieldErrors.registrationCode = detail;
+              } else if (detail.includes('Username')) {
+                fieldErrors.username = detail;
+              } else if (detail.includes('Email')) {
+                fieldErrors.email = detail;
+              } else if (detail.includes('Password')) {
+                fieldErrors.password = detail;
+              } else if (detail.includes('First name')) {
+                fieldErrors.firstName = detail;
+              } else if (detail.includes('Last name')) {
+                fieldErrors.lastName = detail;
+              }
+            });
+          } else {
+            fieldErrors = { ...fieldErrors, ...error.error.details };
+          }
         } else if (error.details) {
-          fieldErrors = error.details;
+          if (Array.isArray(error.details)) {
+            error.details.forEach(detail => {
+              if (detail.includes('Mã đăng ký')) {
+                fieldErrors.registrationCode = detail;
+              } else if (detail.includes('Username')) {
+                fieldErrors.username = detail;
+              } else if (detail.includes('Email')) {
+                fieldErrors.email = detail;
+              } else if (detail.includes('Password')) {
+                fieldErrors.password = detail;
+              } else if (detail.includes('First name')) {
+                fieldErrors.firstName = detail;
+              } else if (detail.includes('Last name')) {
+                fieldErrors.lastName = detail;
+              }
+            });
+          } else {
+            fieldErrors = { ...fieldErrors, ...error.details };
+          }
         }
       }
-      
-      console.log('DEBUG: Final error message:', errorMessage);
-      console.log('DEBUG: Final field errors:', fieldErrors);
-      
-      setBackendError(errorMessage);
+      // Nếu không có lỗi tổng quát, lấy lỗi đầu tiên từ field để hiển thị Dialog
+      let dialogError = errorMessage;
+      if ((!dialogError || dialogError === "Đăng ký thất bại. Vui lòng thử lại.") && Object.values(fieldErrors).length > 0) {
+        dialogError = Object.values(fieldErrors)[0];
+      }
+      // Log giá trị lỗi trước khi set state
+      console.log('DEBUG: dialogError:', dialogError);
+      console.log('DEBUG: errorMessage:', errorMessage);
+      console.log('DEBUG: fieldErrors:', fieldErrors);
+      console.log('DEBUG: backendError (before set):', backendError);
+      console.log('DEBUG: openErrorModal (before set):', openErrorModal);
+      setBackendError(dialogError);
       setBackendFieldErrors(fieldErrors);
       setOpenErrorModal(true);
       setShowSnackbar(true);
-      
-      console.log('DEBUG: States set - openErrorModal:', true, 'showSnackbar:', true);
+      // Log giá trị lỗi sau khi set state (sẽ log giá trị cũ do setState bất đồng bộ)
       setTimeout(() => {
-        console.log('DEBUG: Timeout check openErrorModal', openErrorModal, backendError);
-      }, 100);
+        console.log('DEBUG: backendError (after set):', backendError);
+        console.log('DEBUG: openErrorModal (after set):', openErrorModal);
+      }, 200);
     }
     setIsSubmitting(false);
   };
@@ -329,8 +396,8 @@ function SignUp() {
                 )}
               >
                 <VuiInput
-                  name="inviteCode"
-                  value={formData.inviteCode || ''}
+                  name="registrationCode"
+                  value={formData.registrationCode || ''}
                   onChange={handleInputChange}
                   placeholder="Nhập mã đăng ký của bạn"
                   sx={({ typography: { size } }) => ({
@@ -338,8 +405,93 @@ function SignUp() {
                     color: 'white',
                   })}
                   required
+                  error={!!errors.registrationCode || !!backendFieldErrors.registrationCode}
                 />
               </GradientBorder>
+              {errors.registrationCode && (
+                <VuiTypography variant="caption" color="error" mt={0.5}>
+                  {errors.registrationCode}
+                </VuiTypography>
+              )}
+              {backendFieldErrors.registrationCode && (
+                <div style={{ color: 'red', fontSize: 13 }}>{backendFieldErrors.registrationCode}</div>
+              )}
+            </VuiBox>
+            <VuiBox mb={2}>
+              <VuiBox mb={1} ml={0.5}>
+                <VuiTypography component="label" variant="button" color="white" fontWeight="medium">
+                  Họ
+                </VuiTypography>
+              </VuiBox>
+              <GradientBorder
+                minWidth="100%"
+                borderRadius={borders.borderRadius.lg}
+                padding="1px"
+                backgroundImage={radialGradient(
+                  palette.gradients.borderLight.main,
+                  palette.gradients.borderLight.state,
+                  palette.gradients.borderLight.angle
+                )}
+              >
+                <VuiInput
+                  name="lastName"
+                  value={formData.lastName}
+                  onChange={handleInputChange}
+                  placeholder="Nhập họ của bạn"
+                  sx={({ typography: { size } }) => ({
+                    fontSize: size.sm,
+                    color: 'white',
+                  })}
+                  required
+                  error={!!errors.lastName || !!backendFieldErrors.lastName}
+                />
+              </GradientBorder>
+              {errors.lastName && (
+                <VuiTypography variant="caption" color="error" mt={0.5}>
+                  {errors.lastName}
+                </VuiTypography>
+              )}
+              {backendFieldErrors.lastName && (
+                <div style={{ color: 'red', fontSize: 13 }}>{backendFieldErrors.lastName}</div>
+              )}
+            </VuiBox>
+            <VuiBox mb={2}>
+              <VuiBox mb={1} ml={0.5}>
+                <VuiTypography component="label" variant="button" color="white" fontWeight="medium">
+                  Tên
+                </VuiTypography>
+              </VuiBox>
+              <GradientBorder
+                minWidth="100%"
+                borderRadius={borders.borderRadius.lg}
+                padding="1px"
+                backgroundImage={radialGradient(
+                  palette.gradients.borderLight.main,
+                  palette.gradients.borderLight.state,
+                  palette.gradients.borderLight.angle
+                )}
+              >
+                <VuiInput
+                  name="firstName"
+                  value={formData.firstName}
+                  onChange={handleInputChange}
+                  placeholder="Nhập tên của bạn"
+                  sx={({ typography: { size } }) => ({
+                    fontSize: size.sm,
+                    color: 'white',
+                  })}
+                  required
+                  error={!!errors.firstName || !!backendFieldErrors.firstName}
+                />
+              </GradientBorder>
+              {errors.firstName && (
+                <VuiTypography variant="caption" color="error" mt={0.5}>
+                  {errors.firstName}
+                </VuiTypography>
+              )}
+              {backendFieldErrors.firstName && (
+                <div style={{ color: 'red', fontSize: 13 }}>{backendFieldErrors.firstName}</div>
+              )}
             </VuiBox>
             <VuiBox mb={2}>
               <VuiBox mb={1} ml={0.5}>
