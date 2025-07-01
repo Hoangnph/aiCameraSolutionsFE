@@ -29,7 +29,9 @@ import AppBar from "@mui/material/AppBar";
 import Toolbar from "@mui/material/Toolbar";
 import IconButton from "@mui/material/IconButton";
 import Menu from "@mui/material/Menu";
+import MenuItem from "@mui/material/MenuItem";
 import Icon from "@mui/material/Icon";
+import Avatar from "@mui/material/Avatar";
 
 // Vision UI Dashboard React components
 import VuiBox from "components/VuiBox";
@@ -57,6 +59,9 @@ import {
   setOpenConfigurator,
 } from "context";
 
+// Authentication context
+import { useAuth } from "context/AuthContext";
+
 // Images
 import team2 from "assets/images/team-2.jpg";
 import logoSpotify from "assets/images/small-logos/logo-spotify.svg";
@@ -66,7 +71,11 @@ function DashboardNavbar({ absolute, light, isMini }) {
   const [controller, dispatch] = useVisionUIController();
   const { miniSidenav, transparentNavbar, fixedNavbar, openConfigurator } = controller;
   const [openMenu, setOpenMenu] = useState(false);
+  const [openUserMenu, setOpenUserMenu] = useState(false);
+  const [userMenuAnchor, setUserMenuAnchor] = useState(null);
   const route = useLocation().pathname.split("/").slice(1);
+  
+  const { user, logout } = useAuth();
 
   useEffect(() => {
     // Setting the navbar type
@@ -98,6 +107,21 @@ function DashboardNavbar({ absolute, light, isMini }) {
   const handleConfiguratorOpen = () => setOpenConfigurator(dispatch, !openConfigurator);
   const handleOpenMenu = (event) => setOpenMenu(event.currentTarget);
   const handleCloseMenu = () => setOpenMenu(false);
+  
+  const handleOpenUserMenu = (event) => {
+    setUserMenuAnchor(event.currentTarget);
+    setOpenUserMenu(true);
+  };
+  
+  const handleCloseUserMenu = () => {
+    setOpenUserMenu(false);
+    setUserMenuAnchor(null);
+  };
+  
+  const handleLogout = async () => {
+    handleCloseUserMenu();
+    await logout();
+  };
 
   // Render the notifications menu
   const renderMenu = () => (
@@ -138,6 +162,51 @@ function DashboardNavbar({ absolute, light, isMini }) {
     </Menu>
   );
 
+  // Render user menu
+  const renderUserMenu = () => (
+    <Menu
+      anchorEl={userMenuAnchor}
+      anchorReference={null}
+      anchorOrigin={{
+        vertical: "bottom",
+        horizontal: "right",
+      }}
+      open={openUserMenu}
+      onClose={handleCloseUserMenu}
+      sx={{ mt: 2 }}
+    >
+      <MenuItem onClick={handleCloseUserMenu}>
+        <VuiBox display="flex" alignItems="center" p={1}>
+          <Avatar sx={{ width: 32, height: 32, mr: 2 }}>
+            {user?.firstName?.charAt(0) || user?.username?.charAt(0) || "U"}
+          </Avatar>
+          <VuiBox>
+            <VuiTypography variant="button" fontWeight="medium">
+              {user?.firstName} {user?.lastName}
+            </VuiTypography>
+            <VuiTypography variant="caption" color="text">
+              {user?.email}
+            </VuiTypography>
+          </VuiBox>
+        </VuiBox>
+      </MenuItem>
+      <MenuItem onClick={handleCloseUserMenu}>
+        <Link to="/profile" style={{ textDecoration: "none", color: "inherit" }}>
+          <VuiBox display="flex" alignItems="center">
+            <Icon sx={{ mr: 1 }}>person</Icon>
+            Profile
+          </VuiBox>
+        </Link>
+      </MenuItem>
+      <MenuItem onClick={handleLogout}>
+        <VuiBox display="flex" alignItems="center">
+          <Icon sx={{ mr: 1 }}>logout</Icon>
+          Logout
+        </VuiBox>
+      </MenuItem>
+    </Menu>
+  );
+
   return (
     <AppBar
       position={absolute ? "absolute" : navbarType}
@@ -166,24 +235,23 @@ function DashboardNavbar({ absolute, light, isMini }) {
               />
             </VuiBox>
             <VuiBox color={light ? "white" : "inherit"}>
-              <Link to="/authentication/sign-in">
-                <IconButton sx={navbarIconButton} size="small">
-                  <Icon
-                    sx={({ palette: { dark, white } }) => ({
-                      color: light ? white.main : dark.main,
-                    })}
-                  >
-                    account_circle
-                  </Icon>
-                  <VuiTypography
-                    variant="button"
-                    fontWeight="medium"
-                    color={light ? "white" : "dark"}
-                  >
-                    Sign in
-                  </VuiTypography>
-                </IconButton>
-              </Link>
+              <IconButton
+                sx={navbarIconButton}
+                size="small"
+                onClick={handleOpenUserMenu}
+              >
+                <Avatar sx={{ width: 32, height: 32 }}>
+                  {user?.firstName?.charAt(0) || user?.username?.charAt(0) || "U"}
+                </Avatar>
+                <VuiTypography
+                  variant="button"
+                  fontWeight="medium"
+                  color={light ? "white" : "dark"}
+                  ml={1}
+                >
+                  {user?.firstName || user?.username}
+                </VuiTypography>
+              </IconButton>
               <IconButton
                 size="small"
                 color="inherit"
@@ -212,6 +280,7 @@ function DashboardNavbar({ absolute, light, isMini }) {
                 <Icon className={light ? "text-white" : "text-dark"}>notifications</Icon>
               </IconButton>
               {renderMenu()}
+              {renderUserMenu()}
             </VuiBox>
           </VuiBox>
         )}

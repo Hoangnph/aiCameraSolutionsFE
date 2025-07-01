@@ -33,9 +33,13 @@ import DialogActions from '@mui/material/DialogActions';
 import Button from '@mui/material/Button';
 import Alert from '@mui/material/Alert';
 import Snackbar from '@mui/material/Snackbar';
+import Tooltip from '@mui/material/Tooltip';
 
 // Icons
 import { FaApple, FaFacebook, FaGoogle } from "react-icons/fa";
+import Visibility from '@mui/icons-material/Visibility';
+import VisibilityOff from '@mui/icons-material/VisibilityOff';
+import HelpOutlineIcon from '@mui/icons-material/HelpOutline';
 
 // Vision UI Dashboard React components
 import VuiBox from "components/VuiBox";
@@ -69,6 +73,7 @@ function SignUp() {
     confirmPassword: "",
     firstName: "",
     lastName: "",
+    inviteCode: "",
   });
   const [isSubmitting, setIsSubmitting] = useState(false);
   const [showPassword, setShowPassword] = useState(false);
@@ -166,6 +171,7 @@ function SignUp() {
         confirmPassword: formData.confirmPassword,
         firstName: formData.firstName,
         lastName: formData.lastName,
+        inviteCode: formData.inviteCode,
       });
       if (result.success) {
         history.replace("/dashboard");
@@ -282,13 +288,15 @@ function SignUp() {
       </Snackbar>
 
       <CoverLayout
-        title="Welcome!"
+        title="Xin chào!"
         color="white"
-        description="Create your account to get started with our platform."
+        description="Thật tuyệt vời khi chúng ta được làm việc cùng nhau. Chỉ có một bước đăng ký nữa thôi."
         image={bgSignIn}
-        premotto="INSPIRED BY THE FUTURE:"
-        motto="THE VISION UI DASHBOARD"
+        premotto="CẢM HỨNG TỪ TƯƠNG LAI"
+        motto="aiCamera Solutions"
         cardContent
+        hideNavbar={true}
+        hideFooter={true}
       >
         <GradientBorder borderRadius={borders.borderRadius.form} minWidth="100%" maxWidth="100%">
           <VuiBox
@@ -301,120 +309,14 @@ function SignUp() {
               backgroundColor: secondary.focus,
             })}
           >
-            <VuiTypography
-              color="white"
-              fontWeight="bold"
-              textAlign="center"
-              mb="24px"
-              sx={({ typography: { size } }) => ({
-                fontSize: size.lg,
-              })}
-            >
-              Register with
-            </VuiTypography>
-            
-            <Stack mb="25px" justifyContent="center" alignItems="center" direction="row" spacing={2}>
-              <GradientBorder borderRadius="xl">
-                <a href="#">
-                  <IconButton
-                    transition="all .25s ease"
-                    justify="center"
-                    align="center"
-                    bg="rgb(19,21,54)"
-                    borderradius="15px"
-                    sx={({ palette: { secondary }, borders: { borderRadius } }) => ({
-                      borderRadius: borderRadius.xl,
-                      padding: "25px",
-                      backgroundColor: secondary.focus,
-                      "&:hover": {
-                        backgroundColor: rgba(secondary.focus, 0.9),
-                      },
-                    })}
-                  >
-                    <Icon
-                      as={FaFacebook}
-                      w="30px"
-                      h="30px"
-                      sx={({ palette: { white } }) => ({
-                        color: white.focus,
-                      })}
-                    />
-                  </IconButton>
-                </a>
-              </GradientBorder>
-              <GradientBorder borderRadius="xl">
-                <a href="#">
-                  <IconButton
-                    transition="all .25s ease"
-                    justify="center"
-                    align="center"
-                    bg="rgb(19,21,54)"
-                    borderradius="15px"
-                    sx={({ palette: { secondary }, borders: { borderRadius } }) => ({
-                      borderRadius: borderRadius.xl,
-                      padding: "25px",
-                      backgroundColor: secondary.focus,
-                      "&:hover": {
-                        backgroundColor: rgba(secondary.focus, 0.9),
-                      },
-                    })}
-                  >
-                    <Icon
-                      as={FaApple}
-                      w="30px"
-                      h="30px"
-                      sx={({ palette: { white } }) => ({
-                        color: white.focus,
-                      })}
-                    />
-                  </IconButton>
-                </a>
-              </GradientBorder>
-              <GradientBorder borderRadius="xl">
-                <a href="#">
-                  <IconButton
-                    transition="all .25s ease"
-                    justify="center"
-                    align="center"
-                    bg="rgb(19,21,54)"
-                    borderradius="15px"
-                    sx={({ palette: { secondary }, borders: { borderRadius } }) => ({
-                      borderRadius: borderRadius.xl,
-                      padding: "25px",
-                      backgroundColor: secondary.focus,
-                      "&:hover": {
-                        backgroundColor: rgba(secondary.focus, 0.9),
-                      },
-                    })}
-                  >
-                    <Icon
-                      as={FaGoogle}
-                      w="30px"
-                      h="30px"
-                      sx={({ palette: { white } }) => ({
-                        color: white.focus,
-                      })}
-                    />
-                  </IconButton>
-                </a>
-              </GradientBorder>
-            </Stack>
-            
-            <VuiTypography
-              color="text"
-              fontWeight="bold"
-              textAlign="center"
-              mb="14px"
-              sx={({ typography: { size } }) => ({ fontSize: size.lg })}
-            >
-              or
-            </VuiTypography>
-            
             <VuiBox mb={2}>
-              <VuiBox mb={1} ml={0.5}>
+              <VuiBox mb={1} ml={0.5} display="flex" alignItems="center">
                 <VuiTypography component="label" variant="button" color="white" fontWeight="medium">
-                  First Name
+                  Mã đăng ký
                 </VuiTypography>
+                <Tooltip title="Đây là mã đăng ký được cấp cho doanh nghiệp của bạn." arrow>
+                  <HelpOutlineIcon sx={{ color: 'white', ml: 1, cursor: 'pointer', fontSize: 20 }} />
+                </Tooltip>
               </VuiBox>
               <GradientBorder
                 minWidth="100%"
@@ -427,69 +329,22 @@ function SignUp() {
                 )}
               >
                 <VuiInput
-                  name="firstName"
-                  value={formData.firstName}
+                  name="inviteCode"
+                  value={formData.inviteCode || ''}
                   onChange={handleInputChange}
-                  placeholder="Your first name..."
+                  placeholder="Nhập mã đăng ký của bạn"
                   sx={({ typography: { size } }) => ({
                     fontSize: size.sm,
+                    color: 'white',
                   })}
                   required
-                  error={!!errors.firstName || !!backendFieldErrors.firstName}
                 />
               </GradientBorder>
-              {errors.firstName && (
-                <VuiTypography variant="caption" color="error" mt={0.5}>
-                  {errors.firstName}
-                </VuiTypography>
-              )}
-              {backendFieldErrors.firstName && (
-                <div style={{ color: 'red', fontSize: 13 }}>{backendFieldErrors.firstName}</div>
-              )}
             </VuiBox>
-
             <VuiBox mb={2}>
               <VuiBox mb={1} ml={0.5}>
                 <VuiTypography component="label" variant="button" color="white" fontWeight="medium">
-                  Last Name
-                </VuiTypography>
-              </VuiBox>
-              <GradientBorder
-                minWidth="100%"
-                borderRadius={borders.borderRadius.lg}
-                padding="1px"
-                backgroundImage={radialGradient(
-                  palette.gradients.borderLight.main,
-                  palette.gradients.borderLight.state,
-                  palette.gradients.borderLight.angle
-                )}
-              >
-                <VuiInput
-                  name="lastName"
-                  value={formData.lastName}
-                  onChange={handleInputChange}
-                  placeholder="Your last name..."
-                  sx={({ typography: { size } }) => ({
-                    fontSize: size.sm,
-                  })}
-                  required
-                  error={!!errors.lastName || !!backendFieldErrors.lastName}
-                />
-              </GradientBorder>
-              {errors.lastName && (
-                <VuiTypography variant="caption" color="error" mt={0.5}>
-                  {errors.lastName}
-                </VuiTypography>
-              )}
-              {backendFieldErrors.lastName && (
-                <div style={{ color: 'red', fontSize: 13 }}>{backendFieldErrors.lastName}</div>
-              )}
-            </VuiBox>
-
-            <VuiBox mb={2}>
-              <VuiBox mb={1} ml={0.5}>
-                <VuiTypography component="label" variant="button" color="white" fontWeight="medium">
-                  Username
+                  Tên tài khoản
                 </VuiTypography>
               </VuiBox>
               <GradientBorder
@@ -506,9 +361,10 @@ function SignUp() {
                   name="username"
                   value={formData.username}
                   onChange={handleInputChange}
-                  placeholder="Your username..."
+                  placeholder="Tên tài khoản của bạn"
                   sx={({ typography: { size } }) => ({
                     fontSize: size.sm,
+                    color: 'white',
                   })}
                   required
                   error={!!errors.username || !!backendFieldErrors.username}
@@ -523,11 +379,10 @@ function SignUp() {
                 <div style={{ color: 'red', fontSize: 13 }}>{backendFieldErrors.username}</div>
               )}
             </VuiBox>
-
             <VuiBox mb={2}>
               <VuiBox mb={1} ml={0.5}>
                 <VuiTypography component="label" variant="button" color="white" fontWeight="medium">
-                  Email
+                  Địa chỉ email
                 </VuiTypography>
               </VuiBox>
               <GradientBorder
@@ -545,9 +400,10 @@ function SignUp() {
                   name="email"
                   value={formData.email}
                   onChange={handleInputChange}
-                  placeholder="Your email..."
+                  placeholder="Email đã đăng ký của bạn"
                   sx={({ typography: { size } }) => ({
                     fontSize: size.sm,
+                    color: 'white',
                   })}
                   required
                   error={!!errors.email || !!backendFieldErrors.email}
@@ -562,7 +418,6 @@ function SignUp() {
                 <div style={{ color: 'red', fontSize: 13 }}>{backendFieldErrors.email}</div>
               )}
             </VuiBox>
-
             <VuiBox mb={2}>
               <VuiBox mb={1} ml={0.5}>
                 <VuiTypography component="label" variant="button" color="white" fontWeight="medium">
@@ -584,20 +439,20 @@ function SignUp() {
                   name="password"
                   value={formData.password}
                   onChange={handleInputChange}
-                  placeholder="Your password..."
+                  placeholder="Password của bạn"
                   sx={({ typography: { size } }) => ({
                     fontSize: size.sm,
+                    color: 'white',
                   })}
                   required
-                  endAdornment={
-                    <VuiBox
-                      component="span"
-                      onClick={togglePasswordVisibility}
-                      sx={{ cursor: "pointer", color: "white" }}
-                    >
-                      {showPassword ? "👁️" : "👁️‍🗨️"}
-                    </VuiBox>
-                  }
+                  icon={{
+                    component: (
+                      <span onClick={togglePasswordVisibility} style={{ cursor: 'pointer', color: 'white', display: 'flex', alignItems: 'center' }}>
+                        {showPassword ? <Visibility /> : <VisibilityOff />}
+                      </span>
+                    ),
+                    direction: 'left',
+                  }}
                   error={!!errors.password || !!backendFieldErrors.password}
                 />
               </GradientBorder>
@@ -610,11 +465,10 @@ function SignUp() {
                 <div style={{ color: 'red', fontSize: 13 }}>{backendFieldErrors.password}</div>
               )}
             </VuiBox>
-
             <VuiBox mb={2}>
               <VuiBox mb={1} ml={0.5}>
                 <VuiTypography component="label" variant="button" color="white" fontWeight="medium">
-                  Confirm Password
+                  Nhập lại password
                 </VuiTypography>
               </VuiBox>
               <GradientBorder
@@ -632,20 +486,20 @@ function SignUp() {
                   name="confirmPassword"
                   value={formData.confirmPassword}
                   onChange={handleInputChange}
-                  placeholder="Confirm your password..."
+                  placeholder="Nhập lại password"
                   sx={({ typography: { size } }) => ({
                     fontSize: size.sm,
+                    color: 'white',
                   })}
                   required
-                  endAdornment={
-                    <VuiBox
-                      component="span"
-                      onClick={toggleConfirmPasswordVisibility}
-                      sx={{ cursor: "pointer", color: "white" }}
-                    >
-                      {showConfirmPassword ? "👁️" : "👁️‍🗨️"}
-                    </VuiBox>
-                  }
+                  icon={{
+                    component: (
+                      <span onClick={toggleConfirmPasswordVisibility} style={{ cursor: 'pointer', color: 'white', display: 'flex', alignItems: 'center' }}>
+                        {showConfirmPassword ? <Visibility /> : <VisibilityOff />}
+                      </span>
+                    ),
+                    direction: 'left',
+                  }}
                   error={!!errors.confirmPassword || !!backendFieldErrors.confirmPassword}
                 />
               </GradientBorder>
@@ -658,7 +512,6 @@ function SignUp() {
                 <div style={{ color: 'red', fontSize: 13 }}>{backendFieldErrors.confirmPassword}</div>
               )}
             </VuiBox>
-
             <VuiBox display="flex" alignItems="center">
               <VuiSwitch color="info" checked={rememberMe} onChange={handleSetRememberMe} />
               <VuiTypography
@@ -668,10 +521,9 @@ function SignUp() {
                 onClick={handleSetRememberMe}
                 sx={{ cursor: "pointer", userSelect: "none" }}
               >
-                &nbsp;&nbsp;&nbsp;&nbsp;I agree to the terms and conditions
+                &nbsp;&nbsp;&nbsp;&nbsp;Lưu thông tin đăng ký
               </VuiTypography>
             </VuiBox>
-
             <VuiBox mt={4} mb={1}>
               <VuiButton 
                 color="info" 
@@ -679,13 +531,12 @@ function SignUp() {
                 type="submit"
                 disabled={isSubmitting}
               >
-                {isSubmitting ? "CREATING ACCOUNT..." : "SIGN UP"}
+                {isSubmitting ? "ĐANG ĐĂNG KÝ..." : "ĐĂNG KÝ"}
               </VuiButton>
             </VuiBox>
-
             <VuiBox mt={3} textAlign="center">
               <VuiTypography variant="button" color="text" fontWeight="regular">
-                Already have an account?{" "}
+                Bạn đã có tài khoản chưa?{" "}
                 <VuiTypography
                   component={Link}
                   to="/authentication/sign-in"
@@ -693,7 +544,7 @@ function SignUp() {
                   color="white"
                   fontWeight="medium"
                 >
-                  Sign in
+                  Đăng nhập
                 </VuiTypography>
               </VuiTypography>
             </VuiBox>

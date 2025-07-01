@@ -47,6 +47,8 @@ function CoverLayout({
   top,
   cardContent,
   children,
+  hideNavbar = false,
+  hideFooter = false,
 }) {
   const { gradients } = colors;
   return (
@@ -58,13 +60,15 @@ function CoverLayout({
         gradients.cover.angle
       )}
     >
-      <DefaultNavbar
-        action={{
-          type: "external",
-          route: "https://creative-tim.com/product/vision-ui-dashboard-pro-react",
-          label: "BUY NOW",
-        }}
-      />
+      {!hideNavbar && (
+        <DefaultNavbar
+          action={{
+            type: "external",
+            route: "https://creative-tim.com/product/vision-ui-dashboard-pro-react",
+            label: "BUY NOW",
+          }}
+        />
+      )}
       <VuiBox
         height="100%"
         width="50vw"
@@ -205,7 +209,7 @@ function CoverLayout({
           >
             {children}
           </VuiBox>
-          <Footer />
+          {!hideFooter && <Footer />}
         </VuiBox>
       </VuiBox>
     </PageLayout>
@@ -219,6 +223,7 @@ CoverLayout.defaultProps = {
   description: "",
   color: "info",
   top: 20,
+  hideFooter: false,
 };
 
 // Typechecking props for the CoverLayout
@@ -229,6 +234,7 @@ CoverLayout.propTypes = {
   image: PropTypes.string.isRequired,
   top: PropTypes.number,
   children: PropTypes.node.isRequired,
+  hideFooter: PropTypes.bool,
 };
 
 export default CoverLayout;

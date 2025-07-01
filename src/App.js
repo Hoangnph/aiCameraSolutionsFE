@@ -48,12 +48,26 @@ import routes from "routes";
 // Vision UI Dashboard React contexts
 import { useVisionUIController, setMiniSidenav, setOpenConfigurator } from "context";
 
-export default function App() {
+// Authentication context
+import { AuthProvider, useAuth } from "context/AuthContext";
+
+// Protected Route component
+import ProtectedRoute from "components/ProtectedRoute";
+
+// Loading Spinner component
+import LoadingSpinner from "components/LoadingSpinner";
+
+// Authentication layouts
+import SignIn from "layouts/authentication/sign-in";
+import SignUp from "layouts/authentication/sign-up";
+
+function AppContent() {
   const [controller, dispatch] = useVisionUIController();
   const { miniSidenav, direction, layout, openConfigurator, sidenavColor } = controller;
   const [onMouseEnter, setOnMouseEnter] = useState(false);
   const [rtlCache, setRtlCache] = useState(null);
   const { pathname } = useLocation();
+  const { isAuthenticated, isLoading } = useAuth();
 
   // Cache for the rtl
   useMemo(() => {
@@ -102,7 +116,14 @@ export default function App() {
       }
 
       if (route.route) {
-        return <Route exact path={route.route} component={route.component} key={route.key} />;
+        return (
+          <ProtectedRoute
+            exact
+            path={route.route}
+            component={route.component}
+            key={route.key}
+          />
+        );
       }
 
       return null;
@@ -132,11 +153,16 @@ export default function App() {
     </VuiBox>
   );
 
+  // Show loading screen while checking authentication
+  if (isLoading) {
+    return <LoadingSpinner message="Verifying authentication..." />;
+  }
+
   return direction === "rtl" ? (
     <CacheProvider value={rtlCache}>
       <ThemeProvider theme={themeRTL}>
         <CssBaseline />
-        {layout === "dashboard" && (
+        {layout === "dashboard" && isAuthenticated && (
           <>
             <Sidenav
               color={sidenavColor}
@@ -152,15 +178,23 @@ export default function App() {
         )}
         {layout === "vr" && <Configurator />}
         <Switch>
+          {/* Public routes */}
+          <Route exact path="/authentication/sign-in" component={SignIn} />
+          <Route exact path="/authentication/sign-up" component={SignUp} />
+          
+          {/* Protected routes */}
           {getRoutes(routes)}
-          <Redirect from="*" to="/dashboard" />
+          
+          {/* Default redirects */}
+          <Redirect from="/" to="/authentication/sign-in" />
+          <Redirect from="*" to="/authentication/sign-in" />
         </Switch>
       </ThemeProvider>
     </CacheProvider>
   ) : (
     <ThemeProvider theme={theme}>
       <CssBaseline />
-      {layout === "dashboard" && (
+      {layout === "dashboard" && isAuthenticated && (
         <>
           <Sidenav
             color={sidenavColor}
@@ -176,9 +210,25 @@ export default function App() {
       )}
       {layout === "vr" && <Configurator />}
       <Switch>
+        {/* Public routes */}
+        <Route exact path="/authentication/sign-in" component={SignIn} />
+        <Route exact path="/authentication/sign-up" component={SignUp} />
+        
+        {/* Protected routes */}
         {getRoutes(routes)}
-        <Redirect from="*" to="/dashboard" />
+        
+        {/* Default redirects */}
+        <Redirect from="/" to="/authentication/sign-in" />
+        <Redirect from="*" to="/authentication/sign-in" />
       </Switch>
     </ThemeProvider>
+  );
+}
+
+export default function App() {
+  return (
+    <AuthProvider>
+      <AppContent />
+    </AuthProvider>
   );
 }

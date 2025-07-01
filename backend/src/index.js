@@ -45,6 +45,25 @@ app.use(morgan('combined', {
   }
 }));
 
+// Root endpoint
+app.get('/', (req, res) => {
+  res.status(200).json({
+    message: 'Authentication Service API',
+    version: '1.0.0',
+    endpoints: {
+      health: '/health',
+      auth: `/api/${process.env.API_VERSION || 'v1'}/auth`,
+      users: `/api/${process.env.API_VERSION || 'v1'}/users`
+    },
+    documentation: 'Check the API documentation for available endpoints'
+  });
+});
+
+// Favicon handler
+app.get('/favicon.ico', (req, res) => {
+  res.status(204).end(); // No content response
+});
+
 // Health check endpoint
 app.get('/health', (req, res) => {
   res.status(200).json({
