@@ -319,6 +319,327 @@ router.get('/', authorize('admin'), async (req, res, next) => {
   }
 });
 
+// ==================== REGISTRATION CODES ROUTES ====================
+
+// @desc    Get all registration codes (Admin only)
+// @route   GET /api/v1/users/registration-codes
+// @access  Private/Admin
+router.get('/registration-codes', authorize('admin'), async (req, res, next) => {
+  try {
+    const { page = 1, limit = 10, search, type, isActive } = req.query;
+    const offset = (page - 1) * limit;
+
+    // Build query with filters
+    let whereConditions = [];
+    let queryParams = [];
+    let paramCount = 1;
+
+    if (search) {
+      whereConditions.push(`(code ILIKE $${paramCount} OR name ILIKE $${paramCount} OR description ILIKE $${paramCount})`);
+      queryParams.push(`%${search}%`);
+      paramCount++;
+    }
+
+    if (type) {
+      whereConditions.push(`type = $${paramCount++}`);
+      queryParams.push(type);
+    }
+
+    if (isActive !== undefined) {
+      whereConditions.push(`is_active = $${paramCount++}`);
+      queryParams.push(isActive === 'true');
+    }
+
+    const whereClause = whereConditions.length > 0 ? `WHERE ${whereConditions.join(' AND ')}` : '';
+
+    // Get total count
+    const countQuery = `
+      SELECT COUNT(*) as total
+      FROM registration_codes
+      ${whereClause}
+    `;
+    
+    const countResult = await executeQuery(countQuery, queryParams);
+    const total = parseInt(countResult.rows[0].total);
+
+    // Get registration codes with pagination
+    const codesQuery = `
+      SELECT 
+        rc.id, rc.code, rc.name, rc.description, rc.type, 
+        rc.max_uses, rc.used_count, rc.is_active, rc.expires_at,
+        rc.created_at, rc.updated_at,
+        u.username as created_by_username
+      FROM registration_codes rc
+      LEFT JOIN users u ON rc.created_by = u.id
+      ${whereClause}
+      ORDER BY rc.created_at DESC
+      LIMIT $${paramCount++} OFFSET $${paramCount++}
+    `;
+    
+    queryParams.push(parseInt(limit), offset);
+    const codesResult = await executeQuery(codesQuery, queryParams);
+
+    res.status(200).json({
+      success: true,
+      data: {
+        codes: codesResult.rows,
+        pagination: {
+          page: parseInt(page),
+          limit: parseInt(limit),
+          total,
+          pages: Math.ceil(total / limit)
+        }
+      }
+    });
+  } catch (error) {
+    next(error);
+  }
+});
+
+// @desc    Get registration code by ID (Admin only)
+// @route   GET /api/v1/users/registration-codes/:id
+// @access  Private/Admin
+router.get('/registration-codes/:id', authorize('admin'), async (req, res, next) => {
+  try {
+    const { id } = req.params;
+
+    const query = `
+      SELECT 
+        rc.id, rc.code, rc.name, rc.description, rc.type, 
+        rc.max_uses, rc.used_count, rc.is_active, rc.expires_at,
+        rc.created_at, rc.updated_at,
+        u.username as created_by_username
+      FROM registration_codes rc
+      LEFT JOIN users u ON rc.created_by = u.id
+      WHERE rc.id = $1
+    `;
+
+    const result = await executeQuery(query, [id]);
+
+    if (result.rows.length === 0) {
+      return res.status(404).json({
+        success: false,
+        error: {
+          code: 404,
+          message: 'Registration code not found'
+        }
+      });
+    }
+
+    res.status(200).json({
+      success: true,
+      data: {
+        code: result.rows[0]
+      }
+    });
+  } catch (error) {
+    next(error);
+  }
+});
+
+// @desc    Create new registration code (Admin only)
+// @route   POST /api/v1/users/registration-codes
+// @access  Private/Admin
+router.post('/registration-codes', authorize('admin'), async (req, res, next) => {
+  try {
+    const { code, name, description, type, maxUses, expiresAt } = req.body;
+
+    // Validate required fields
+    if (!code || !name) {
+      return res.status(400).json({
+        success: false,
+        error: {
+          code: 400,
+          message: 'Code and name are required'
+        }
+      });
+    }
+
+    // Check if code already exists
+    const existingCodeQuery = 'SELECT id FROM registration_codes WHERE code = $1';
+    const existingCodeResult = await executeQuery(existingCodeQuery, [code]);
+
+    if (existingCodeResult.rows.length > 0) {
+      return res.status(400).json({
+        success: false,
+        error: {
+          code: 400,
+          message: 'Registration code already exists'
+        }
+      });
+    }
+
+    // Insert new registration code
+    const insertQuery = `
+      INSERT INTO registration_codes (code, name, description, type, max_uses, expires_at, created_by)
+      VALUES ($1, $2, $3, $4, $5, $6, $7)
+      RETURNING id, code, name, description, type, max_uses, used_count, is_active, expires_at, created_at
+    `;
+
+    const result = await executeQuery(insertQuery, [
+      code,
+      name,
+      description || null,
+      type || 'organization',
+      maxUses || null,
+      expiresAt || null,
+      req.user.id
+    ]);
+
+    logger.info(`Registration code created by ${req.user.username}: ${code}`);
+
+    res.status(201).json({
+      success: true,
+      data: {
+        code: result.rows[0]
+      }
+    });
+  } catch (error) {
+    next(error);
+  }
+});
+
+// @desc    Update registration code (Admin only)
+// @route   PUT /api/v1/users/registration-codes/:id
+// @access  Private/Admin
+router.put('/registration-codes/:id', authorize('admin'), async (req, res, next) => {
+  try {
+    const { id } = req.params;
+    const { name, description, type, maxUses, isActive, expiresAt } = req.body;
+
+    // Check if registration code exists
+    const existingCodeQuery = 'SELECT id, code FROM registration_codes WHERE id = $1';
+    const existingCodeResult = await executeQuery(existingCodeQuery, [id]);
+
+    if (existingCodeResult.rows.length === 0) {
+      return res.status(404).json({
+        success: false,
+        error: {
+          code: 404,
+          message: 'Registration code not found'
+        }
+      });
+    }
+
+    // Build update query
+    const updateFields = [];
+    const updateValues = [];
+    let paramCount = 1;
+
+    if (name !== undefined) {
+      updateFields.push(`name = $${paramCount++}`);
+      updateValues.push(name);
+    }
+
+    if (description !== undefined) {
+      updateFields.push(`description = $${paramCount++}`);
+      updateValues.push(description);
+    }
+
+    if (type !== undefined) {
+      updateFields.push(`type = $${paramCount++}`);
+      updateValues.push(type);
+    }
+
+    if (maxUses !== undefined) {
+      updateFields.push(`max_uses = $${paramCount++}`);
+      updateValues.push(maxUses);
+    }
+
+    if (isActive !== undefined) {
+      updateFields.push(`is_active = $${paramCount++}`);
+      updateValues.push(isActive);
+    }
+
+    if (expiresAt !== undefined) {
+      updateFields.push(`expires_at = $${paramCount++}`);
+      updateValues.push(expiresAt);
+    }
+
+    if (updateFields.length === 0) {
+      return res.status(400).json({
+        success: false,
+        error: {
+          code: 400,
+          message: 'No fields to update'
+        }
+      });
+    }
+
+    updateFields.push(`updated_at = CURRENT_TIMESTAMP`);
+    updateValues.push(id);
+
+    const updateQuery = `
+      UPDATE registration_codes 
+      SET ${updateFields.join(', ')}
+      WHERE id = $${paramCount++}
+      RETURNING id, code, name, description, type, max_uses, used_count, is_active, expires_at, updated_at
+    `;
+
+    const result = await executeQuery(updateQuery, updateValues);
+
+    logger.info(`Registration code updated by ${req.user.username}: ${existingCodeResult.rows[0].code}`);
+
+    res.status(200).json({
+      success: true,
+      data: {
+        code: result.rows[0]
+      }
+    });
+  } catch (error) {
+    next(error);
+  }
+});
+
+// @desc    Delete registration code (Admin only)
+// @route   DELETE /api/v1/users/registration-codes/:id
+// @access  Private/Admin
+router.delete('/registration-codes/:id', authorize('admin'), async (req, res, next) => {
+  try {
+    const { id } = req.params;
+
+    // Check if registration code exists
+    const existingCodeQuery = 'SELECT id, code, used_count FROM registration_codes WHERE id = $1';
+    const existingCodeResult = await executeQuery(existingCodeQuery, [id]);
+
+    if (existingCodeResult.rows.length === 0) {
+      return res.status(404).json({
+        success: false,
+        error: {
+          code: 404,
+          message: 'Registration code not found'
+        }
+      });
+    }
+
+    const codeData = existingCodeResult.rows[0];
+
+    // Check if code has been used
+    if (codeData.used_count > 0) {
+      return res.status(400).json({
+        success: false,
+        error: {
+          code: 400,
+          message: 'Cannot delete registration code that has been used'
+        }
+      });
+    }
+
+    // Delete registration code
+    const deleteQuery = 'DELETE FROM registration_codes WHERE id = $1';
+    await executeQuery(deleteQuery, [id]);
+
+    logger.info(`Registration code deleted by ${req.user.username}: ${codeData.code}`);
+
+    res.status(200).json({
+      success: true,
+      message: 'Registration code deleted successfully'
+    });
+  } catch (error) {
+    next(error);
+  }
+});
+
 // @desc    Get user by ID (Admin only)
 // @route   GET /api/v1/users/:id
 // @access  Private/Admin

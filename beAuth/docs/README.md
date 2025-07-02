@@ -32,7 +32,7 @@ Backend Authentication Service là một microservice Node.js được xây dự
 ## Cấu trúc dự án
 
 ```
-backend/
+beAuth/
 ├── docs/                          # Tài liệu hệ thống
 │   ├── README.md                  # Tài liệu tổng quan
 │   ├── api-reference.md           # Tham khảo API
@@ -70,7 +70,7 @@ backend/
 ## Tính năng chính
 
 ### 1. Authentication
-- ✅ User registration với validation
+- ✅ User registration với validation và mã đăng ký
 - ✅ User login với username/email
 - ✅ JWT Access Token và Refresh Token
 - ✅ Password reset functionality
@@ -83,6 +83,7 @@ backend/
 - ✅ Role-based access control (admin, user, viewer)
 - ✅ User listing và search (Admin)
 - ✅ User status management
+- ✅ Registration code management (Admin)
 
 ### 3. Security Features
 - ✅ Password hashing với bcrypt
@@ -124,6 +125,15 @@ backend/
 | PUT | `/api/v1/users/:id` | Cập nhật user | Admin |
 | DELETE | `/api/v1/users/:id` | Xóa user | Admin |
 
+### Registration Code Management Endpoints (Admin Only)
+| Method | Endpoint | Description | Access |
+|--------|----------|-------------|--------|
+| GET | `/api/v1/users/registration-codes` | Danh sách mã đăng ký | Admin |
+| GET | `/api/v1/users/registration-codes/:id` | Chi tiết mã đăng ký | Admin |
+| POST | `/api/v1/users/registration-codes` | Tạo mã đăng ký mới | Admin |
+| PUT | `/api/v1/users/registration-codes/:id` | Cập nhật mã đăng ký | Admin |
+| DELETE | `/api/v1/users/registration-codes/:id` | Xóa mã đăng ký | Admin |
+
 ### System Endpoints
 | Method | Endpoint | Description | Access |
 |--------|----------|-------------|--------|
@@ -147,6 +157,25 @@ CREATE TABLE users (
     reset_password_expires TIMESTAMP,
     email_verification_token VARCHAR(255),
     email_verified BOOLEAN DEFAULT FALSE,
+    registration_code_id INTEGER REFERENCES registration_codes(id),
+    created_at TIMESTAMP DEFAULT CURRENT_TIMESTAMP,
+    updated_at TIMESTAMP DEFAULT CURRENT_TIMESTAMP
+);
+```
+
+### Registration Codes Table
+```sql
+CREATE TABLE registration_codes (
+    id SERIAL PRIMARY KEY,
+    code VARCHAR(50) UNIQUE NOT NULL,
+    name VARCHAR(100) NOT NULL,
+    description TEXT,
+    type VARCHAR(20) DEFAULT 'organization' CHECK (type IN ('organization', 'department', 'general')),
+    max_uses INTEGER DEFAULT NULL,
+    used_count INTEGER DEFAULT 0,
+    is_active BOOLEAN DEFAULT TRUE,
+    expires_at TIMESTAMP DEFAULT NULL,
+    created_by INTEGER REFERENCES users(id),
     created_at TIMESTAMP DEFAULT CURRENT_TIMESTAMP,
     updated_at TIMESTAMP DEFAULT CURRENT_TIMESTAMP
 );

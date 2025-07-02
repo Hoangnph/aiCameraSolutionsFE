@@ -172,7 +172,7 @@ const routes = [
 ### 1. Service Structure
 
 ```
-Backend/
+beAuth/
 ├── main.py                 # FastAPI application
 ├── config/
 │   ├── settings.py        # Configuration

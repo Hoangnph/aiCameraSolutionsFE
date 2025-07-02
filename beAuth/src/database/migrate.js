@@ -22,6 +22,25 @@ async function runMigrations() {
         reset_password_expires TIMESTAMP,
         email_verification_token VARCHAR(255),
         email_verified BOOLEAN DEFAULT FALSE,
+        registration_code_id INTEGER,
+        created_at TIMESTAMP DEFAULT CURRENT_TIMESTAMP,
+        updated_at TIMESTAMP DEFAULT CURRENT_TIMESTAMP
+      );
+    `;
+
+    // Create registration_codes table
+    const createRegistrationCodesTable = `
+      CREATE TABLE IF NOT EXISTS registration_codes (
+        id SERIAL PRIMARY KEY,
+        code VARCHAR(50) UNIQUE NOT NULL,
+        name VARCHAR(100) NOT NULL,
+        description TEXT,
+        type VARCHAR(20) DEFAULT 'organization' CHECK (type IN ('organization', 'department', 'general')),
+        max_uses INTEGER DEFAULT NULL,
+        used_count INTEGER DEFAULT 0,
+        is_active BOOLEAN DEFAULT TRUE,
+        expires_at TIMESTAMP DEFAULT NULL,
+        created_by INTEGER,
         created_at TIMESTAMP DEFAULT CURRENT_TIMESTAMP,
         updated_at TIMESTAMP DEFAULT CURRENT_TIMESTAMP
       );
@@ -64,6 +83,11 @@ async function runMigrations() {
       'CREATE INDEX IF NOT EXISTS idx_users_role ON users(role);',
       'CREATE INDEX IF NOT EXISTS idx_users_created_at ON users(created_at);',
       'CREATE INDEX IF NOT EXISTS idx_users_reset_token ON users(reset_password_token);',
+      'CREATE INDEX IF NOT EXISTS idx_users_registration_code_id ON users(registration_code_id);',
+      'CREATE INDEX IF NOT EXISTS idx_registration_codes_code ON registration_codes(code);',
+      'CREATE INDEX IF NOT EXISTS idx_registration_codes_type ON registration_codes(type);',
+      'CREATE INDEX IF NOT EXISTS idx_registration_codes_is_active ON registration_codes(is_active);',
+      'CREATE INDEX IF NOT EXISTS idx_registration_codes_created_by ON registration_codes(created_by);',
       'CREATE INDEX IF NOT EXISTS idx_user_sessions_user_id ON user_sessions(user_id);',
       'CREATE INDEX IF NOT EXISTS idx_user_sessions_token ON user_sessions(session_token);',
       'CREATE INDEX IF NOT EXISTS idx_user_sessions_refresh_token ON user_sessions(refresh_token);',
@@ -86,12 +110,28 @@ async function runMigrations() {
 
     // Create triggers
     const createTriggers = [
-      'CREATE TRIGGER update_users_updated_at BEFORE UPDATE ON users FOR EACH ROW EXECUTE FUNCTION update_updated_at_column();'
+      'CREATE TRIGGER update_users_updated_at BEFORE UPDATE ON users FOR EACH ROW EXECUTE FUNCTION update_updated_at_column();',
+      'CREATE TRIGGER update_registration_codes_updated_at BEFORE UPDATE ON registration_codes FOR EACH ROW EXECUTE FUNCTION update_updated_at_column();'
     ];
 
     // Execute migrations
     await executeQuery(createUsersTable);
     logger.info('Users table created/verified');
+
+    await executeQuery(createRegistrationCodesTable);
+    logger.info('Registration codes table created/verified');
+
+    // Add registration_code_id column to users table if it doesn't exist
+    try {
+      await executeQuery('ALTER TABLE users ADD COLUMN registration_code_id INTEGER');
+      logger.info('Added registration_code_id column to users table');
+    } catch (error) {
+      if (error.message.includes('already exists')) {
+        logger.info('registration_code_id column already exists in users table');
+      } else {
+        throw error;
+      }
+    }
 
     await executeQuery(createUserSessionsTable);
     logger.info('User sessions table created/verified');
@@ -108,9 +148,17 @@ async function runMigrations() {
     }
     logger.info('Indexes created/verified');
 
-    // Create triggers
+    // Create triggers with error handling
     for (const triggerQuery of createTriggers) {
-      await executeQuery(triggerQuery);
+      try {
+        await executeQuery(triggerQuery);
+      } catch (error) {
+        if (error.message.includes('already exists')) {
+          logger.info('Trigger already exists, skipping...');
+        } else {
+          throw error;
+        }
+      }
     }
     logger.info('Triggers created/verified');
 

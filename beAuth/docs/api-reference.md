@@ -34,7 +34,8 @@ Content-Type: application/json
   "password": "string",
   "confirmPassword": "string",
   "firstName": "string",
-  "lastName": "string"
+  "lastName": "string",
+  "registrationCode": "string"
 }
 ```
 
@@ -45,6 +46,7 @@ Content-Type: application/json
 - `confirmPassword`: Must match password
 - `firstName`: 2-50 chars (optional)
 - `lastName`: 2-50 chars (optional)
+- `registrationCode`: Required, must be a valid active registration code
 
 **Response (201):**
 ```json
@@ -450,6 +452,191 @@ GET /health
 }
 ```
 
+### 3. Registration Codes (Admin Only)
+
+#### Get All Registration Codes
+```http
+GET /users/registration-codes?page=1&limit=10&search=code&type=organization&isActive=true
+Authorization: Bearer <admin_token>
+```
+
+**Query Parameters:**
+- `page`: Page number (default: 1)
+- `limit`: Items per page (default: 10)
+- `search`: Search in code, name, description
+- `type`: Filter by type (organization, department, general)
+- `isActive`: Filter by active status (true/false)
+
+**Response (200):**
+```json
+{
+  "success": true,
+  "data": {
+    "codes": [
+      {
+        "id": 1,
+        "code": "adminfe",
+        "name": "Admin Future Eyes",
+        "description": "Mã đăng ký mặc định cho hệ thống Future Eyes",
+        "type": "organization",
+        "max_uses": null,
+        "used_count": 4,
+        "is_active": true,
+        "expires_at": null,
+        "created_at": "2025-07-01T08:36:17.651Z",
+        "updated_at": "2025-07-01T08:36:17.658Z",
+        "created_by_username": "admin"
+      }
+    ],
+    "pagination": {
+      "page": 1,
+      "limit": 10,
+      "total": 1,
+      "pages": 1
+    }
+  }
+}
+```
+
+#### Get Registration Code by ID
+```http
+GET /users/registration-codes/:id
+Authorization: Bearer <admin_token>
+```
+
+**Response (200):**
+```json
+{
+  "success": true,
+  "data": {
+    "code": {
+      "id": 1,
+      "code": "adminfe",
+      "name": "Admin Future Eyes",
+      "description": "Mã đăng ký mặc định cho hệ thống Future Eyes",
+      "type": "organization",
+      "max_uses": null,
+      "used_count": 4,
+      "is_active": true,
+      "expires_at": null,
+      "created_at": "2025-07-01T08:36:17.651Z",
+      "updated_at": "2025-07-01T08:36:17.658Z",
+      "created_by_username": "admin"
+    }
+  }
+}
+```
+
+#### Create Registration Code
+```http
+POST /users/registration-codes
+Authorization: Bearer <admin_token>
+Content-Type: application/json
+
+{
+  "code": "string",
+  "name": "string",
+  "description": "string",
+  "type": "organization|department|general",
+  "maxUses": 10,
+  "expiresAt": "2025-12-31T23:59:59Z"
+}
+```
+
+**Validation Rules:**
+- `code`: Required, unique, 1-50 characters
+- `name`: Required, 1-100 characters
+- `description`: Optional
+- `type`: Optional, defaults to "organization"
+- `maxUses`: Optional, integer (null = unlimited)
+- `expiresAt`: Optional, ISO date string (null = never expires)
+
+**Response (201):**
+```json
+{
+  "success": true,
+  "data": {
+    "code": {
+      "id": 2,
+      "code": "testcode",
+      "name": "Test Code",
+      "description": "Mã đăng ký test",
+      "type": "department",
+      "max_uses": 10,
+      "used_count": 0,
+      "is_active": true,
+      "expires_at": null,
+      "created_at": "2025-07-01T10:40:34.626Z"
+    }
+  }
+}
+```
+
+#### Update Registration Code
+```http
+PUT /users/registration-codes/:id
+Authorization: Bearer <admin_token>
+Content-Type: application/json
+
+{
+  "name": "Updated Name",
+  "description": "Updated description",
+  "type": "department",
+  "maxUses": 5,
+  "isActive": false,
+  "expiresAt": "2025-12-31T23:59:59Z"
+}
+```
+
+**Response (200):**
+```json
+{
+  "success": true,
+  "data": {
+    "code": {
+      "id": 2,
+      "code": "testcode",
+      "name": "Updated Name",
+      "description": "Updated description",
+      "type": "department",
+      "max_uses": 5,
+      "used_count": 0,
+      "is_active": false,
+      "expires_at": "2025-12-31T23:59:59Z",
+      "updated_at": "2025-07-01T10:40:41.992Z"
+    }
+  }
+}
+```
+
+#### Delete Registration Code
+```http
+DELETE /users/registration-codes/:id
+Authorization: Bearer <admin_token>
+```
+
+**Notes:**
+- Chỉ có thể xóa mã chưa được sử dụng (used_count = 0)
+
+**Response (200):**
+```json
+{
+  "success": true,
+  "message": "Registration code deleted successfully"
+}
+```
+
+**Error Response (400):**
+```json
+{
+  "success": false,
+  "error": {
+    "code": 400,
+    "message": "Cannot delete registration code that has been used"
+  }
+}
+```
+
 ## Error Responses
 
 ### Standard Error Format
@@ -551,7 +738,8 @@ curl -X POST http://localhost:3001/api/v1/auth/register \
     "password": "Password123!",
     "confirmPassword": "Password123!",
     "firstName": "New",
-    "lastName": "User"
+    "lastName": "User",
+    "registrationCode": "adminfe"
   }'
 ```
 

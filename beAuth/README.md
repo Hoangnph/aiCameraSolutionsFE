@@ -33,7 +33,7 @@ Authentication Service là một microservice Node.js được xây dựng để
 ## Cấu trúc dự án
 
 ```
-backend/
+beAuth/
 ├── src/
 │   ├── config/
 │   │   └── database.js          # Database configuration
@@ -66,7 +66,7 @@ backend/
 
 ### Bước 1: Clone và cài đặt dependencies
 ```bash
-cd backend
+cd beAuth
 npm install
 ```
 

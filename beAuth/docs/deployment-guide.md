@@ -96,7 +96,7 @@ pm2 --version
 ### 1. Clone Repository
 ```bash
 git clone <repository-url>
-cd feMain/backend
+cd feMain/beAuth
 ```
 
 ### 2. Install Dependencies
@@ -299,7 +299,7 @@ sudo npm install -g pm2
 ```bash
 # Clone repository
 git clone <repository-url> /home/appuser/app
-cd /home/appuser/app/backend
+cd /home/appuser/app/beAuth
 
 # Install dependencies
 npm install --production
@@ -578,7 +578,7 @@ chmod +x health-check.sh
 crontab -e
 
 # Add this line to check every 5 minutes
-*/5 * * * * /home/appuser/app/backend/health-check.sh
+*/5 * * * * /home/appuser/app/beAuth/health-check.sh
 ```
 
 ### 2. Log Management
@@ -594,7 +594,7 @@ sudo nano /etc/logrotate.d/auth-service
 
 **Logrotate Configuration:**
 ```
-/home/appuser/app/backend/logs/*.log {
+/home/appuser/app/beAuth/logs/*.log {
     daily
     missingok
     rotate 30
@@ -667,7 +667,7 @@ chmod +x backup-db.sh
 crontab -e
 
 # Add this line
-0 2 * * * /home/appuser/app/backend/backup-db.sh
+0 2 * * * /home/appuser/app/beAuth/backup-db.sh
 ```
 
 ### 2. Application Backup
@@ -916,7 +916,7 @@ sudo systemctl status nginx
 ```
 
 ### Log Locations
-- Application logs: `/home/appuser/app/backend/logs/`
+- Application logs: `/home/appuser/app/beAuth/logs/`
 - PM2 logs: `pm2 logs auth-service`
 - Nginx logs: `/var/log/nginx/`
 - PostgreSQL logs: `/var/log/postgresql/`

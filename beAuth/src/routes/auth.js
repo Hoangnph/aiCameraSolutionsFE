@@ -14,7 +14,7 @@ const router = express.Router();
 // @access  Public
 router.post('/register', validate('register'), async (req, res, next) => {
   try {
-    const { username, email, password, firstName, lastName } = req.body;
+    const { username, email, password, firstName, lastName, registrationCode } = req.body;
 
     // Check if username is available
     const isUsernameAvailable = await customValidations.isUsernameAvailable(username);
@@ -40,14 +40,67 @@ router.post('/register', validate('register'), async (req, res, next) => {
       });
     }
 
+    // Validate registration code
+    const registrationCodeQuery = `
+      SELECT id, code, name, max_uses, used_count, is_active, expires_at 
+      FROM registration_codes 
+      WHERE code = $1
+    `;
+    const registrationCodeResult = await executeQuery(registrationCodeQuery, [registrationCode]);
+
+    if (registrationCodeResult.rows.length === 0) {
+      return res.status(400).json({
+        success: false,
+        error: {
+          code: 400,
+          message: 'Mã đăng ký không hợp lệ'
+        }
+      });
+    }
+
+    const registrationCodeData = registrationCodeResult.rows[0];
+
+    // Check if registration code is active
+    if (!registrationCodeData.is_active) {
+      return res.status(400).json({
+        success: false,
+        error: {
+          code: 400,
+          message: 'Mã đăng ký đã bị vô hiệu hóa'
+        }
+      });
+    }
+
+    // Check if registration code has expired
+    if (registrationCodeData.expires_at && new Date() > new Date(registrationCodeData.expires_at)) {
+      return res.status(400).json({
+        success: false,
+        error: {
+          code: 400,
+          message: 'Mã đăng ký đã hết hạn'
+        }
+      });
+    }
+
+    // Check if registration code has reached max uses
+    if (registrationCodeData.max_uses && registrationCodeData.used_count >= registrationCodeData.max_uses) {
+      return res.status(400).json({
+        success: false,
+        error: {
+          code: 400,
+          message: 'Mã đăng ký đã đạt giới hạn sử dụng'
+        }
+      });
+    }
+
     // Hash password
     const salt = await bcrypt.genSalt(parseInt(process.env.BCRYPT_ROUNDS) || 12);
     const hashedPassword = await bcrypt.hash(password, salt);
 
-    // Insert user into database
+    // Insert user into database with registration code
     const insertQuery = `
-      INSERT INTO users (username, email, password_hash, first_name, last_name, role, is_active)
-      VALUES ($1, $2, $3, $4, $5, $6, $7)
+      INSERT INTO users (username, email, password_hash, first_name, last_name, role, is_active, registration_code_id)
+      VALUES ($1, $2, $3, $4, $5, $6, $7, $8)
       RETURNING id, username, email, first_name, last_name, role, created_at
     `;
     
@@ -58,15 +111,24 @@ router.post('/register', validate('register'), async (req, res, next) => {
       firstName || null,
       lastName || null,
       'user',
-      true
+      true,
+      registrationCodeData.id
     ]);
 
     const user = result.rows[0];
 
+    // Update used_count in registration_codes table
+    const updateUsedCountQuery = `
+      UPDATE registration_codes 
+      SET used_count = used_count + 1 
+      WHERE id = $1
+    `;
+    await executeQuery(updateUsedCountQuery, [registrationCodeData.id]);
+
     // Generate tokens
     const tokens = generateTokenPair(user.id);
 
-    logger.info(`User registered successfully: ${user.username}`);
+    logger.info(`User registered successfully: ${user.username} with registration code: ${registrationCode}`);
 
     res.status(201).json({
       success: true,

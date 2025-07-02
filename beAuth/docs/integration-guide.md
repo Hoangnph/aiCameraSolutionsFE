@@ -118,7 +118,8 @@ export const registerUser = async (userData) => {
       password: userData.password,
       confirmPassword: userData.confirmPassword,
       firstName: userData.firstName,
-      lastName: userData.lastName
+      lastName: userData.lastName,
+      registrationCode: userData.registrationCode // Bắt buộc
     });
     
     if (response.data.success) {
@@ -1093,6 +1094,215 @@ export const getUserById = async (id) => {
 const LazyProfile = React.lazy(() => import('./Profile'));
 ```
 
+## Registration Code Management (Admin Only)
+
+### 1. Lấy danh sách mã đăng ký
+
+```javascript
+// services/registrationCodeService.js
+export const getRegistrationCodes = async (params = {}) => {
+  try {
+    const queryParams = new URLSearchParams();
+    
+    if (params.page) queryParams.append('page', params.page);
+    if (params.limit) queryParams.append('limit', params.limit);
+    if (params.search) queryParams.append('search', params.search);
+    if (params.type) queryParams.append('type', params.type);
+    if (params.isActive !== undefined) queryParams.append('isActive', params.isActive);
+    
+    const response = await apiClient.get(`/users/registration-codes?${queryParams}`);
+    return response.data;
+  } catch (error) {
+    throw new Error(error.response?.data?.error?.message || 'Failed to get registration codes');
+  }
+};
+```
+
+### 2. Tạo mã đăng ký mới
+
+```javascript
+export const createRegistrationCode = async (codeData) => {
+  try {
+    const response = await apiClient.post('/users/registration-codes', {
+      code: codeData.code,
+      name: codeData.name,
+      description: codeData.description,
+      type: codeData.type || 'organization',
+      maxUses: codeData.maxUses,
+      expiresAt: codeData.expiresAt
+    });
+    
+    return response.data;
+  } catch (error) {
+    throw new Error(error.response?.data?.error?.message || 'Failed to create registration code');
+  }
+};
+```
+
+### 3. Cập nhật mã đăng ký
+
+```javascript
+export const updateRegistrationCode = async (id, updateData) => {
+  try {
+    const response = await apiClient.put(`/users/registration-codes/${id}`, {
+      name: updateData.name,
+      description: updateData.description,
+      type: updateData.type,
+      maxUses: updateData.maxUses,
+      isActive: updateData.isActive,
+      expiresAt: updateData.expiresAt
+    });
+    
+    return response.data;
+  } catch (error) {
+    throw new Error(error.response?.data?.error?.message || 'Failed to update registration code');
+  }
+};
+```
+
+### 4. Xóa mã đăng ký
+
+```javascript
+export const deleteRegistrationCode = async (id) => {
+  try {
+    const response = await apiClient.delete(`/users/registration-codes/${id}`);
+    return response.data;
+  } catch (error) {
+    throw new Error(error.response?.data?.error?.message || 'Failed to delete registration code');
+  }
+};
+```
+
+### 5. React Component Example
+
+```jsx
+// components/RegistrationCodeManager.jsx
+import React, { useState, useEffect } from 'react';
+import { getRegistrationCodes, createRegistrationCode, updateRegistrationCode, deleteRegistrationCode } from '../services/registrationCodeService';
+
+const RegistrationCodeManager = () => {
+  const [codes, setCodes] = useState([]);
+  const [loading, setLoading] = useState(false);
+  const [error, setError] = useState(null);
+  const [pagination, setPagination] = useState({});
+  
+  const fetchCodes = async (params = {}) => {
+    try {
+      setLoading(true);
+      const response = await getRegistrationCodes(params);
+      setCodes(response.data.codes);
+      setPagination(response.data.pagination);
+    } catch (err) {
+      setError(err.message);
+    } finally {
+      setLoading(false);
+    }
+  };
+  
+  const handleCreateCode = async (codeData) => {
+    try {
+      await createRegistrationCode(codeData);
+      fetchCodes(); // Refresh list
+    } catch (err) {
+      setError(err.message);
+    }
+  };
+  
+  const handleUpdateCode = async (id, updateData) => {
+    try {
+      await updateRegistrationCode(id, updateData);
+      fetchCodes(); // Refresh list
+    } catch (err) {
+      setError(err.message);
+    }
+  };
+  
+  const handleDeleteCode = async (id) => {
+    if (window.confirm('Bạn có chắc muốn xóa mã đăng ký này?')) {
+      try {
+        await deleteRegistrationCode(id);
+        fetchCodes(); // Refresh list
+      } catch (err) {
+        setError(err.message);
+      }
+    }
+  };
+  
+  useEffect(() => {
+    fetchCodes();
+  }, []);
+  
+  if (loading) return <div>Loading...</div>;
+  if (error) return <div>Error: {error}</div>;
+  
+  return (
+    <div>
+      <h2>Quản lý mã đăng ký</h2>
+      <table>
+        <thead>
+          <tr>
+            <th>Mã</th>
+            <th>Tên</th>
+            <th>Loại</th>
+            <th>Đã sử dụng</th>
+            <th>Trạng thái</th>
+            <th>Thao tác</th>
+          </tr>
+        </thead>
+        <tbody>
+          {codes.map(code => (
+            <tr key={code.id}>
+              <td>{code.code}</td>
+              <td>{code.name}</td>
+              <td>{code.type}</td>
+              <td>{code.used_count}/{code.max_uses || '∞'}</td>
+              <td>{code.is_active ? 'Active' : 'Inactive'}</td>
+              <td>
+                <button onClick={() => handleUpdateCode(code.id, { isActive: !code.is_active })}>
+                  {code.is_active ? 'Deactivate' : 'Activate'}
+                </button>
+                {code.used_count === 0 && (
+                  <button onClick={() => handleDeleteCode(code.id)}>Delete</button>
+                )}
+              </td>
+            </tr>
+          ))}
+        </tbody>
+      </table>
+    </div>
+  );
+};
+
+export default RegistrationCodeManager;
+```
+
+### 6. Form Validation cho Registration Code
+
+```javascript
+// utils/registrationCodeValidation.js
+export const validateRegistrationCode = (codeData) => {
+  const errors = {};
+  
+  if (!codeData.code || codeData.code.length < 1 || codeData.code.length > 50) {
+    errors.code = 'Mã đăng ký phải có từ 1-50 ký tự';
+  }
+  
+  if (!codeData.name || codeData.name.length < 1 || codeData.name.length > 100) {
+    errors.name = 'Tên mã đăng ký phải có từ 1-100 ký tự';
+  }
+  
+  if (codeData.maxUses && (codeData.maxUses < 1 || !Number.isInteger(codeData.maxUses))) {
+    errors.maxUses = 'Giới hạn sử dụng phải là số nguyên dương';
+  }
+  
+  if (codeData.expiresAt && new Date(codeData.expiresAt) <= new Date()) {
+    errors.expiresAt = 'Thời hạn phải lớn hơn thời gian hiện tại';
+  }
+  
+  return errors;
+};
+```
+
 ## Kết luận
 
 Tài liệu này cung cấp hướng dẫn chi tiết để tích hợp Authentication Microservice với frontend. Đảm bảo:
@@ -1105,4 +1315,5 @@ Tài liệu này cung cấp hướng dẫn chi tiết để tích hợp Authenti
 Để hỗ trợ thêm, hãy tham khảo:
 - [API Reference](./api-reference.md)
 - [Security Guide](./security-guide.md)
-- [Deployment Guide](./deployment-guide.md) 
+- [Deployment Guide](./deployment-guide.md)
+- [Registration Code System](./registration-code-system.md) 

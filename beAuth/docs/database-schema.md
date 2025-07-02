@@ -25,6 +25,26 @@ Database schema được thiết kế để hỗ trợ authentication và user m
 │ reset_expires   │              │                       │
 │ email_token     │              │                       │
 │ email_verified  │              │                       │
+│ reg_code_id(FK) │              │                       │
+│ created_at      │              │                       │
+│ updated_at      │              │                       │
+└─────────────────┘              │                       │
+         │                       │                       │
+         │                       │                       │
+         ▼                       │                       │
+┌─────────────────┐              │                       │
+│registration_codes│              │                       │
+├─────────────────┤              │                       │
+│ id (PK)         │              │                       │
+│ code            │              │                       │
+│ name            │              │                       │
+│ description     │              │                       │
+│ type            │              │                       │
+│ max_uses        │              │                       │
+│ used_count      │              │                       │
+│ is_active       │              │                       │
+│ expires_at      │              │                       │
+│ created_by (FK) │              │                       │
 │ created_at      │              │                       │
 │ updated_at      │              │                       │
 └─────────────────┘              │                       │
@@ -61,6 +81,7 @@ CREATE TABLE users (
     reset_password_expires TIMESTAMP,
     email_verification_token VARCHAR(255),
     email_verified BOOLEAN DEFAULT FALSE,
+    registration_code_id INTEGER REFERENCES registration_codes(id),
     created_at TIMESTAMP DEFAULT CURRENT_TIMESTAMP,
     updated_at TIMESTAMP DEFAULT CURRENT_TIMESTAMP
 );
@@ -80,10 +101,44 @@ CREATE TABLE users (
 - `reset_password_expires`: Reset token expiry
 - `email_verification_token`: Email verification token
 - `email_verified`: Email verification status
+- `registration_code_id`: Foreign key to registration_codes table
 - `created_at`: Account creation timestamp
 - `updated_at`: Last update timestamp
 
-### 2. User Sessions Table
+### 2. Registration Codes Table
+
+```sql
+CREATE TABLE registration_codes (
+    id SERIAL PRIMARY KEY,
+    code VARCHAR(50) UNIQUE NOT NULL,
+    name VARCHAR(100) NOT NULL,
+    description TEXT,
+    type VARCHAR(20) DEFAULT 'organization' CHECK (type IN ('organization', 'department', 'general')),
+    max_uses INTEGER DEFAULT NULL,
+    used_count INTEGER DEFAULT 0,
+    is_active BOOLEAN DEFAULT TRUE,
+    expires_at TIMESTAMP DEFAULT NULL,
+    created_by INTEGER REFERENCES users(id),
+    created_at TIMESTAMP DEFAULT CURRENT_TIMESTAMP,
+    updated_at TIMESTAMP DEFAULT CURRENT_TIMESTAMP
+);
+```
+
+**Column Descriptions:**
+- `id`: Primary key, auto-increment
+- `code`: Unique registration code (required for user registration)
+- `name`: Display name for the registration code
+- `description`: Optional description of the code's purpose
+- `type`: Code type (organization, department, general)
+- `max_uses`: Maximum number of times the code can be used (NULL = unlimited)
+- `used_count`: Number of times the code has been used
+- `is_active`: Whether the code is active and can be used
+- `expires_at`: Expiration date (NULL = never expires)
+- `created_by`: User who created the code
+- `created_at`: Code creation timestamp
+- `updated_at`: Last update timestamp
+
+### 3. User Sessions Table
 
 ```sql
 CREATE TABLE user_sessions (
@@ -110,7 +165,7 @@ CREATE TABLE user_sessions (
 - `expires_at`: Session expiry timestamp
 - `created_at`: Session creation timestamp
 
-### 3. Audit Log Table
+### 4. Audit Log Table
 
 ```sql
 CREATE TABLE audit_log (
@@ -179,6 +234,13 @@ CREATE INDEX idx_users_email ON users(email);
 CREATE INDEX idx_users_role ON users(role);
 CREATE INDEX idx_users_created_at ON users(created_at);
 CREATE INDEX idx_users_reset_token ON users(reset_password_token);
+CREATE INDEX idx_users_registration_code_id ON users(registration_code_id);
+
+-- Registration codes table indexes
+CREATE INDEX idx_registration_codes_code ON registration_codes(code);
+CREATE INDEX idx_registration_codes_type ON registration_codes(type);
+CREATE INDEX idx_registration_codes_is_active ON registration_codes(is_active);
+CREATE INDEX idx_registration_codes_created_by ON registration_codes(created_by);
 
 -- User sessions table indexes
 CREATE INDEX idx_user_sessions_user_id ON user_sessions(user_id);

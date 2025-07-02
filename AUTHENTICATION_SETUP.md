@@ -45,7 +45,7 @@
 
 ### 1. Backend Setup
 ```bash
-cd backend
+cd beAuth
 npm install
 cp env.example .env
 # Chỉnh sửa .env với thông tin database
@@ -134,19 +134,19 @@ Sau khi chạy seed, có thể sử dụng:
 ### Common Issues
 
 1. **CORS Error**
-   - Đảm bảo backend đang chạy trên port 3001
-   - Kiểm tra CORS_ORIGIN trong backend .env
+   - Đảm bảo beAuth đang chạy trên port 3001
+   - Kiểm tra CORS_ORIGIN trong beAuth .env
    - Frontend phải chạy trên port 3000
 
 2. **Database Connection Error**
    - Kiểm tra PostgreSQL đang chạy
-   - Kiểm tra thông tin database trong backend .env
+   - Kiểm tra thông tin database trong beAuth .env
    - Chạy `npm run migrate` và `npm run seed`
 
 3. **Token Expired**
    - Token access tự động refresh
    - Nếu refresh fail, redirect to login
-   - Kiểm tra JWT_SECRET trong backend
+   - Kiểm tra JWT_SECRET trong beAuth
 
 4. **Validation Errors**
    - Password phải đáp ứng yêu cầu

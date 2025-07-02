@@ -75,7 +75,7 @@ npm start
 
 #### Start Backend
 ```bash
-cd backend
+cd beAuth
 uvicorn main:app --reload --host 0.0.0.0 --port 8000
 # Access at http://localhost:8000
 ```
@@ -120,12 +120,12 @@ services:
 
   backend:
     build:
-      context: ./backend
+      context: ./beAuth
       dockerfile: Dockerfile.dev
     ports:
       - "8000:8000"
     volumes:
-      - ./backend:/app
+      - ./beAuth:/app
     environment:
       - DATABASE_URL=postgresql://dev_user:dev_password@postgres:5432/people_counting
       - SECRET_KEY=dev-secret-key
@@ -212,7 +212,7 @@ CMD ["nginx", "-g", "daemon off;"]
 
 #### Production Dockerfile (Backend)
 ```dockerfile
-# backend/Dockerfile
+# beAuth/Dockerfile
 FROM python:3.10-slim
 
 WORKDIR /app
@@ -269,7 +269,7 @@ services:
 
   backend:
     build:
-      context: ./backend
+      context: ./beAuth
       dockerfile: Dockerfile
     environment:
       - DATABASE_URL=postgresql://prod_user:prod_password@postgres:5432/people_counting
@@ -508,7 +508,7 @@ scrape_configs:
 
 #### Logging Setup
 ```python
-# backend/logging_config.py
+# beAuth/logging_config.py
 import logging
 import logging.handlers
 import os
@@ -645,7 +645,7 @@ services:
 
 #### Security Headers
 ```python
-# backend/security.py
+# beAuth/security.py
 from fastapi import FastAPI
 from fastapi.middleware.cors import CORSMiddleware
 from fastapi.middleware.trustedhost import TrustedHostMiddleware
@@ -697,7 +697,7 @@ ON alerts(created_at DESC) WHERE is_read = false;
 
 #### Caching Strategy
 ```python
-# backend/cache.py
+# beAuth/cache.py
 import redis
 from functools import wraps
 
@@ -770,7 +770,7 @@ docker logs postgres
 #### Application Startup Issues
 ```bash
 # Check application logs
-docker logs backend
+docker logs beAuth
 
 # Check environment variables
 docker exec -it backend env | grep -E "(DATABASE|SECRET|JWT)"

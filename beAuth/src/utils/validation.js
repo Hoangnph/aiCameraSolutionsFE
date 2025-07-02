@@ -53,6 +53,11 @@ const validationSchemas = {
       .messages({
         'string.min': 'Last name must be at least 2 characters long',
         'string.max': 'Last name cannot exceed 50 characters'
+      }),
+    registrationCode: Joi.string()
+      .required()
+      .messages({
+        'any.required': 'Mã đăng ký là bắt buộc'
       })
   }),
 

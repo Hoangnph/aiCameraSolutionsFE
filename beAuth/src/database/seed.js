@@ -100,11 +100,74 @@ async function runSeeds() {
       logger.info('Viewer user already exists');
     }
 
+    // Create registration code "adminfe" if it doesn't exist
+    const checkRegistrationCodeQuery = "SELECT id FROM registration_codes WHERE code = 'adminfe'";
+    const registrationCodeExists = await executeQuery(checkRegistrationCodeQuery);
+
+    if (registrationCodeExists.rows.length === 0) {
+      // Get admin user ID for created_by
+      const adminUserQuery = "SELECT id FROM users WHERE username = 'admin'";
+      const adminUserResult = await executeQuery(adminUserQuery);
+      const adminUserId = adminUserResult.rows[0]?.id || null;
+
+      const createRegistrationCodeQuery = `
+        INSERT INTO registration_codes (code, name, description, type, max_uses, created_by)
+        VALUES ($1, $2, $3, $4, $5, $6)
+        RETURNING id, code, name
+      `;
+
+      const registrationCodeResult = await executeQuery(createRegistrationCodeQuery, [
+        'adminfe',
+        'Admin Future Eyes',
+        'Mã đăng ký mặc định cho hệ thống Future Eyes',
+        'organization',
+        null, // Không giới hạn số lần sử dụng
+        adminUserId
+      ]);
+
+      logger.info('Registration code created:', registrationCodeResult.rows[0]);
+    } else {
+      logger.info('Registration code "adminfe" already exists');
+    }
+
+    // Get the registration code ID
+    const getRegistrationCodeQuery = "SELECT id FROM registration_codes WHERE code = 'adminfe'";
+    const registrationCodeResult = await executeQuery(getRegistrationCodeQuery);
+    const registrationCodeId = registrationCodeResult.rows[0]?.id;
+
+    if (registrationCodeId) {
+      // Update all existing users to use this registration code
+      const updateUsersQuery = `
+        UPDATE users 
+        SET registration_code_id = $1 
+        WHERE registration_code_id IS NULL
+      `;
+      
+      const updateResult = await executeQuery(updateUsersQuery, [registrationCodeId]);
+      
+      if (updateResult.rowCount > 0) {
+        logger.info(`Updated ${updateResult.rowCount} users with registration code "adminfe"`);
+      } else {
+        logger.info('All users already have registration codes assigned');
+      }
+
+      // Update the used_count in registration_codes table
+      const countUsersQuery = "SELECT COUNT(*) as count FROM users WHERE registration_code_id = $1";
+      const countResult = await executeQuery(countUsersQuery, [registrationCodeId]);
+      const userCount = parseInt(countResult.rows[0].count);
+
+      const updateUsedCountQuery = "UPDATE registration_codes SET used_count = $1 WHERE id = $2";
+      await executeQuery(updateUsedCountQuery, [userCount, registrationCodeId]);
+      
+      logger.info(`Updated registration code used_count to ${userCount}`);
+    }
+
     logger.info('Database seeding completed successfully');
     logger.info('Default users:');
     logger.info('- Admin: admin / Admin123!');
     logger.info('- Test User: testuser / Test123!');
     logger.info('- Viewer: viewer / Viewer123!');
+    logger.info('Registration code: adminfe (assigned to all users)');
 
   } catch (error) {
     logger.error('Seeding failed:', error);
