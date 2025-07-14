@@ -1,0 +1,19 @@
+Starting Dynamic Rate Limiting Test Suite
+==================================================
+[PASSED] AUTH-SETUP: User logged in and token obtained
+[PASSED] RATE-GET-001: Current rate limit: invalid_format
+[PASSED] RATE-SET-001: Rate limit set to: 15/minute
+[PASSED] RATE-GET-001: Current rate limit: 15/minute
+[PASSED] RATE-VERIFY-001: Rate limit verified: 15/minute
+[PASSED] RATE-ENFORCE-001: Rate limited after 5 requests (limit: 15)
+[FAILED] RATE-VALIDATE-001: Invalid format accepted: 200
+
+==================================================
+TEST SUMMARY
+==================================================
+Total Tests: 7
+Passed: 6
+Failed: 1
+Success Rate: 85.7%
+
+Results saved to: results/dynamic_rate_limit_results.json

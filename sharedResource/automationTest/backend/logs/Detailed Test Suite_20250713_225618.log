@@ -1,0 +1,39 @@
+INFO:__main__:Starting Detailed Backend Test Suite
+INFO:__main__:==================================================
+INFO:__main__:=== Testing Authentication ===
+INFO:__main__:[PASSED] AUTH-REG-001: User registered successfully: testuser1752422318
+INFO:__main__:[PASSED] AUTH-REG-002: Invalid registration code rejected
+INFO:__main__:[PASSED] AUTH-REG-003: Duplicate username rejected
+INFO:__main__:[PASSED] AUTH-LOGIN-001: Login successful for loginuser1752422325
+INFO:__main__:[PASSED] AUTH-LOGIN-002: Invalid credentials rejected
+INFO:__main__:[PASSED] AUTH-TOKEN-001: Token verification successful
+INFO:__main__:[PASSED] AUTH-TOKEN-002: Logout successful
+INFO:__main__:[PASSED] AUTH-PROFILE-001: Profile retrieved successfully
+INFO:__main__:[PASSED] AUTH-PROFILE-002: Profile updated successfully
+INFO:__main__:=== Testing Camera Management ===
+INFO:__main__:[PASSED] CAM-CRUD-001: Camera created with ID: 45
+INFO:__main__:[PASSED] CAM-CRUD-002: Retrieved 0 cameras
+INFO:__main__:[PASSED] CAM-CRUD-003: Camera retrieved successfully
+INFO:__main__:[PASSED] CAM-CRUD-004: Camera updated successfully
+INFO:__main__:[PASSED] CAM-CRUD-005: Camera not found (expected for ID 999)
+INFO:__main__:=== Testing Count Data ===
+INFO:__main__:[PASSED] COUNT-LIST-001: Retrieved 0 count records
+INFO:__main__:[PASSED] COUNT-GET-001: Retrieved 0 count records for camera 1
+INFO:__main__:=== Testing Analytics ===
+INFO:__main__:[PASSED] ANALYTICS-001: Analytics summary retrieved: {'success': True, 'data': {'total_cameras': 14, 'active_cameras': 2, 'today_in': 0, 'today_out': 0, 'current_count': 0}}
+INFO:__main__:=== Testing Security ===
+INFO:__main__:[PASSED] SEC-AUTH-001: Unauthorized access blocked
+INFO:__main__:[PASSED] SEC-AUTH-002: Invalid token rejected
+INFO:__main__:=== Testing Error Handling ===
+INFO:__main__:[PASSED] ERR-404-001: 404 error handled correctly
+INFO:__main__:==================================================
+INFO:__main__:TEST SUMMARY
+INFO:__main__:==================================================
+INFO:__main__:Total Tests: 20
+INFO:__main__:Passed: 20
+INFO:__main__:Failed: 0
+INFO:__main__:Errors: 0
+INFO:__main__:Skipped: 0
+INFO:__main__:Success Rate: 100.00%
+INFO:__main__:==================================================
+INFO:__main__:Results saved to: results/detailed_test_results.json

@@ -1,0 +1,46 @@
+{
+  "test_suite": "Camera Management API Tests",
+  "start_time": "2025-07-11T17:48:01.664774",
+  "end_time": "2025-07-11T17:48:02.434429",
+  "duration_seconds": 0.769655,
+  "total_tests": 5,
+  "passed_tests": 5,
+  "failed_tests": 0,
+  "results": [
+    {
+      "test_name": "CAMERA-000",
+      "status": "PASS",
+      "message": "User registration for camera test successful",
+      "timestamp": "2025-07-11T17:48:02.092520",
+      "details": null
+    },
+    {
+      "test_name": "CAMERA-001",
+      "status": "PASS",
+      "message": "Camera created successfully",
+      "timestamp": "2025-07-11T17:48:02.167124",
+      "details": "ID: 14"
+    },
+    {
+      "test_name": "CAMERA-002",
+      "status": "PASS",
+      "message": "Camera list fetched successfully",
+      "timestamp": "2025-07-11T17:48:02.257995",
+      "details": "Count: 5"
+    },
+    {
+      "test_name": "CAMERA-003",
+      "status": "PASS",
+      "message": "Camera updated successfully",
+      "timestamp": "2025-07-11T17:48:02.339462",
+      "details": null
+    },
+    {
+      "test_name": "CAMERA-004",
+      "status": "PASS",
+      "message": "Camera deleted successfully",
+      "timestamp": "2025-07-11T17:48:02.434275",
+      "details": null
+    }
+  ]
+}

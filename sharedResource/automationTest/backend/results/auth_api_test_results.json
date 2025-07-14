@@ -1,0 +1,60 @@
+{
+  "test_suite": "Authentication API Tests",
+  "start_time": "2025-07-11T17:48:00.111300",
+  "end_time": "2025-07-11T17:48:01.050413",
+  "duration_seconds": 0.939113,
+  "total_tests": 7,
+  "passed_tests": 7,
+  "failed_tests": 0,
+  "results": [
+    {
+      "test_name": "AUTH-001",
+      "status": "PASS",
+      "message": "Health endpoint is accessible",
+      "timestamp": "2025-07-11T17:48:00.133322",
+      "details": "Status: 200, Response: {'status': 'OK', 'timestamp': '2025-07-11T10:48:00.130Z', 'service': 'Authentication Service', 'version': '1.0.0'}"
+    },
+    {
+      "test_name": "AUTH-002",
+      "status": "PASS",
+      "message": "User registration successful",
+      "timestamp": "2025-07-11T17:48:00.567106",
+      "details": "Status: 201, User: testuser1752230880"
+    },
+    {
+      "test_name": "AUTH-003",
+      "status": "PASS",
+      "message": "User login successful",
+      "timestamp": "2025-07-11T17:48:00.996735",
+      "details": "Status: 200, User: testuser1752230880"
+    },
+    {
+      "test_name": "AUTH-004",
+      "status": "PASS",
+      "message": "Protected endpoint accessible with valid token",
+      "timestamp": "2025-07-11T17:48:01.010301",
+      "details": "Status: 200"
+    },
+    {
+      "test_name": "AUTH-005",
+      "status": "PASS",
+      "message": "Token refresh successful",
+      "timestamp": "2025-07-11T17:48:01.028715",
+      "details": "Status: 200"
+    },
+    {
+      "test_name": "AUTH-006",
+      "status": "PASS",
+      "message": "Invalid credentials properly rejected",
+      "timestamp": "2025-07-11T17:48:01.037413",
+      "details": "Status: 401"
+    },
+    {
+      "test_name": "AUTH-007",
+      "status": "PASS",
+      "message": "User logout successful",
+      "timestamp": "2025-07-11T17:48:01.050255",
+      "details": "Status: 200"
+    }
+  ]
+}

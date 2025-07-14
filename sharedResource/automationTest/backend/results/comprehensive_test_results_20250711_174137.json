@@ -1,0 +1,172 @@
+{
+  "summary": {
+    "total_tests": 27,
+    "passed_tests": 27,
+    "failed_tests": 0,
+    "success_rate": 100.0
+  },
+  "results": [
+    {
+      "test_name": "AUTH-REG-002",
+      "status": "PASSED",
+      "details": "Registration with invalid code rejected",
+      "timestamp": "2025-07-11T17:41:38.793888"
+    },
+    {
+      "test_name": "AUTH-REG-003",
+      "status": "PASSED",
+      "details": "Registration with duplicate username rejected",
+      "timestamp": "2025-07-11T17:41:38.807185"
+    },
+    {
+      "test_name": "AUTH-LOGIN-002",
+      "status": "PASSED",
+      "details": "Login with invalid credentials rejected",
+      "timestamp": "2025-07-11T17:41:39.218886"
+    },
+    {
+      "test_name": "AUTH-TOKEN-001",
+      "status": "PASSED",
+      "details": "Token refresh successful",
+      "timestamp": "2025-07-11T17:41:39.650782"
+    },
+    {
+      "test_name": "AUTH-TOKEN-002",
+      "status": "PASSED",
+      "details": "Logout successful",
+      "timestamp": "2025-07-11T17:41:39.661327"
+    },
+    {
+      "test_name": "AUTH-PROFILE-001",
+      "status": "PASSED",
+      "details": "Profile retrieved successfully",
+      "timestamp": "2025-07-11T17:41:39.678484"
+    },
+    {
+      "test_name": "AUTH-PROFILE-002",
+      "status": "PASSED",
+      "details": "Profile updated successfully",
+      "timestamp": "2025-07-11T17:41:39.701114"
+    },
+    {
+      "test_name": "CAM-REG-001",
+      "status": "PASSED",
+      "details": "Camera created with ID: 9",
+      "timestamp": "2025-07-11T17:41:39.800730"
+    },
+    {
+      "test_name": "CAM-GET-001",
+      "status": "PASSED",
+      "details": "Camera retrieved successfully",
+      "timestamp": "2025-07-11T17:41:39.878952"
+    },
+    {
+      "test_name": "CAM-UPD-001",
+      "status": "PASSED",
+      "details": "Camera updated successfully",
+      "timestamp": "2025-07-11T17:41:39.970253"
+    },
+    {
+      "test_name": "CAM-DEL-001",
+      "status": "PASSED",
+      "details": "Camera deleted successfully",
+      "timestamp": "2025-07-11T17:41:40.054027"
+    },
+    {
+      "test_name": "CAM-REG-002",
+      "status": "PASSED",
+      "details": "Invalid camera data rejected",
+      "timestamp": "2025-07-11T17:41:40.122320"
+    },
+    {
+      "test_name": "CAM-LIST-001",
+      "status": "PASSED",
+      "details": "Retrieved 4 cameras",
+      "timestamp": "2025-07-11T17:41:40.195566"
+    },
+    {
+      "test_name": "CAM-GET-002",
+      "status": "PASSED",
+      "details": "Non-existent camera handled correctly",
+      "timestamp": "2025-07-11T17:41:40.282438"
+    },
+    {
+      "test_name": "COUNT-LIST-001",
+      "status": "PASSED",
+      "details": "Retrieved 4 count records",
+      "timestamp": "2025-07-11T17:41:40.303135"
+    },
+    {
+      "test_name": "COUNT-GET-001",
+      "status": "PASSED",
+      "details": "Retrieved 2 count records for camera 1",
+      "timestamp": "2025-07-11T17:41:40.321642"
+    },
+    {
+      "test_name": "ANALYTICS-001",
+      "status": "PASSED",
+      "details": "Analytics summary: 4 cameras, 20 current count",
+      "timestamp": "2025-07-11T17:41:40.342779"
+    },
+    {
+      "test_name": "CAM-START-001",
+      "status": "PASSED",
+      "details": "Camera processing started",
+      "timestamp": "2025-07-11T17:41:40.427806"
+    },
+    {
+      "test_name": "CAM-STOP-001",
+      "status": "PASSED",
+      "details": "Camera processing stopped",
+      "timestamp": "2025-07-11T17:41:40.496987"
+    },
+    {
+      "test_name": "WORKER-STATUS-001",
+      "status": "PASSED",
+      "details": "Worker pool: 4 workers, 4 idle",
+      "timestamp": "2025-07-11T17:41:40.561832"
+    },
+    {
+      "test_name": "SEC-AUTH-001",
+      "status": "PASSED",
+      "details": "Unauthorized access blocked",
+      "timestamp": "2025-07-11T17:41:40.570410"
+    },
+    {
+      "test_name": "SEC-AUTH-002",
+      "status": "PASSED",
+      "details": "Invalid token rejected",
+      "timestamp": "2025-07-11T17:41:40.633427"
+    },
+    {
+      "test_name": "PERF-LOAD-001",
+      "status": "PASSED",
+      "details": "All 10 requests successful in 0.77s",
+      "timestamp": "2025-07-11T17:41:41.406057"
+    },
+    {
+      "test_name": "INT-AUTH-CAM-001",
+      "status": "PASSED",
+      "details": "Camera API with auth successful",
+      "timestamp": "2025-07-11T17:41:41.483866"
+    },
+    {
+      "test_name": "INT-DB-CAM-001",
+      "status": "PASSED",
+      "details": "Database integration: 4 cameras",
+      "timestamp": "2025-07-11T17:41:41.561289"
+    },
+    {
+      "test_name": "INT-DB-COUNT-001",
+      "status": "PASSED",
+      "details": "Database integration: 4 count records",
+      "timestamp": "2025-07-11T17:41:41.578355"
+    },
+    {
+      "test_name": "ERR-404-001",
+      "status": "PASSED",
+      "details": "404 error handled correctly",
+      "timestamp": "2025-07-11T17:41:41.588073"
+    }
+  ]
+}

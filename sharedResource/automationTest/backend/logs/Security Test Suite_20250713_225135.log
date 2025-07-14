@@ -1,0 +1,47 @@
+Starting Security Test Suite
+==================================================
+
+=== Testing JWT Token Security ===
+[PASSED] SEC-JWT-001: Expired token rejected
+[PASSED] SEC-JWT-002: Invalid token signature rejected
+[PASSED] SEC-JWT-003: Malformed token rejected
+[PASSED] SEC-JWT-004: Token without Bearer prefix rejected
+[PASSED] SEC-JWT-005: Empty token rejected
+
+=== Testing Password Security ===
+[PASSED] SEC-PWD-001: Weak password rejected
+[PASSED] SEC-PWD-002: Password mismatch rejected
+[PASSED] SEC-PWD-003: SQL injection in password rejected
+[PASSED] SEC-PWD-004: XSS in password rejected
+[PASSED] SEC-PWD-005: Excessive password length rejected
+
+=== Testing SQL Injection Prevention ===
+[PASSED] SEC-SQL-001: SQL injection in camera name rejected
+[PASSED] SEC-SQL-002: SQL injection in description rejected
+[PASSED] SEC-SQL-003: SQL injection in IP address rejected
+[PASSED] SEC-SQL-004: SQL injection in RTSP URL rejected
+[PASSED] SEC-SQL-005: SQL injection in query parameters rejected (422 - validation error)
+
+=== Testing XSS Prevention ===
+[PASSED] SEC-XSS-001: XSS in camera name rejected
+[FAILED] SEC-XSS-002: Expected 400, got 429
+[FAILED] SEC-XSS-003: Expected 400, got 429
+[FAILED] SEC-XSS-004: Unexpected status: 429
+[FAILED] SEC-XSS-005: Expected 400, got 429
+
+=== Testing Rate Limiting Security ===
+[FAILED] SEC-RATE-001: Rate limiting not enforced
+[PASSED] SEC-RATE-002: Rate limiting enforced on camera endpoints
+[FAILED] SEC-RATE-003: Rate limiting not working correctly
+[FAILED] SEC-RATE-004: Rate limiting headers missing
+[FAILED] SEC-RATE-005: Rate limiting recovery failed
+
+==================================================
+SECURITY TEST SUMMARY
+==================================================
+Total Security Tests: 25
+Passed: 17
+Failed: 8
+Success Rate: 68.0%
+
+Results saved to: results/security_test_results.json

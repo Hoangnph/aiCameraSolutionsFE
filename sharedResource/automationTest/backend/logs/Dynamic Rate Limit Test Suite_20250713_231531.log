@@ -1,0 +1,25 @@
+Starting Dynamic Rate Limiting Test Suite
+==================================================
+[PASSED] AUTH-SETUP: User logged in and token obtained
+[PASSED] RATE-GET-001: Current rate limit: 5/minute
+[PASSED] RATE-SET-001: Rate limit set to: 15/minute
+[PASSED] RATE-GET-001: Current rate limit: 15/minute
+[PASSED] RATE-VERIFY-001: Rate limit verified: 15/minute
+[PASSED] RATE-ENFORCE-001: Rate limited after 5 requests (limit: 15)
+[PASSED] RATE-VALIDATE-001: Invalid rate limit format rejected
+[PASSED] RATE-AUTH-001: Unauthorized access blocked
+
+Testing rate limit recovery (this will take 65 seconds)...
+Waiting 65 seconds for rate limit window to reset...
+[PASSED] RATE-RECOVERY-001: Rate limit recovered after window
+[PASSED] RATE-SET-001: Rate limit set to: 5/minute
+
+==================================================
+TEST SUMMARY
+==================================================
+Total Tests: 10
+Passed: 10
+Failed: 0
+Success Rate: 100.0%
+
+Results saved to: results/dynamic_rate_limit_results.json

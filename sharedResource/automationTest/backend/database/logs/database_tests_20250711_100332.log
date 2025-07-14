@@ -1,0 +1,127 @@
+==========================================
+🧪 MASTER TEST RUNNER
+AI Camera Counting System
+==========================================
+
+Available test phases:
+
+🔧 BACKEND TESTS:
+  1) Database Tests (Phase 1)
+  2) Authentication Tests (Phase 2)
+  3) Camera Management Tests (Phase 3)
+  4) Worker Pool Tests (Phase 4)
+  5) Integration Tests (Phase 5)
+  6) Security Tests (Phase 6)
+  7) Performance Tests (Phase 7)
+
+🎨 FRONTEND TESTS:
+  8) Authentication & Navigation Tests
+  9) Core Functionality Tests
+  10) Advanced Features Tests
+
+📊 SPECIAL OPTIONS:
+  11) Run All Backend Tests
+  12) Run All Frontend Tests
+  13) Run Complete Test Suite
+  14) Verify Environment Only
+  15) Show Test Results
+  0) Exit
+
+==========================================
+
+
+
+[0;34m[2025-07-11 10:06:19][0m Starting Database Tests: Database connection and schema validation
+==========================================
+🧪 DATABASE TESTS - PHASE 1
+AI Camera Counting System
+==========================================
+
+[0;34m[2025-07-11 10:06:19][0m Verifying test environment...
+==========================================
+🧪 ENVIRONMENT VERIFICATION
+AI Camera Counting System - Test Environment
+==========================================
+
+[0;34m[2025-07-11 10:06:19][0m Checking Docker status...
+[0;32m✅ Docker is running[0m
+[0;34m[2025-07-11 10:06:19][0m Checking Docker containers...
+[0;32m✅ Container ai_camera_postgres is running[0m
+[0;32m✅ Container ai_camera_redis is running[0m
+[0;32m✅ Container ai_camera_beauth is running[0m
+[0;32m✅ Container ai_camera_becamera is running[0m
+[0;32m✅ Container ai_camera_frontend is running[0m
+[0;34m[2025-07-11 10:06:21][0m Checking service health endpoints...
+[0;32m✅ beAuth service is healthy (Port 3001)[0m
+[0;32m✅ beCamera service is healthy (Port 3002)[0m
+[0;32m✅ Frontend is accessible (Port 3000)[0m
+[0;34m[2025-07-11 10:06:21][0m Checking database connection...
+[0;32m✅ PostgreSQL database is ready[0m
+[0;34m[2025-07-11 10:06:21][0m Checking Redis connection...
+[0;32m✅ Redis is responding[0m
+[0;34m[2025-07-11 10:06:22][0m Checking required tools...
+[0;32m✅ curl is available[0m
+[0;32m✅ jq is available[0m
+[0;32m✅ Python 3 is available[0m
+[0;32m✅ Node.js is available[0m
+[0;34m[2025-07-11 10:06:22][0m Checking port availability...
+[0;32m✅ Port 3000 is in use[0m
+[0;32m✅ Port 3001 is in use[0m
+[0;32m✅ Port 3002 is in use[0m
+[0;32m✅ Port 3003 is in use[0m
+[0;32m✅ Port 5432 is in use[0m
+[0;32m✅ Port 6379 is in use[0m
+[0;34m[2025-07-11 10:06:23][0m Checking test data availability...
+[0;32m✅ Registration codes are available in database[0m
+[0;32m✅ Users exist in database[0m
+
+==========================================
+📊 VERIFICATION SUMMARY
+==========================================
+[0;32m✅ Environment verification completed successfully![0m
+
+🎯 Ready to start testing:
+   - Backend Tests: 67 test cases
+   - Frontend Tests: 45 test cases
+   - Total: 112 test cases
+
+📁 Test scripts location: sharedResource/automationTest/
+📋 Test configuration: sharedResource/automationTest/config/
+📊 Results location: sharedResource/automationTest/*/results/
+
+🚀 Next step: Run database tests (Phase 1)
+==========================================
+[0;34m[2025-07-11 10:06:24][0m Starting database tests...
+[0;34m[2025-07-11 10:06:24][0m Log file: /Users/macintoshhd/Project/Project/AI_OCR/feMain/sharedResource/automationTest/backend/database/logs/database_tests_20250711_100624.log
+[0;34m[2025-07-11 10:06:24][0m Running database connection test...
+==========================================
+🧪 DATABASE CONNECTION TESTS
+AI Camera Counting System
+==========================================
+Start time: 2025-07-11 10:06:24
+
+🔍 Connecting to database: people_counting_db on localhost:5432
+✅ DB-CONN-001: Database connection successful
+   Details: PostgreSQL version: PostgreSQL 14.18 (Homebrew) on x86_64-apple-darwin23.6.0, compiled by Apple clang version 16.0.0 (clang-1600.0.26.6), 64-bit
+❌ DB-TABLES-001: Missing tables: cameras, count_data, refresh_tokens
+   Details: Existing: users, user_sessions, registration_codes, audit_log
+✅ DB-PERM-001: Database permissions verified (4 permissions)
+   Details: Permissions: SELECT, INSERT, UPDATE, DELETE
+❌ DB-PERF-001: Performance test failed: relation "cameras" does not exist
+LINE 4:                 LEFT JOIN cameras c ON 1=1
+                                  ^
+
+   Details: Error code: 42P01
+
+==========================================
+📊 TEST SUMMARY
+==========================================
+Total tests: 4
+Passed: 2
+Failed: 2
+Success rate: 50.0%
+⚠️  Some database tests failed!
+
+📊 Results saved to: /Users/macintoshhd/Project/Project/AI_OCR/feMain/sharedResource/automationTest/backend/database/../results/database_connection_test_results.json
+[0;31m❌ Database connection test failed[0m
+[0;31m❌ Database Tests failed[0m

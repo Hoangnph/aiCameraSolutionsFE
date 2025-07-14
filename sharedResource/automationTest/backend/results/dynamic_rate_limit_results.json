@@ -1,0 +1,69 @@
+{
+  "test_suite": "Dynamic Rate Limiting",
+  "timestamp": "2025-07-13T23:18:56.460422",
+  "total_tests": 10,
+  "passed": 10,
+  "failed": 0,
+  "results": [
+    {
+      "test": "AUTH-SETUP",
+      "passed": true,
+      "details": "User logged in and token obtained",
+      "timestamp": "2025-07-13T23:17:49.921774"
+    },
+    {
+      "test": "RATE-GET-001",
+      "passed": true,
+      "details": "Current rate limit: 5/minute",
+      "timestamp": "2025-07-13T23:17:49.985682"
+    },
+    {
+      "test": "RATE-SET-001",
+      "passed": true,
+      "details": "Rate limit set to: 15/minute",
+      "timestamp": "2025-07-13T23:17:50.052214"
+    },
+    {
+      "test": "RATE-GET-001",
+      "passed": true,
+      "details": "Current rate limit: 15/minute",
+      "timestamp": "2025-07-13T23:17:50.123707"
+    },
+    {
+      "test": "RATE-VERIFY-001",
+      "passed": true,
+      "details": "Rate limit verified: 15/minute",
+      "timestamp": "2025-07-13T23:17:50.123820"
+    },
+    {
+      "test": "RATE-ENFORCE-001",
+      "passed": true,
+      "details": "Rate limited after 5 requests (limit: 15)",
+      "timestamp": "2025-07-13T23:17:51.135510"
+    },
+    {
+      "test": "RATE-VALIDATE-001",
+      "passed": true,
+      "details": "Invalid rate limit format rejected",
+      "timestamp": "2025-07-13T23:17:51.200155"
+    },
+    {
+      "test": "RATE-AUTH-001",
+      "passed": true,
+      "details": "Unauthorized access blocked",
+      "timestamp": "2025-07-13T23:17:51.206550"
+    },
+    {
+      "test": "RATE-RECOVERY-001",
+      "passed": true,
+      "details": "Rate limit recovered after window",
+      "timestamp": "2025-07-13T23:18:56.379876"
+    },
+    {
+      "test": "RATE-SET-001",
+      "passed": true,
+      "details": "Rate limit set to: 5/minute",
+      "timestamp": "2025-07-13T23:18:56.460058"
+    }
+  ]
+}

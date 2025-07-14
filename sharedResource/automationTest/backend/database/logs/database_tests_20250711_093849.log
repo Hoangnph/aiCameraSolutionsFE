@@ -1,0 +1,32 @@
+[0;34m[2025-07-11 09:38:49][0m Starting database tests...
+[0;34m[2025-07-11 09:38:49][0m Log file: /Users/macintoshhd/Project/Project/AI_OCR/feMain/sharedResource/automationTest/backend/database/logs/database_tests_20250711_093849.log
+[0;34m[2025-07-11 09:38:49][0m Running database connection test...
+==========================================
+🧪 DATABASE CONNECTION TESTS
+AI Camera Counting System
+==========================================
+Start time: 2025-07-11 09:38:49
+
+✅ DB-CONN-001: Database connection successful
+   Details: PostgreSQL version: PostgreSQL 14.18 (Homebrew) on x86_64-apple-darwin23.6.0, compiled by Apple clang version 16.0.0 (clang-1600.0.26.6), 64-bit
+❌ DB-TABLES-001: Missing tables: cameras, count_data, refresh_tokens
+   Details: Existing: users, user_sessions, registration_codes, audit_log
+✅ DB-PERM-001: Database permissions verified (4 permissions)
+   Details: Permissions: SELECT, INSERT, UPDATE, DELETE
+❌ DB-PERF-001: Performance test failed: relation "cameras" does not exist
+LINE 4:                 LEFT JOIN cameras c ON 1=1
+                                  ^
+
+   Details: Error code: 42P01
+
+==========================================
+📊 TEST SUMMARY
+==========================================
+Total tests: 4
+Passed: 2
+Failed: 2
+Success rate: 50.0%
+⚠️  Some database tests failed!
+
+📊 Results saved to: /Users/macintoshhd/Project/Project/AI_OCR/feMain/sharedResource/automationTest/backend/database/../results/database_connection_test_results.json
+[0;31m❌ Database connection test failed[0m

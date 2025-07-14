@@ -1,0 +1,129 @@
+config:
+  target: '{{ $processEnvironment.TARGET_URL }}'
+  phases:
+    - duration: 60
+      arrivalRate: 5
+      name: "Warm up"
+    - duration: 300
+      arrivalRate: 10
+      name: "Normal load"
+    - duration: 120
+      arrivalRate: 20
+      name: "Peak load"
+    - duration: 60
+      arrivalRate: 5
+      name: "Cool down"
+  defaults:
+    headers:
+      Content-Type: 'application/json'
+      Authorization: 'Bearer {{ $processEnvironment.API_TOKEN }}'
+  processor: './functions.js'
+
+scenarios:
+  - name: "Health Check"
+    weight: 10
+    flow:
+      - get:
+          url: "/health"
+          expect:
+            - statusCode: 200
+
+  - name: "Authentication Flow"
+    weight: 20
+    flow:
+      - post:
+          url: "/api/v1/auth/login"
+          json:
+            email: "test@example.com"
+            password: "testpassword"
+          capture:
+            - json: "$.token"
+              as: "authToken"
+          expect:
+            - statusCode: 200
+            - hasProperty: "token"
+
+  - name: "Camera Management"
+    weight: 30
+    flow:
+      - function: "setAuthHeader"
+      - get:
+          url: "/api/v1/cameras"
+          expect:
+            - statusCode: 200
+      - post:
+          url: "/api/v1/cameras"
+          json:
+            name: "Test Camera {{ $randomString() }}"
+            location: "Test Location"
+            ip_address: "192.168.1.100"
+            port: 8080
+            username: "admin"
+            password: "password"
+            status: "active"
+          expect:
+            - statusCode: 201
+            - hasProperty: "id"
+          capture:
+            - json: "$.id"
+              as: "cameraId"
+
+  - name: "Camera Processing"
+    weight: 25
+    flow:
+      - function: "setAuthHeader"
+      - get:
+          url: "/api/v1/cameras/{{ cameraId }}"
+          expect:
+            - statusCode: 200
+      - post:
+          url: "/api/v1/cameras/{{ cameraId }}/process"
+          json:
+            image_url: "https://example.com/test-image.jpg"
+          expect:
+            - statusCode: 200
+            - hasProperty: "count"
+
+  - name: "Analytics"
+    weight: 15
+    flow:
+      - function: "setAuthHeader"
+      - get:
+          url: "/api/v1/analytics/daily"
+          qs:
+            date: "{{ $isoTimestamp }}"
+          expect:
+            - statusCode: 200
+      - get:
+          url: "/api/v1/analytics/hourly"
+          qs:
+            date: "{{ $isoTimestamp }}"
+          expect:
+            - statusCode: 200
+
+  - name: "WebSocket Connection"
+    weight: 5
+    engine: "ws"
+    flow:
+      - connect:
+          url: "ws://{{ $processEnvironment.TARGET_URL }}/ws/camera-updates/test-client"
+      - think: 5
+      - send:
+          payload: '{"type": "ping"}'
+      - think: 5
+      - close: true
+
+  - name: "Error Scenarios"
+    weight: 5
+    flow:
+      - get:
+          url: "/api/v1/cameras/invalid-id"
+          expect:
+            - statusCode: 404
+      - post:
+          url: "/api/v1/auth/login"
+          json:
+            email: "invalid@example.com"
+            password: "wrongpassword"
+          expect:
+            - statusCode: 401 
