@@ -95,16 +95,17 @@ show_menu() {
     echo "  7) Performance Tests (Phase 7)"
     echo ""
     echo "🎨 FRONTEND TESTS:"
-    echo "  8) Authentication & Navigation Tests"
-    echo "  9) Core Functionality Tests"
-    echo "  10) Advanced Features Tests"
+    echo "  8) Authentication Flow Tests"
+    echo "  9) Authentication Components Tests"
+    echo "  10) Core Functionality Tests"
+    echo "  11) Advanced Features Tests"
     echo ""
     echo "📊 SPECIAL OPTIONS:"
-    echo "  11) Run All Backend Tests"
-    echo "  12) Run All Frontend Tests"
-    echo "  13) Run Complete Test Suite"
-    echo "  14) Verify Environment Only"
-    echo "  15) Show Test Results"
+    echo "  12) Run All Backend Tests"
+    echo "  13) Run All Frontend Tests"
+    echo "  14) Run Complete Test Suite"
+    echo "  15) Verify Environment Only"
+    echo "  16) Show Test Results"
     echo "  0) Exit"
     echo ""
     echo "=========================================="
@@ -151,9 +152,10 @@ run_all_frontend_tests() {
     echo ""
     
     local frontend_phases=(
-        "Authentication & Navigation Tests" "frontend/auth/run_auth_tests.sh" "User interface authentication and navigation"
-        "Core Functionality Tests" "frontend/core/run_core_tests.sh" "Main application functionality"
-        "Advanced Features Tests" "frontend/advanced/run_advanced_tests.sh" "Advanced UI features and interactions"
+        "Authentication Flow Tests" "frontend/authentication/run_auth_tests.sh" "Complete authentication flow testing"
+        "Authentication Components Tests" "frontend/authentication/test_auth_components.py" "Authentication UI components and forms"
+        "Authentication E2E Tests" "frontend/e2e/test_auth_e2e.py" "End-to-end authentication flows"
+        "Frontend Integration Tests" "frontend/run_frontend_tests.sh" "Complete frontend test suite"
     )
     
     for ((i=0; i<${#frontend_phases[@]}; i+=3)); do
@@ -264,7 +266,7 @@ main_menu() {
     while true; do
         show_menu
         echo ""
-        read -p "Select an option (0-15): "
+        read -p "Select an option (0-16): "
         echo ""
         echo ""
         
@@ -295,32 +297,35 @@ main_menu() {
                 run_test_phase "Performance Tests" "$SCRIPT_DIR/backend/performance/run_performance_tests.sh" "Load and stress testing"
                 ;;
             8)
-                run_test_phase "Authentication & Navigation Tests" "$SCRIPT_DIR/frontend/auth/run_auth_tests.sh" "User interface authentication and navigation"
+                run_test_phase "Authentication Flow Tests" "$SCRIPT_DIR/frontend/authentication/run_auth_tests.sh" "Complete authentication flow testing"
                 ;;
             9)
-                run_test_phase "Core Functionality Tests" "$SCRIPT_DIR/frontend/core/run_core_tests.sh" "Main application functionality"
+                run_test_phase "Authentication Components Tests" "$SCRIPT_DIR/frontend/authentication/test_auth_components.py" "Authentication UI components and forms"
                 ;;
             10)
-                run_test_phase "Advanced Features Tests" "$SCRIPT_DIR/frontend/advanced/run_advanced_tests.sh" "Advanced UI features and interactions"
+                run_test_phase "Core Functionality Tests" "$SCRIPT_DIR/frontend/core/run_core_tests.sh" "Main application functionality"
                 ;;
             11)
-                run_all_backend_tests
+                run_test_phase "Advanced Features Tests" "$SCRIPT_DIR/frontend/advanced/run_advanced_tests.sh" "Advanced UI features and interactions"
                 ;;
             12)
-                run_all_frontend_tests
+                run_all_backend_tests
                 ;;
             13)
-                run_complete_test_suite
+                run_all_frontend_tests
                 ;;
             14)
+                run_complete_test_suite
+                ;;
+            15)
                 log "Verifying environment..."
                 "$SCRIPT_DIR/utils/verify_environment.sh"
                 ;;
-            15)
+            16)
                 show_test_results
                 ;;
             *)
-                error "Invalid option. Please select 0-15."
+                error "Invalid option. Please select 0-16."
                 ;;
         esac
         
