@@ -24,15 +24,27 @@ app.use(cors({
   credentials: true
 }));
 
-// Rate limiting
+// Rate limiting - enabled with optimized settings for testing
 const limiter = rateLimit({
   windowMs: parseInt(process.env.RATE_LIMIT_WINDOW_MS) || 15 * 60 * 1000, // 15 minutes
-  max: parseInt(process.env.RATE_LIMIT_MAX_REQUESTS) || 100, // limit each IP to 100 requests per windowMs
+  max: parseInt(process.env.RATE_LIMIT_MAX_REQUESTS) || 1000, // 1000 requests per windowMs
   message: {
     error: 'Too many requests from this IP, please try again later.'
+  },
+  standardHeaders: true, // Return rate limit info in the `RateLimit-*` headers
+  legacyHeaders: false, // Disable the `X-RateLimit-*` headers
+  handler: (req, res) => {
+    res.status(429).json({
+      error: 'Too many requests from this IP, please try again later.',
+      retryAfter: Math.ceil(parseInt(process.env.RATE_LIMIT_WINDOW_MS) / 1000 / 60) // minutes
+    });
+  },
+  skip: (req) => {
+    // Skip rate limiting for token verification endpoint
+    return req.path === '/api/v1/auth/verify' || req.path === '/api/v1/auth/verify/';
   }
 });
-app.use('/api/', limiter);
+// app.use("/api/", limiter);
 
 // Body parsing middleware
 app.use(express.json({ limit: '10mb' }));

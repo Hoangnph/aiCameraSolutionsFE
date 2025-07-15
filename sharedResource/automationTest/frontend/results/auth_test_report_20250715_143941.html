@@ -1,0 +1,36 @@
+<!DOCTYPE html>
+<html>
+<head>
+    <title>Authentication Test Report</title>
+    <style>
+        body { font-family: Arial, sans-serif; margin: 20px; }
+        .header { background-color: #f0f0f0; padding: 20px; border-radius: 5px; }
+        .success { color: green; }
+        .error { color: red; }
+        .warning { color: orange; }
+        .log { background-color: #f8f8f8; padding: 10px; border-radius: 3px; font-family: monospace; }
+    </style>
+</head>
+<body>
+    <div class="header">
+        <h1>Authentication Test Report</h1>
+        <p><strong>Timestamp:</strong> Tue Jul 15 14:39:54 +07 2025</p>
+        <p><strong>Base URL:</strong> http://localhost:3000</p>
+        <p><strong>Headless:</strong> true</p>
+    </div>
+    
+    <h2>Test Results</h2>
+    <div class="log">
+[0;34mStarting Authentication Tests...[0m
+[1;33mChecking dependencies...[0m
+[0;32m✅ Dependencies check passed[0m
+[1;33mChecking if frontend is running...[0m
+[0;32m✅ Frontend is running at http://localhost:3000[0m
+[0;34mRunning Authentication Flow Tests...[0m
+[0;31m❌ Authentication flow tests FAILED[0m
+[0;34mRunning Authentication Component Tests...[0m
+[0;31m❌ Authentication component tests FAILED[0m
+[0;34mGenerating test report...[0m
+    </div>
+</body>
+</html>

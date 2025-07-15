@@ -6,6 +6,7 @@ import AuthTabs from './components/AuthTabs';
 import LoginForm from './components/LoginForm';
 import RegisterForm from './components/RegisterForm';
 import ForgotPasswordForm from './components/ForgotPasswordForm';
+import ResetPasswordForm from './components/ResetPasswordForm';
 import { useAuth } from '../../context/AuthContext';
 
 const AuthenticationScreen = () => {
@@ -18,6 +19,7 @@ const AuthenticationScreen = () => {
     const path = location.pathname;
     if (path.includes('/register')) return 'register';
     if (path.includes('/forgot-password')) return 'forgot';
+    if (path.includes('/reset-password')) return 'reset';
     return 'login';
   };
 
@@ -77,6 +79,11 @@ const AuthenticationScreen = () => {
           title: 'Quên mật khẩu',
           subtitle: 'Nhập email để nhận link đặt lại mật khẩu'
         };
+      case 'reset':
+        return {
+          title: 'Đặt lại mật khẩu',
+          subtitle: 'Nhập mật khẩu mới cho tài khoản của bạn'
+        };
       default:
         return {
           title: 'Đăng nhập',
@@ -100,6 +107,13 @@ const AuthenticationScreen = () => {
       case 'forgot':
         return (
           <ForgotPasswordForm
+            onSuccess={handleFormSuccess}
+            onError={handleFormError}
+          />
+        );
+      case 'reset':
+        return (
+          <ResetPasswordForm
             onSuccess={handleFormSuccess}
             onError={handleFormError}
           />

@@ -1,0 +1,377 @@
+name: AI Camera System CI/CD Pipeline
+
+on:
+  push:
+    branches: [ main, develop ]
+  pull_request:
+    branches: [ main, develop ]
+
+env:
+  REGISTRY: ghcr.io
+  IMAGE_NAME: ${{ github.repository }}
+
+jobs:
+  # Test Backend Services
+  test-backend:
+    runs-on: ubuntu-latest
+    services:
+      postgres:
+        image: postgres:15-alpine
+        env:
+          POSTGRES_PASSWORD: test_password
+          POSTGRES_DB: test_db
+        options: >-
+          --health-cmd pg_isready
+          --health-interval 10s
+          --health-timeout 5s
+          --health-retries 5
+        ports:
+          - 5432:5432
+      
+      redis:
+        image: redis:7-alpine
+        options: >-
+          --health-cmd "redis-cli ping"
+          --health-interval 10s
+          --health-timeout 5s
+          --health-retries 5
+        ports:
+          - 6379:6379
+
+    steps:
+    - name: Checkout code
+      uses: actions/checkout@v4
+
+    - name: Set up Python
+      uses: actions/setup-python@v4
+      with:
+        python-version: '3.11'
+
+    - name: Set up Node.js
+      uses: actions/setup-node@v4
+      with:
+        node-version: '18'
+        cache: 'npm'
+
+    - name: Install Python dependencies
+      run: |
+        cd beCamera
+        pip install -r requirements.txt
+        pip install pytest pytest-asyncio pytest-cov
+
+    - name: Install Node.js dependencies
+      run: |
+        cd beAuth
+        npm ci
+
+    - name: Run beAuth tests
+      run: |
+        cd beAuth
+        npm test
+      env:
+        NODE_ENV: test
+        DB_HOST: localhost
+        DB_PORT: 5432
+        DB_NAME: test_db
+        DB_USER: postgres
+        DB_PASSWORD: test_password
+        JWT_SECRET: test_secret_key
+        REDIS_HOST: localhost
+        REDIS_PORT: 6379
+
+    - name: Run beCamera tests
+      run: |
+        cd beCamera
+        pytest tests/ -v --cov=src --cov-report=xml
+      env:
+        PYTHON_ENV: test
+        DB_HOST: localhost
+        DB_PORT: 5432
+        DB_NAME: test_db
+        DB_USER: postgres
+        DB_PASSWORD: test_password
+        REDIS_HOST: localhost
+        REDIS_PORT: 6379
+
+    - name: Upload coverage to Codecov
+      uses: codecov/codecov-action@v3
+      with:
+        file: ./beCamera/coverage.xml
+        flags: backend
+        name: backend-coverage
+
+  # Test Frontend
+  test-frontend:
+    runs-on: ubuntu-latest
+
+    steps:
+    - name: Checkout code
+      uses: actions/checkout@v4
+
+    - name: Set up Node.js
+      uses: actions/setup-node@v4
+      with:
+        node-version: '18'
+        cache: 'npm'
+
+    - name: Install dependencies
+      run: |
+        cd frontend
+        npm ci
+
+    - name: Run linting
+      run: |
+        cd frontend
+        npm run lint
+
+    - name: Run tests
+      run: |
+        cd frontend
+        npm test -- --coverage --watchAll=false
+
+    - name: Upload coverage to Codecov
+      uses: codecov/codecov-action@v3
+      with:
+        file: ./coverage/lcov.info
+        flags: frontend
+        name: frontend-coverage
+
+  # Security Scan
+  security-scan:
+    runs-on: ubuntu-latest
+    needs: [test-backend, test-frontend]
+
+    steps:
+    - name: Checkout code
+      uses: actions/checkout@v4
+
+    - name: Run Trivy vulnerability scanner
+      uses: aquasecurity/trivy-action@master
+      with:
+        scan-type: 'fs'
+        scan-ref: '.'
+        format: 'sarif'
+        output: 'trivy-results.sarif'
+
+    - name: Upload Trivy scan results to GitHub Security tab
+      uses: github/codeql-action/upload-sarif@v2
+      if: always()
+      with:
+        sarif_file: 'trivy-results.sarif'
+
+    - name: Run Bandit security scan
+      run: |
+        pip install bandit
+        bandit -r beCamera/src/ -f json -o bandit-report.json
+
+    - name: Run npm audit
+      run: |
+        npm audit --audit-level=moderate
+        npm audit --audit-level=moderate --prefix beAuth
+
+  # Build and Push Docker Images
+  build-and-push:
+    runs-on: ubuntu-latest
+    needs: [test-backend, test-frontend, security-scan]
+    if: github.event_name == 'push' && github.ref == 'refs/heads/main'
+    permissions:
+      contents: read
+      packages: write
+
+    steps:
+    - name: Checkout code
+      uses: actions/checkout@v4
+
+    - name: Set up Docker Buildx
+      uses: docker/setup-buildx-action@v3
+
+    - name: Log in to Container Registry
+      uses: docker/login-action@v3
+      with:
+        registry: ${{ env.REGISTRY }}
+        username: ${{ github.actor }}
+        password: ${{ secrets.GITHUB_TOKEN }}
+
+    - name: Extract metadata
+      id: meta
+      uses: docker/metadata-action@v5
+      with:
+        images: ${{ env.REGISTRY }}/${{ env.IMAGE_NAME }}
+        tags: |
+          type=ref,event=branch
+          type=ref,event=pr
+          type=semver,pattern={{version}}
+          type=semver,pattern={{major}}.{{minor}}
+          type=sha
+
+    - name: Build and push beAuth image
+      uses: docker/build-push-action@v5
+      with:
+        context: ./beAuth
+        push: true
+        tags: ${{ env.REGISTRY }}/${{ env.IMAGE_NAME }}/beauth:${{ steps.meta.outputs.version }}
+        cache-from: type=gha
+        cache-to: type=gha,mode=max
+
+    - name: Build and push beCamera image
+      uses: docker/build-push-action@v5
+      with:
+        context: ./beCamera
+        push: true
+        tags: ${{ env.REGISTRY }}/${{ env.IMAGE_NAME }}/becamera:${{ steps.meta.outputs.version }}
+        cache-from: type=gha
+        cache-to: type=gha,mode=max
+
+    - name: Build and push Frontend image
+      uses: docker/build-push-action@v5
+      with:
+        context: ./frontend
+        file: ./frontend/Dockerfile.prod
+        push: true
+        tags: ${{ env.REGISTRY }}/${{ env.IMAGE_NAME }}/frontend:${{ steps.meta.outputs.version }}
+        cache-from: type=gha
+        cache-to: type=gha,mode=max
+
+  # Deploy to Staging
+  deploy-staging:
+    runs-on: ubuntu-latest
+    needs: build-and-push
+    if: github.ref == 'refs/heads/develop'
+    environment: staging
+
+    steps:
+    - name: Checkout code
+      uses: actions/checkout@v4
+
+    - name: Deploy to staging
+      run: |
+        echo "Deploying to staging environment..."
+        # Add your staging deployment commands here
+        # Example: kubectl apply -f k8s/staging/
+        # Example: docker-compose -f docker-compose.staging.yml up -d
+
+    - name: Run smoke tests
+      run: |
+        echo "Running smoke tests on staging..."
+        # Add smoke test commands here
+        # Example: curl -f http://staging.your-domain.com/health
+
+  # Deploy to Production
+  deploy-production:
+    runs-on: ubuntu-latest
+    needs: build-and-push
+    if: github.ref == 'refs/heads/main'
+    environment: production
+
+    steps:
+    - name: Checkout code
+      uses: actions/checkout@v4
+
+    - name: Deploy to production
+      run: |
+        echo "Deploying to production environment..."
+        # Add your production deployment commands here
+        # Example: kubectl apply -f k8s/production/
+        # Example: docker-compose -f docker-compose.prod.yml up -d
+
+    - name: Run health checks
+      run: |
+        echo "Running health checks on production..."
+        # Add health check commands here
+        # Example: curl -f https://your-domain.com/health
+
+    - name: Notify deployment success
+      if: success()
+      run: |
+        echo "Production deployment successful!"
+        # Add notification commands here (Slack, email, etc.)
+
+    - name: Notify deployment failure
+      if: failure()
+      run: |
+        echo "Production deployment failed!"
+        # Add failure notification commands here
+
+  # Performance Testing
+  performance-test:
+    runs-on: ubuntu-latest
+    needs: [deploy-staging, deploy-production]
+    if: always()
+
+    steps:
+    - name: Checkout code
+      uses: actions/checkout@v4
+
+    - name: Set up Node.js
+      uses: actions/setup-node@v4
+      with:
+        node-version: '18'
+
+    - name: Install Artillery
+      run: npm install -g artillery
+
+    - name: Run performance tests
+      run: |
+        artillery run performance-tests/load-test.yml
+      env:
+        TARGET_URL: ${{ secrets.TARGET_URL }}
+
+    - name: Upload performance report
+      uses: actions/upload-artifact@v4
+      with:
+        name: performance-report
+        path: artillery-report.json
+
+  # Database Migration
+  database-migration:
+    runs-on: ubuntu-latest
+    needs: [test-backend]
+    if: github.ref == 'refs/heads/main'
+
+    steps:
+    - name: Checkout code
+      uses: actions/checkout@v4
+
+    - name: Set up Python
+      uses: actions/setup-python@v4
+      with:
+        python-version: '3.11'
+
+    - name: Install dependencies
+      run: |
+        cd beCamera
+        pip install -r requirements.txt
+
+    - name: Run database migrations
+      run: |
+        cd beCamera
+        python src/database/migrate.py
+      env:
+        DB_HOST: ${{ secrets.DB_HOST }}
+        DB_PORT: ${{ secrets.DB_PORT }}
+        DB_NAME: ${{ secrets.DB_NAME }}
+        DB_USER: ${{ secrets.DB_USER }}
+        DB_PASSWORD: ${{ secrets.DB_PASSWORD }}
+
+  # Backup Database
+  backup-database:
+    runs-on: ubuntu-latest
+    needs: [database-migration]
+    if: github.ref == 'refs/heads/main'
+
+    steps:
+    - name: Checkout code
+      uses: actions/checkout@v4
+
+    - name: Create database backup
+      run: |
+        pg_dump -h ${{ secrets.DB_HOST }} -p ${{ secrets.DB_PORT }} -U ${{ secrets.DB_USER }} -d ${{ secrets.DB_NAME }} > backup_$(date +%Y%m%d_%H%M%S).sql
+      env:
+        PGPASSWORD: ${{ secrets.DB_PASSWORD }}
+
+    - name: Upload backup to artifacts
+      uses: actions/upload-artifact@v4
+      with:
+        name: database-backup
+        path: backup_*.sql
+        retention-days: 7 

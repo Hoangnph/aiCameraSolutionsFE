@@ -1,0 +1,121 @@
+version: '3.8'
+
+services:
+  # PostgreSQL Database
+  postgres:
+    image: postgres:13
+    container_name: becamera_postgres
+    environment:
+      POSTGRES_DB: people_counting_db
+      POSTGRES_USER: postgres
+      POSTGRES_PASSWORD: dev_password
+    ports:
+      - "5432:5432"
+    volumes:
+      - becamera_postgres_data:/var/lib/postgresql/data
+      - ./beAuth/init.sql:/docker-entrypoint-initdb.d/init.sql
+    networks:
+      - becamera_network
+      - femain_shared_network
+    restart: unless-stopped
+    healthcheck:
+      test: ["CMD-SHELL", "pg_isready -U postgres"]
+      interval: 30s
+      timeout: 10s
+      retries: 3
+
+  # Redis Cache
+  redis:
+    image: redis:6-alpine
+    container_name: becamera_redis
+    ports:
+      - "6379:6379"
+    volumes:
+      - becamera_redis_data:/data
+    networks:
+      - becamera_network
+      - femain_shared_network
+    restart: unless-stopped
+    healthcheck:
+      test: ["CMD", "redis-cli", "ping"]
+      interval: 30s
+      timeout: 10s
+      retries: 3
+
+  # Camera Service (beCamera)
+  becamera:
+    build:
+      context: ./beCamera
+      dockerfile: Dockerfile.dev
+    container_name: becamera_service
+    ports:
+      - "3002:3002"
+    env_file:
+      - ./beCamera/env.camera
+    volumes:
+      - ./beCamera:/app
+      - /app/models
+    depends_on:
+      - postgres
+      - redis
+    networks:
+      - becamera_network
+      - femain_shared_network
+    restart: unless-stopped
+    command: uvicorn main:app --host 0.0.0.0 --port 3002 --reload
+    healthcheck:
+      test: ["CMD", "curl", "-f", "http://localhost:3002/health"]
+      interval: 30s
+      timeout: 10s
+      retries: 3
+      start_period: 40s
+
+  # WebSocket Server
+  websocket:
+    build:
+      context: ./beCamera
+      dockerfile: Dockerfile.dev
+    container_name: becamera_websocket
+    ports:
+      - "3004:3003"
+    environment:
+      - PYTHON_ENV=development
+      - WS_PORT=3003
+      - REDIS_HOST=redis
+      - REDIS_PORT=6379
+      - DB_HOST=postgres
+      - DB_PORT=5432
+      - DB_NAME=people_counting_db
+      - DB_USER=postgres
+      - DB_PASSWORD=dev_password
+    volumes:
+      - ./beCamera:/app
+      - /app/__pycache__
+    depends_on:
+      redis:
+        condition: service_healthy
+      postgres:
+        condition: service_healthy
+    networks:
+      - becamera_network
+      - femain_shared_network
+    restart: unless-stopped
+    command: python src/websocket_service.py
+    healthcheck:
+      test: ["CMD", "curl", "-f", "http://localhost:3003/health"]
+      interval: 30s
+      timeout: 10s
+      retries: 3
+      start_period: 40s
+
+volumes:
+  becamera_postgres_data:
+    driver: local
+  becamera_redis_data:
+    driver: local
+
+networks:
+  becamera_network:
+    driver: bridge
+  femain_shared_network:
+    external: true 

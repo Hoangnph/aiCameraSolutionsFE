@@ -439,4 +439,47 @@ router.get('/me', protect, async (req, res, next) => {
   }
 });
 
+// @desc    Verify access token
+// @route   POST /api/v1/auth/verify
+// @access  Public
+router.post('/verify', async (req, res) => {
+  try {
+    const authHeader = req.headers['authorization'] || req.headers['Authorization'];
+    if (!authHeader || !authHeader.startsWith('Bearer ')) {
+      return res.status(401).json({ success: false, error: { code: 401, message: 'No token provided' } });
+    }
+    const token = authHeader.split(' ')[1];
+    const { verifyToken } = require('../utils/jwt');
+    let decoded;
+    try {
+      decoded = verifyToken(token);
+    } catch (err) {
+      return res.status(401).json({ success: false, error: { code: 401, message: 'Invalid token' } });
+    }
+    // Check if user exists and is active
+    const userQuery = 'SELECT id, username, email, first_name, last_name, role, is_active FROM users WHERE id = $1';
+    const userResult = await executeQuery(userQuery, [decoded.userId]);
+    if (userResult.rows.length === 0 || !userResult.rows[0].is_active) {
+      return res.status(401).json({ success: false, error: { code: 401, message: 'User not found or inactive' } });
+    }
+    const user = userResult.rows[0];
+    res.status(200).json({
+      success: true,
+      data: {
+        user: {
+          id: user.id,
+          username: user.username,
+          email: user.email,
+          firstName: user.first_name,
+          lastName: user.last_name,
+          role: user.role
+        },
+        tokenClaims: decoded
+      }
+    });
+  } catch (error) {
+    res.status(500).json({ success: false, error: { code: 500, message: 'Token verification failed' } });
+  }
+});
+
 module.exports = router; 

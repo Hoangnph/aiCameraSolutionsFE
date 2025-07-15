@@ -153,6 +153,7 @@ run_all_frontend_tests() {
     
     local frontend_phases=(
         "Authentication Tests" "frontend/authentication/run_auth_tests.sh" "Complete authentication testing"
+        "Change Password Tests" "frontend/authentication/run_change_password_tests.sh" "Change password flow testing"
         "Frontend Integration Tests" "frontend/run_frontend_tests.sh" "Complete frontend test suite"
     )
     

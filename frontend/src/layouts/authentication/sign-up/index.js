@@ -755,6 +755,18 @@ function SignUp() {
                 </VuiTypography>
               </VuiTypography>
             </VuiBox>
+            <VuiBox mt={2} textAlign="center">
+              <VuiTypography
+                component={Link}
+                to="/authentication/forgot-password"
+                variant="button"
+                color="white"
+                fontWeight="medium"
+                sx={{ textDecoration: "none" }}
+              >
+                Quên mật khẩu?
+              </VuiTypography>
+            </VuiBox>
           </VuiBox>
         </GradientBorder>
       </CoverLayout>

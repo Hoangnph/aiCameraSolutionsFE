@@ -1,0 +1,47 @@
+version: '3.8'
+
+services:
+  # Authentication Service (beAuth)
+  beauth:
+    build: 
+      context: ./beAuth
+      dockerfile: Dockerfile.dev
+    container_name: beauth_service
+    ports:
+      - "3001:3001"
+    environment:
+      - NODE_ENV=development
+      - PORT=3001
+      - DB_HOST=becamera_postgres
+      - DB_PORT=5432
+      - DB_NAME=people_counting_db
+      - DB_USER=postgres
+      - DB_PASSWORD=dev_password
+      - DB_SSL=false
+      - JWT_SECRET=dev_jwt_secret_key_2024_ai_camera_system
+      - JWT_ACCESS_TOKEN_EXPIRY=15m
+      - JWT_REFRESH_TOKEN_EXPIRY=7d
+      - BCRYPT_ROUNDS=12
+      - RATE_LIMIT_WINDOW_MS=900000
+      - RATE_LIMIT_MAX_REQUESTS=100
+      - CORS_ORIGIN=http://localhost:3000
+    volumes:
+      - ./beAuth:/app
+      - /app/node_modules
+    networks:
+      - beauth_network
+      - femain_shared_network
+    restart: unless-stopped
+    command: npm run dev
+    healthcheck:
+      test: ["CMD", "curl", "-f", "http://localhost:3001/health"]
+      interval: 30s
+      timeout: 10s
+      retries: 3
+      start_period: 40s
+
+networks:
+  beauth_network:
+    driver: bridge
+  femain_shared_network:
+    external: true 

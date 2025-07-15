@@ -1,0 +1,201 @@
+version: '3.8'
+
+services:
+  # PostgreSQL Database
+  postgres:
+    image: postgres:13
+    container_name: ai_camera_postgres
+    environment:
+      POSTGRES_DB: people_counting_db
+      POSTGRES_USER: postgres
+      POSTGRES_PASSWORD: dev_password
+    ports:
+      - "5432:5432"
+    volumes:
+      - postgres_data:/var/lib/postgresql/data
+      - ./beAuth/init.sql:/docker-entrypoint-initdb.d/init.sql
+    networks:
+      - ai_camera_network
+    restart: unless-stopped
+    healthcheck:
+      test: ["CMD-SHELL", "pg_isready -U postgres"]
+      interval: 30s
+      timeout: 10s
+      retries: 3
+
+  # Redis Cache
+  redis:
+    image: redis:6-alpine
+    container_name: ai_camera_redis
+    ports:
+      - "6379:6379"
+    volumes:
+      - redis_data:/data
+    networks:
+      - ai_camera_network
+    restart: unless-stopped
+    healthcheck:
+      test: ["CMD", "redis-cli", "ping"]
+      interval: 30s
+      timeout: 10s
+      retries: 3
+
+  # Authentication Service (beAuth)
+  beauth:
+    build: 
+      context: ./beAuth
+      dockerfile: Dockerfile.dev
+    container_name: ai_camera_beauth
+    ports:
+      - "3001:3001"
+    environment:
+      - NODE_ENV=development
+      - PORT=3001
+      - DB_HOST=postgres
+      - DB_PORT=5432
+      - DB_NAME=people_counting_db
+      - DB_USER=postgres
+      - DB_PASSWORD=dev_password
+      - DB_SSL=false
+      - JWT_SECRET=dev_jwt_secret_key_2024_ai_camera_system
+      - JWT_ACCESS_TOKEN_EXPIRY=15m
+      - JWT_REFRESH_TOKEN_EXPIRY=7d
+      - BCRYPT_ROUNDS=12
+      - RATE_LIMIT_WINDOW_MS=900000
+      - RATE_LIMIT_MAX_REQUESTS=100
+      - CORS_ORIGIN=http://localhost:3000
+    volumes:
+      - ./beAuth:/app
+      - /app/node_modules
+    depends_on:
+      postgres:
+        condition: service_healthy
+      redis:
+        condition: service_healthy
+    networks:
+      - ai_camera_network
+    restart: unless-stopped
+    command: npm run dev
+    healthcheck:
+      test: ["CMD", "curl", "-f", "http://localhost:3001/health"]
+      interval: 30s
+      timeout: 10s
+      retries: 3
+      start_period: 40s
+
+  # Camera Service (beCamera)
+  becamera:
+    build: 
+      context: ./beCamera
+      dockerfile: Dockerfile.dev
+    container_name: ai_camera_becamera
+    ports:
+      - "3002:3002"
+    environment:
+      - PYTHON_ENV=development
+      - PORT=3002
+      - DB_HOST=postgres
+      - DB_PORT=5432
+      - DB_NAME=people_counting_db
+      - DB_USER=postgres
+      - DB_PASSWORD=dev_password
+      - REDIS_HOST=redis
+      - REDIS_PORT=6379
+      - JWT_SECRET=dev_jwt_secret_key_2024_ai_camera_system
+      - CORS_ORIGIN=http://localhost:3000
+    volumes:
+      - ./beCamera:/app
+      - /app/__pycache__
+    depends_on:
+      postgres:
+        condition: service_healthy
+      redis:
+        condition: service_healthy
+    networks:
+      - ai_camera_network
+    restart: unless-stopped
+    command: uvicorn main:app --host 0.0.0.0 --port 3002 --reload
+    healthcheck:
+      test: ["CMD", "curl", "-f", "http://localhost:3002/health"]
+      interval: 30s
+      timeout: 10s
+      retries: 3
+      start_period: 40s
+
+  # WebSocket Server
+  websocket:
+    build: 
+      context: ./beCamera
+      dockerfile: Dockerfile.dev
+    container_name: ai_camera_websocket
+    ports:
+      - "3003:3003"
+    environment:
+      - PYTHON_ENV=development
+      - WS_PORT=3003
+      - REDIS_HOST=redis
+      - REDIS_PORT=6379
+      - DB_HOST=postgres
+      - DB_PORT=5432
+      - DB_NAME=people_counting_db
+      - DB_USER=postgres
+      - DB_PASSWORD=dev_password
+    volumes:
+      - ./beCamera:/app
+      - /app/__pycache__
+    depends_on:
+      redis:
+        condition: service_healthy
+      postgres:
+        condition: service_healthy
+    networks:
+      - ai_camera_network
+    restart: unless-stopped
+    command: python src/websocket_service.py
+    healthcheck:
+      test: ["CMD", "curl", "-f", "http://localhost:3003/health"]
+      interval: 30s
+      timeout: 10s
+      retries: 3
+      start_period: 40s
+
+  # Frontend Service
+  frontend:
+    build:
+      context: ./frontend
+      dockerfile: Dockerfile.dev
+    container_name: ai_camera_frontend
+    ports:
+      - "3000:3000"
+    environment:
+      - REACT_APP_API_URL=http://localhost:3001/api/v1
+      - REACT_APP_CAMERA_API_URL=http://localhost:3002/api/v1
+      - REACT_APP_WS_URL=ws://localhost:3003
+      - CHOKIDAR_USEPOLLING=true
+    volumes:
+      - ./frontend:/app
+      - /app/node_modules
+    depends_on:
+      - beauth
+      - becamera
+      - websocket
+    networks:
+      - ai_camera_network
+    restart: unless-stopped
+    command: npm start
+    healthcheck:
+      test: ["CMD", "curl", "-f", "http://localhost:3000"]
+      interval: 30s
+      timeout: 10s
+      retries: 3
+      start_period: 60s
+
+volumes:
+  postgres_data:
+    driver: local
+  redis_data:
+    driver: local
+
+networks:
+  ai_camera_network:
+    driver: bridge 

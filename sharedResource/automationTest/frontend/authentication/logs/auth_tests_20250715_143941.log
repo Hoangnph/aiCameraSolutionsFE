@@ -1,0 +1,18 @@
+[0;34mStarting Authentication Tests...[0m
+[1;33mChecking dependencies...[0m
+[0;32m✅ Dependencies check passed[0m
+[1;33mChecking if frontend is running...[0m
+[0;32m✅ Frontend is running at http://localhost:3000[0m
+[0;34mRunning Authentication Flow Tests...[0m
+[0;31m❌ Authentication flow tests FAILED[0m
+[0;34mRunning Authentication Component Tests...[0m
+[0;31m❌ Authentication component tests FAILED[0m
+[0;34mGenerating test report...[0m
+[0;32m✅ Test report generated: /Users/macintoshhd/Project/Project/AI_OCR/feMain/sharedResource/automationTest/frontend/authentication/../results/auth_test_report_20250715_143941.html[0m
+
+[0;34m================================[0m
+[0;34m  Test Summary[0m
+[0;34m================================[0m
+Tests Passed: 0
+Tests Failed: 2
+[0;31m❌ Some authentication tests FAILED![0m
