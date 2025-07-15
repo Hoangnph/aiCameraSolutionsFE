@@ -27,7 +27,6 @@ import MasterCard from "examples/Cards/MasterCard";
 // Vision UI Dashboard React example components
 import DashboardLayout from "examples/LayoutContainers/DashboardLayout";
 import DashboardNavbar from "examples/Navbars/DashboardNavbar";
-import Footer from "examples/Footer";
 
 // Billing page components
 import PaymentMethod from "layouts/billing/components/PaymentMethod";
@@ -72,7 +71,6 @@ function Billing() {
           </Grid>
         </VuiBox>
       </VuiBox>
-      <Footer />
     </DashboardLayout>
   );
 }
