@@ -29,7 +29,7 @@ import VuiProgress from "components/VuiProgress";
 // Vision UI Dashboard React example components
 import DashboardLayout from "examples/LayoutContainers/DashboardLayout";
 import DashboardNavbar from "examples/Navbars/DashboardNavbar";
-import Footer from "examples/Footer";
+
 import MiniStatisticsCard from "examples/Cards/StatisticsCards/MiniStatisticsCard";
 import linearGradient from "assets/theme/functions/linearGradient";
 
@@ -38,11 +38,8 @@ import typography from "assets/theme/base/typography";
 import colors from "assets/theme/base/colors";
 
 // Dashboard layout components
-import WelcomeMark from "layouts/dashboard/components/WelcomeMark";
 import Projects from "layouts/dashboard/components/Projects";
 import OrderOverview from "layouts/dashboard/components/OrderOverview";
-import SatisfactionRate from "layouts/dashboard/components/SatisfactionRate";
-import ReferralTracking from "layouts/dashboard/components/ReferralTracking";
 
 // React icons
 import { IoIosRocket } from "react-icons/io";
@@ -130,19 +127,6 @@ function Dashboard() {
                 percentage={{ color: "success", text: "Live" }}
                 icon={{ color: "success", component: <IoPeople size="22px" color="white" /> }}
               />
-            </Grid>
-          </Grid>
-        </VuiBox>
-        <VuiBox mb={3}>
-          <Grid container spacing="18px">
-            <Grid item xs={12} lg={12} xl={5}>
-              <WelcomeMark />
-            </Grid>
-            <Grid item xs={12} lg={6} xl={3}>
-              <SatisfactionRate />
-            </Grid>
-            <Grid item xs={12} lg={6} xl={4}>
-              <ReferralTracking />
             </Grid>
           </Grid>
         </VuiBox>
@@ -314,7 +298,6 @@ function Dashboard() {
           </Grid>
         </Grid>
       </VuiBox>
-      <Footer />
     </DashboardLayout>
   );
 }
