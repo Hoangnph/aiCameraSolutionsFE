@@ -1,191 +1,166 @@
 # Frontend Authentication Automation Tests
 
-## Tổng quan
+## Overview
+This directory contains comprehensive automation tests for the frontend authentication system, covering all authentication flows including the newly added forgot password functionality.
 
-Bộ test automation cho các component authentication trong frontend, sử dụng Selenium WebDriver với Python.
+## Recent Updates (2025-07-15)
 
-## Tính năng được test
+### ✅ Added Forgot Password Link to Sign-In Page
+- **Feature**: Added "Quên mật khẩu?" link to the sign-in page
+- **Location**: Between "Lưu lại thông tin đăng nhập" checkbox and "ĐĂNG NHẬP" button
+- **Navigation**: Links to `/authentication/forgot-password` page
+- **Styling**: Consistent with existing UI design, white text with underline hover effect
 
-### 1. Authentication Components
-- ✅ **LoginForm**: Form đăng nhập với validation
-- ✅ **RegisterForm**: Form đăng ký với validation đầy đủ
-- ✅ **ForgotPasswordForm**: Form quên mật khẩu
-- ✅ **ResetPasswordForm**: Form đặt lại mật khẩu
-- ✅ **AuthContainer**: Container chính cho authentication
-- ✅ **AuthTabs**: Tab navigation cho các form
+### ✅ Enhanced Forgot Password Page
+- **Background**: Updated to use same background image as sign-in page
+- **Layout**: Simplified form layout to match sign-in form style
+- **Branding**: Added "CẢM HỨNG TỪ TƯƠNG LAI" and "aiCamera Solutions" branding
+- **Navigation**: Includes links back to sign-in and sign-up pages
 
-### 2. Navigation & Links
-- ✅ **Login to Register**: Link từ trang đăng nhập đến đăng ký
-- ✅ **Register to Login**: Link từ trang đăng ký đến đăng nhập
-- ✅ **Login to Forgot Password**: Link từ trang đăng nhập đến quên mật khẩu
-- ✅ **Register to Forgot Password**: Link từ trang đăng ký đến quên mật khẩu (MỚI)
-- ✅ **Profile Reset Password**: Nút đặt lại mật khẩu trong trang profile (MỚI)
+### ✅ Updated Automation Tests
+- **New Test File**: `test_simple_auth_flow.py` - Tests complete forgot password flow
+- **New Test File**: `test_simple_forgot_password.py` - Tests forgot password link detection
+- **Updated Tests**: All existing tests updated to work with new UI structure
 
-### 3. Form Validation
-- ✅ **Real-time validation**: Validation ngay khi nhập
-- ✅ **Password strength**: Kiểm tra độ mạnh mật khẩu
-- ✅ **Email format**: Kiểm tra định dạng email
-- ✅ **Required fields**: Kiểm tra các trường bắt buộc
-- ✅ **Password confirmation**: Kiểm tra xác nhận mật khẩu
+## Test Files
 
-### 4. User Experience
-- ✅ **Password visibility toggle**: Ẩn/hiện mật khẩu
-- ✅ **Loading states**: Trạng thái loading khi submit
-- ✅ **Success dialogs**: Dialog thông báo thành công
-- ✅ **Error handling**: Xử lý và hiển thị lỗi
-- ✅ **Responsive design**: Kiểm tra responsive trên các kích thước màn hình
+### 1. `test_simple_auth_flow.py`
+**Purpose**: Test complete forgot password flow end-to-end
+**Tests**:
+- ✅ Navigation from sign-in to forgot password page
+- ✅ Form submission with valid email
+- ✅ Success message display
+- ✅ Navigation back to sign-in page
+- ✅ Form validation with invalid email
 
-## Test Cases
+### 2. `test_simple_forgot_password.py`
+**Purpose**: Verify forgot password link exists and works
+**Tests**:
+- ✅ Forgot password link detection in sign-in page
+- ✅ Link navigation to forgot password page
+- ✅ Form elements presence (email input, submit button)
 
-### 1. Component Rendering Tests
-- `test_login_form_rendering()`: Kiểm tra form đăng nhập render đúng
-- `test_register_form_rendering()`: Kiểm tra form đăng ký render đúng
-- `test_forgot_password_form_rendering()`: Kiểm tra form quên mật khẩu render đúng
-- `test_reset_password_form_rendering()`: Kiểm tra form đặt lại mật khẩu render đúng
+### 3. `test_auth_components.py`
+**Purpose**: Comprehensive authentication component tests
+**Tests**:
+- ✅ Sign-in form rendering and validation
+- ✅ Sign-up form rendering and validation
+- ✅ Password visibility toggle
+- ✅ Form submission handling
+- ✅ Error message display
 
-### 2. Navigation Tests
-- `test_login_to_register_navigation()`: Kiểm tra navigation từ login đến register
-- `test_register_to_login_navigation()`: Kiểm tra navigation từ register đến login
-- `test_login_to_forgot_password_navigation()`: Kiểm tra navigation từ login đến forgot password
-- `test_profile_reset_password_button()`: Kiểm tra nút đặt lại mật khẩu trong profile (MỚI)
-- `test_signup_forgot_password_link()`: Kiểm tra link quên mật khẩu trong trang đăng ký (MỚI)
+### 4. `test_change_password.py`
+**Purpose**: Test change password functionality
+**Tests**:
+- ✅ Change password form rendering
+- ✅ Old password validation
+- ✅ New password validation
+- ✅ Form submission and success handling
 
-### 3. Form Validation Tests
-- `test_login_form_validation()`: Kiểm tra validation form đăng nhập
-- `test_register_form_validation()`: Kiểm tra validation form đăng ký
-- `test_forgot_password_form_validation()`: Kiểm tra validation form quên mật khẩu
-- `test_reset_password_form_validation()`: Kiểm tra validation form đặt lại mật khẩu
+## Running Tests
 
-### 4. Form Submission Tests
-- `test_login_form_submission()`: Kiểm tra submit form đăng nhập
-- `test_register_form_submission()`: Kiểm tra submit form đăng ký
-- `test_forgot_password_form_submission()`: Kiểm tra submit form quên mật khẩu
-- `test_reset_password_form_submission()`: Kiểm tra submit form đặt lại mật khẩu
+### Prerequisites
+1. Frontend server running on `http://localhost:3000`
+2. Python 3.7+ with required packages:
+   ```bash
+   pip install selenium webdriver-manager
+   ```
 
-### 5. Error Handling Tests
-- `test_login_error_handling()`: Kiểm tra xử lý lỗi đăng nhập
-- `test_register_error_handling()`: Kiểm tra xử lý lỗi đăng ký
-- `test_forgot_password_error_handling()`: Kiểm tra xử lý lỗi quên mật khẩu
-- `test_reset_password_error_handling()`: Kiểm tra xử lý lỗi đặt lại mật khẩu
-
-### 6. Success Flow Tests
-- `test_login_success_flow()`: Kiểm tra luồng đăng nhập thành công
-- `test_register_success_flow()`: Kiểm tra luồng đăng ký thành công
-- `test_forgot_password_success_flow()`: Kiểm tra luồng quên mật khẩu thành công
-- `test_reset_password_success_flow()`: Kiểm tra luồng đặt lại mật khẩu thành công
-
-### 7. Responsive Design Tests
-- `test_mobile_responsive()`: Kiểm tra responsive trên mobile
-- `test_tablet_responsive()`: Kiểm tra responsive trên tablet
-- `test_desktop_responsive()`: Kiểm tra responsive trên desktop
-
-## Cách chạy tests
-
-### 1. Cài đặt dependencies
+### Running Individual Tests
 ```bash
-pip install selenium webdriver-manager pytest
-```
+# Test forgot password flow
+python test_simple_auth_flow.py
 
-### 2. Chạy tất cả tests
-```bash
+# Test forgot password link detection
+python test_simple_forgot_password.py
+
+# Test all authentication components
 python test_auth_components.py
+
+# Test change password functionality
+python test_change_password.py
 ```
 
-### 3. Chạy test cụ thể
+### Running All Tests
 ```bash
-python -m pytest test_auth_components.py::AuthenticationComponentsTest::test_login_form_rendering -v
+# Run all tests with detailed output
+python -m unittest discover -v
+
+# Run specific test class
+python -m unittest test_simple_auth_flow.TestSimpleAuthFlow -v
 ```
 
-### 4. Chạy với HTML report
-```bash
-python test_auth_components.py --html=report.html
+## Test Results
+
+### Latest Test Results (2025-07-15)
+```
+🔍 Testing complete forgot password flow...
+✅ Step 1: Navigated to sign-in page
+✅ Step 2: Clicked forgot password link
+✅ Step 3: Successfully navigated to forgot password page
+✅ Step 4: Found form elements
+✅ Step 5: Submitted form with valid email
+✅ Step 6: Success message displayed
+✅ Step 7: Successfully navigated back to sign-in page
+✅ Complete forgot password flow test passed
+
+🔍 Testing forgot password form validation...
+✅ Form validation test passed
 ```
 
-## Cấu hình
+**Overall Status**: ✅ All tests passing
 
-### 1. Test Data
-```python
-# Test credentials
-TEST_USERNAME = "admin"
-TEST_PASSWORD = "Admin123!"
-TEST_EMAIL = "admin@example.com"
+## UI Changes Summary
 
-# Registration data
-REGISTRATION_DATA = {
-    "username": "REG001",
-    "email": "reg001@example.com",
-    "password": "Test123!",
-    "confirmPassword": "Test123!",
-    "firstName": "Test",
-    "lastName": "User",
-    "registrationCode": "REG001"
-}
-```
+### Sign-In Page Updates
+- **Added**: "Quên mật khẩu?" link positioned between remember me checkbox and login button
+- **Layout**: Uses flexbox with `justify-content: space-between` for proper alignment
+- **Styling**: White text with underline and hover opacity effect
 
-### 2. Validation Rules
-- **Username**: Tối thiểu 3 ký tự
-- **Email**: Định dạng email hợp lệ
-- **Password**: Tối thiểu 8 ký tự, có chữ hoa, chữ thường, số và ký tự đặc biệt
-- **First Name**: Tối thiểu 2 ký tự
-- **Last Name**: Tối thiểu 2 ký tự
-- **Registration Code**: Tối thiểu 3 ký tự
+### Forgot Password Page Updates
+- **Background**: Now uses `bgSignIn` image for consistency
+- **Branding**: Added premotto and motto text
+- **Layout**: Simplified form structure matching sign-in page
+- **Navigation**: Improved link styling and positioning
+
+## Validation Rules
+
+### Email Validation
+- **Required**: Email field cannot be empty
+- **Format**: Must be valid email format (contains @ and domain)
+- **Error Messages**: 
+  - "Email là bắt buộc" (Email is required)
+  - "Email không hợp lệ" (Invalid email format)
+
+### Password Validation (Change Password)
+- **Old Password**: Required for change password flow
+- **New Password**: Must meet security requirements
+- **Confirm Password**: Must match new password
 
 ## Troubleshooting
 
-### 1. ChromeDriver Issues
-```bash
-# Update ChromeDriver
-webdriver-manager update
+### Common Issues
+1. **Element not found**: Check if frontend server is running on port 3000
+2. **Timeout errors**: Increase wait time or check network connectivity
+3. **Chrome driver issues**: Update ChromeDriver to match Chrome version
+
+### Debug Mode
+To run tests in debug mode (non-headless):
+```python
+# Remove headless option in setUp method
+chrome_options.add_argument("--headless")  # Comment out this line
 ```
 
-### 2. Element Not Found
-- Kiểm tra selector có đúng không
-- Kiểm tra page đã load xong chưa
-- Thêm wait time nếu cần
-
-### 3. Test Failures
-- Kiểm tra frontend server có chạy không
-- Kiểm tra database connection
-- Kiểm tra test data có hợp lệ không
-
-## Recent Updates
-
-### 2025-07-15
-- ✅ **Thêm nút "Đặt lại mật khẩu" trong trang profile**
-- ✅ **Thêm link "Quên mật khẩu?" trong trang đăng ký**
-- ✅ **Cập nhật test cases cho các tính năng mới**
-- ✅ **Cải thiện navigation flow giữa các trang**
-
-### 2025-07-14
-- ✅ **Hoàn thành ResetPasswordForm component**
-- ✅ **Thêm automation tests cho reset password flow**
-- ✅ **Cập nhật validation rules**
-- ✅ **Cải thiện error handling**
-
-### 2025-07-13
-- ✅ **Hoàn thành ForgotPasswordForm component**
-- ✅ **Thêm automation tests cho forgot password flow**
-- ✅ **Cập nhật AuthContext với forgotPassword method**
-- ✅ **Cải thiện form validation**
-
-## Kết quả test
-
-```
-Test Results Summary:
-✅ Component Rendering: 4/4 passed
-✅ Navigation Tests: 5/5 passed
-✅ Form Validation: 4/4 passed
-✅ Form Submission: 4/4 passed
-✅ Error Handling: 4/4 passed
-✅ Success Flow: 4/4 passed
-✅ Responsive Design: 3/3 passed
-
-Total: 28/28 tests passed (100%)
-```
+## Future Enhancements
+- [ ] Add API integration tests for forgot password backend
+- [ ] Add email verification flow tests
+- [ ] Add password strength indicator tests
+- [ ] Add accessibility tests for screen readers
+- [ ] Add mobile responsive design tests
 
 ## Contributing
-
-1. Chạy tests trước khi commit
-2. Cập nhật documentation khi thêm test mới
-3. Sử dụng descriptive test names
-4. Thêm comments cho complex test logic 
+When adding new authentication features:
+1. Update existing tests or create new test files
+2. Document changes in this README
+3. Ensure all tests pass before committing
+4. Add appropriate error handling and validation 
