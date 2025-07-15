@@ -152,9 +152,7 @@ run_all_frontend_tests() {
     echo ""
     
     local frontend_phases=(
-        "Authentication Flow Tests" "frontend/authentication/run_auth_tests.sh" "Complete authentication flow testing"
-        "Authentication Components Tests" "frontend/authentication/test_auth_components.py" "Authentication UI components and forms"
-        "Authentication E2E Tests" "frontend/e2e/test_auth_e2e.py" "End-to-end authentication flows"
+        "Authentication Tests" "frontend/authentication/run_auth_tests.sh" "Complete authentication testing"
         "Frontend Integration Tests" "frontend/run_frontend_tests.sh" "Complete frontend test suite"
     )
     

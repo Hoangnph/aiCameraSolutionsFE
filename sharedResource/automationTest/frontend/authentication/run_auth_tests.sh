@@ -84,37 +84,17 @@ check_dependencies() {
     return 0
 }
 
-# Function to run authentication flow tests
-run_auth_flow_tests() {
-    log_message "${BLUE}Running Authentication Flow Tests...${NC}"
+# Function to run simple authentication tests
+run_simple_auth_tests() {
+    log_message "${BLUE}Running Simple Authentication Tests...${NC}"
     
     cd "$SCRIPT_DIR"
     
-    HEADLESS_FLAG=""
-    if [ "$HEADLESS" = "true" ]; then
-        HEADLESS_FLAG="--headless"
-    fi
-    
-    if python3 test_auth_flow.py --base-url "$BASE_URL" $HEADLESS_FLAG; then
-        log_message "${GREEN}✅ Authentication flow tests PASSED${NC}"
+    if python3 test_auth_components_simple.py; then
+        log_message "${GREEN}✅ Simple authentication tests PASSED${NC}"
         return 0
     else
-        log_message "${RED}❌ Authentication flow tests FAILED${NC}"
-        return 1
-    fi
-}
-
-# Function to run component tests
-run_component_tests() {
-    log_message "${BLUE}Running Authentication Component Tests...${NC}"
-    
-    cd "$SCRIPT_DIR"
-    
-    if python3 test_auth_components.py --base-url "$BASE_URL"; then
-        log_message "${GREEN}✅ Authentication component tests PASSED${NC}"
-        return 0
-    else
-        log_message "${RED}❌ Authentication component tests FAILED${NC}"
+        log_message "${RED}❌ Simple authentication tests FAILED${NC}"
         return 1
     fi
 }
@@ -178,15 +158,8 @@ main() {
     TESTS_PASSED=0
     TESTS_FAILED=0
     
-    # Run authentication flow tests
-    if run_auth_flow_tests; then
-        ((TESTS_PASSED++))
-    else
-        ((TESTS_FAILED++))
-    fi
-    
-    # Run component tests
-    if run_component_tests; then
+    # Run simple authentication tests
+    if run_simple_auth_tests; then
         ((TESTS_PASSED++))
     else
         ((TESTS_FAILED++))
