@@ -61,15 +61,15 @@ import { IoClose } from "react-icons/io5";
 const getStatusConfig = (status) => {
   switch (status) {
     case 'active':
-      return { color: 'success', icon: <IoPlay size="16px" />, bgColor: 'success' };
+      return { color: 'success', icon: <IoPlay size="16px" />, bgColor: 'success', statusEmoji: '🟢' };
     case 'offline':
-      return { color: 'error', icon: <IoStop size="16px" />, bgColor: 'error' };
+      return { color: 'error', icon: <IoStop size="16px" />, bgColor: 'error', statusEmoji: '🔴' };
     case 'maintenance':
-      return { color: 'warning', icon: <IoPencil size="16px" />, bgColor: 'warning' };
+      return { color: 'warning', icon: <IoPencil size="16px" />, bgColor: 'warning', statusEmoji: '🟠' };
     case 'error':
-      return { color: 'error', icon: <IoStop size="16px" />, bgColor: 'error' };
+      return { color: 'error', icon: <IoStop size="16px" />, bgColor: 'error', statusEmoji: '🔴' };
     default:
-      return { color: 'info', icon: <IoCamera size="16px" />, bgColor: 'info' };
+      return { color: 'info', icon: <IoCamera size="16px" />, bgColor: 'info', statusEmoji: '🔵' };
   }
 };
 
@@ -412,8 +412,6 @@ function CameraTable({ cameras, loading, onStatusChange, onEdit, onDelete }) {
                 <TableCell sx={{...tableStyles.dataCell, maxWidth: '200px'}}>
                   <VuiBox display="flex" alignItems="center" width="100%">
                     <VuiBox
-                      bgColor={statusConfig.bgColor}
-                      color="white"
                       width="2.5rem"
                       height="2.5rem"
                       borderRadius="lg"
@@ -421,10 +419,18 @@ function CameraTable({ cameras, loading, onStatusChange, onEdit, onDelete }) {
                       justifyContent="center"
                       alignItems="center"
                       mr={2}
-                      shadow="md"
                       flexShrink={0}
+                      sx={{
+                        fontSize: '24px',
+                        filter: 'drop-shadow(0 2px 4px rgba(0,0,0,0.3))',
+                        transition: 'all 0.3s ease',
+                        '&:hover': {
+                          transform: 'scale(1.1)',
+                          filter: 'drop-shadow(0 4px 8px rgba(0,0,0,0.4))'
+                        }
+                      }}
                     >
-                      <IoCamera size="16px" />
+                      {statusConfig.statusEmoji}
                     </VuiBox>
                     <Tooltip 
                       title={camera.name} 
