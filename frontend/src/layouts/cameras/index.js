@@ -29,11 +29,6 @@ import DialogTitle from "@mui/material/DialogTitle";
 import DialogContent from "@mui/material/DialogContent";
 import DialogActions from "@mui/material/DialogActions";
 import TextField from "@mui/material/TextField";
-import FormControl from "@mui/material/FormControl";
-import InputLabel from "@mui/material/InputLabel";
-import Select from "@mui/material/Select";
-import MenuItem from "@mui/material/MenuItem";
-import Chip from "@mui/material/Chip";
 import Alert from "@mui/material/Alert";
 import Snackbar from "@mui/material/Snackbar";
 
@@ -41,38 +36,45 @@ import Snackbar from "@mui/material/Snackbar";
 import VuiBox from "components/VuiBox";
 import VuiTypography from "components/VuiTypography";
 import VuiButton from "components/VuiButton";
+import VuiInput from "components/VuiInput";
+import CameraTable from "components/CameraTable";
 
 // Vision UI Dashboard React example components
 import DashboardLayout from "examples/LayoutContainers/DashboardLayout";
 import DashboardNavbar from "examples/Navbars/DashboardNavbar";
-import Footer from "examples/Footer";
 import MiniStatisticsCard from "examples/Cards/StatisticsCards/MiniStatisticsCard";
+import GradientBorder from "examples/GradientBorder";
+
+// Vision UI Dashboard assets
+import radialGradient from "assets/theme/functions/radialGradient";
+import palette from "assets/theme/base/colors";
+import borders from "assets/theme/base/borders";
 
 // React icons
 import { IoCamera } from "react-icons/io5";
 import { IoAdd } from "react-icons/io5";
-import { IoEye } from "react-icons/io5";
-import { IoPencil } from "react-icons/io5";
-import { IoTrash } from "react-icons/io5";
 import { IoPlay } from "react-icons/io5";
 import { IoStop } from "react-icons/io5";
+import { IoPencil } from "react-icons/io5";
+import { IoTrash } from "react-icons/io5";
+import { IoClose } from "react-icons/io5";
 
 // Services
 import { cameraAPI } from "services/cameraAPI";
 
-// Camera status colors
-const getStatusColor = (status) => {
+// Camera status colors and icons
+const getStatusConfig = (status) => {
   switch (status) {
     case 'active':
-      return 'success';
+      return { color: 'success', icon: <IoPlay size="16px" />, bgColor: 'success' };
     case 'offline':
-      return 'error';
+      return { color: 'error', icon: <IoStop size="16px" />, bgColor: 'error' };
     case 'maintenance':
-      return 'warning';
+      return { color: 'warning', icon: <IoPencil size="16px" />, bgColor: 'warning' };
     case 'error':
-      return 'error';
+      return { color: 'error', icon: <IoStop size="16px" />, bgColor: 'error' };
     default:
-      return 'info';
+      return { color: 'info', icon: <IoCamera size="16px" />, bgColor: 'info' };
   }
 };
 
@@ -90,8 +92,15 @@ function Cameras() {
   // Form states
   const [formData, setFormData] = useState({
     name: '',
-    location: '',
-    stream_url: '',
+    ip_address: '',
+    rtsp_url: '',
+    status: 'offline'
+  });
+
+  const [editFormData, setEditFormData] = useState({
+    name: '',
+    ip_address: '',
+    rtsp_url: '',
     status: 'offline'
   });
 
@@ -162,8 +171,8 @@ function Cameras() {
   const resetForm = () => {
     setFormData({
       name: '',
-      location: '',
-      stream_url: '',
+      ip_address: '',
+      rtsp_url: '',
       status: 'offline'
     });
   };
@@ -172,8 +181,8 @@ function Cameras() {
     setSelectedCamera(camera);
     setFormData({
       name: camera.name,
-      location: camera.location,
-      stream_url: camera.stream_url,
+      ip_address: camera.ip_address,
+      rtsp_url: camera.rtsp_url,
       status: camera.status
     });
     setOpenEditDialog(true);
@@ -258,223 +267,414 @@ function Cameras() {
           </VuiBox>
         )}
 
-        {/* Cameras Grid */}
-        <Grid container spacing={3}>
-          {loading ? (
-            <Grid item xs={12}>
-              <VuiBox display="flex" justifyContent="center" py={4}>
-                <VuiTypography color="text">Loading cameras...</VuiTypography>
-              </VuiBox>
-            </Grid>
-          ) : cameras.length === 0 ? (
-            <Grid item xs={12}>
-              <Card>
-                <VuiBox display="flex" justifyContent="center" alignItems="center" py={8}>
-                  <VuiBox textAlign="center">
-                    <IoCamera size="48px" color="#67748e" />
-                    <VuiTypography variant="h6" color="text" mt={2}>
-                      No cameras found
-                    </VuiTypography>
-                    <VuiTypography variant="button" color="text" mt={1}>
-                      Add your first camera to get started
-                    </VuiTypography>
-                  </VuiBox>
-                </VuiBox>
-              </Card>
-            </Grid>
-          ) : (
-            cameras.map((camera) => (
-              <Grid item xs={12} md={6} lg={4} key={camera.id}>
-                <Card>
-                  <VuiBox p={3}>
-                    {/* Camera Header */}
-                    <VuiBox display="flex" justifyContent="space-between" alignItems="center" mb={2}>
-                      <VuiTypography variant="h6" color="white" fontWeight="bold">
-                        {camera.name}
-                      </VuiTypography>
-                      <Chip
-                        label={camera.status}
-                        color={getStatusColor(camera.status)}
-                        size="small"
-                      />
-                    </VuiBox>
-
-                    {/* Camera Details */}
-                    <VuiBox mb={3}>
-                      <VuiTypography variant="button" color="text" fontWeight="medium">
-                        Location: {camera.location}
-                      </VuiTypography>
-                      <VuiTypography variant="button" color="text" fontWeight="medium" display="block" mt={1}>
-                        Created: {new Date(camera.created_at).toLocaleDateString()}
-                      </VuiTypography>
-                    </VuiBox>
-
-                    {/* Action Buttons */}
-                    <VuiBox display="flex" gap={1} flexWrap="wrap">
-                      <VuiButton
-                        color="info"
-                        variant="outlined"
-                        size="small"
-                        startIcon={<IoEye />}
-                        onClick={() => history.push(`/cameras/${camera.id}`)}
-                      >
-                        View
-                      </VuiButton>
-                      <VuiButton
-                        color="warning"
-                        variant="outlined"
-                        size="small"
-                        startIcon={<IoPencil />}
-                        onClick={() => openEditModal(camera)}
-                      >
-                        Edit
-                      </VuiButton>
-                      <VuiButton
-                        color="error"
-                        variant="outlined"
-                        size="small"
-                        startIcon={<IoTrash />}
-                        onClick={() => openDeleteModal(camera)}
-                      >
-                        Delete
-                      </VuiButton>
-                    </VuiBox>
-
-                    {/* Status Control */}
-                    <VuiBox mt={2}>
-                      <FormControl fullWidth size="small">
-                        <InputLabel>Status</InputLabel>
-                        <Select
-                          value={camera.status}
-                          label="Status"
-                          onChange={(e) => handleStatusChange(camera.id, e.target.value)}
-                        >
-                          <MenuItem value="active">Active</MenuItem>
-                          <MenuItem value="offline">Offline</MenuItem>
-                          <MenuItem value="maintenance">Maintenance</MenuItem>
-                          <MenuItem value="error">Error</MenuItem>
-                        </Select>
-                      </FormControl>
-                    </VuiBox>
-                  </VuiBox>
-                </Card>
-              </Grid>
-            ))
-          )}
-        </Grid>
+        {/* Cameras Table */}
+        <CameraTable 
+          cameras={cameras}
+          loading={loading}
+          onStatusChange={handleStatusChange}
+          onEdit={openEditModal}
+          onDelete={openDeleteModal}
+        />
       </VuiBox>
 
       {/* Add Camera Dialog */}
-      <Dialog open={openAddDialog} onClose={() => setOpenAddDialog(false)} maxWidth="sm" fullWidth>
-        <DialogTitle>Add New Camera</DialogTitle>
-        <DialogContent>
-          <VuiBox pt={2}>
-            <TextField
-              fullWidth
-              label="Camera Name"
-              value={formData.name}
-              onChange={(e) => setFormData({ ...formData, name: e.target.value })}
-              margin="normal"
-            />
-            <TextField
-              fullWidth
-              label="Location"
-              value={formData.location}
-              onChange={(e) => setFormData({ ...formData, location: e.target.value })}
-              margin="normal"
-            />
-            <TextField
-              fullWidth
-              label="Stream URL"
-              value={formData.stream_url}
-              onChange={(e) => setFormData({ ...formData, stream_url: e.target.value })}
-              margin="normal"
-            />
-            <FormControl fullWidth margin="normal">
-              <InputLabel>Status</InputLabel>
-              <Select
+      <Dialog 
+        open={openAddDialog} 
+        onClose={() => setOpenAddDialog(false)} 
+        maxWidth="sm" 
+        fullWidth
+        PaperProps={{
+          sx: {
+            backgroundColor: '#1a2035',
+            color: 'white',
+            borderRadius: '16px'
+          }
+        }}
+      >
+        <DialogTitle sx={{ 
+          borderBottom: '1px solid rgba(255,255,255,0.1)',
+          pb: 2
+        }}>
+          <VuiBox display="flex" alignItems="center">
+            <VuiBox
+              bgColor="info"
+              color="white"
+              width="2.5rem"
+              height="2.5rem"
+              borderRadius="lg"
+              display="flex"
+              justifyContent="center"
+              alignItems="center"
+              mr={2}
+            >
+              <IoAdd size="20px" />
+            </VuiBox>
+            <VuiTypography variant="h6" color="white" fontWeight="bold">
+              Add New Camera
+            </VuiTypography>
+          </VuiBox>
+        </DialogTitle>
+        <DialogContent sx={{ pt: 3 }}>
+          <VuiBox>
+            <VuiBox mb={3}>
+              <VuiTypography variant="caption" color="text" opacity={0.7} display="block" mb={1}>
+                Camera Name
+              </VuiTypography>
+              <TextField
+                fullWidth
+                placeholder="Enter camera name"
+                value={formData.name}
+                onChange={(e) => setFormData({ ...formData, name: e.target.value })}
+                sx={{
+                  '& .MuiOutlinedInput-root': {
+                    color: 'white',
+                    '& fieldset': {
+                      borderColor: 'rgba(255,255,255,0.2)'
+                    },
+                    '&:hover fieldset': {
+                      borderColor: 'rgba(255,255,255,0.3)'
+                    },
+                    '&.Mui-focused fieldset': {
+                      borderColor: '#0075FF'
+                    }
+                  },
+                  '& .MuiInputLabel-root': {
+                    color: 'rgba(255,255,255,0.7)'
+                  }
+                }}
+              />
+            </VuiBox>
+            
+            <VuiBox mb={3}>
+              <VuiTypography variant="caption" color="text" opacity={0.7} display="block" mb={1}>
+                IP Address
+              </VuiTypography>
+              <VuiInput
+                placeholder="192.168.1.100"
+                value={formData.ip_address}
+                onChange={(e) => setFormData({ ...formData, ip_address: e.target.value })}
+                fullWidth
+              />
+            </VuiBox>
+            
+            <VuiBox mb={3}>
+              <VuiTypography variant="caption" color="text" opacity={0.7} display="block" mb={1}>
+                RTSP URL
+              </VuiTypography>
+              <VuiInput
+                placeholder="rtsp://192.168.1.100:554/stream"
+                value={formData.rtsp_url}
+                onChange={(e) => setFormData({ ...formData, rtsp_url: e.target.value })}
+                fullWidth
+              />
+            </VuiBox>
+            
+            <VuiBox mb={3}>
+              <VuiTypography variant="caption" color="text" opacity={0.7} display="block" mb={1}>
+                Initial Status
+              </VuiTypography>
+              <VuiInput
+                select
                 value={formData.status}
-                label="Status"
                 onChange={(e) => setFormData({ ...formData, status: e.target.value })}
+                placeholder="Select status"
+                fontWeight="500"
+                sx={({ typography: { size } }) => ({
+                  fontSize: size.sm,
+                  color: 'white',
+                  '& .MuiSelect-select': {
+                    color: 'white',
+                    padding: '12px 16px',
+                  },
+                  '& .MuiSvgIcon-root': {
+                    color: 'white',
+                  },
+                })}
+                icon={{
+                  component: (
+                    <VuiBox
+                      display="flex"
+                      alignItems="center"
+                      gap={0.5}
+                      px={1}
+                      py={0.5}
+                      borderRadius="sm"
+                      bgColor={getStatusConfig(formData.status).bgColor}
+                      color="white"
+                    >
+                      {getStatusConfig(formData.status).icon}
+                      <VuiTypography variant="caption" color="white" fontWeight="medium" textTransform="capitalize">
+                        {formData.status}
+                      </VuiTypography>
+                    </VuiBox>
+                  ),
+                  direction: 'right',
+                }}
               >
-                <MenuItem value="active">Active</MenuItem>
-                <MenuItem value="offline">Offline</MenuItem>
-                <MenuItem value="maintenance">Maintenance</MenuItem>
-                <MenuItem value="error">Error</MenuItem>
-              </Select>
-            </FormControl>
+                <option value="active">Active</option>
+                <option value="offline">Offline</option>
+                <option value="maintenance">Maintenance</option>
+                <option value="error">Error</option>
+              </VuiInput>
+            </VuiBox>
           </VuiBox>
         </DialogContent>
-        <DialogActions>
-          <Button onClick={() => setOpenAddDialog(false)}>Cancel</Button>
-          <Button onClick={handleAddCamera} variant="contained" color="primary">
+        <DialogActions sx={{ 
+          borderTop: '1px solid rgba(255,255,255,0.1)',
+          pt: 2,
+          px: 3,
+          pb: 3
+        }}>
+          <VuiButton
+            variant="outlined"
+            onClick={() => setOpenAddDialog(false)}
+            sx={{ mr: 1 }}
+          >
+            Cancel
+          </VuiButton>
+          <VuiButton
+            color="info"
+            variant="contained"
+            onClick={handleAddCamera}
+            startIcon={<IoAdd />}
+          >
             Add Camera
-          </Button>
+          </VuiButton>
         </DialogActions>
       </Dialog>
 
       {/* Edit Camera Dialog */}
-      <Dialog open={openEditDialog} onClose={() => setOpenEditDialog(false)} maxWidth="sm" fullWidth>
-        <DialogTitle>Edit Camera</DialogTitle>
-        <DialogContent>
-          <VuiBox pt={2}>
-            <TextField
-              fullWidth
-              label="Camera Name"
-              value={formData.name}
-              onChange={(e) => setFormData({ ...formData, name: e.target.value })}
-              margin="normal"
-            />
-            <TextField
-              fullWidth
-              label="Location"
-              value={formData.location}
-              onChange={(e) => setFormData({ ...formData, location: e.target.value })}
-              margin="normal"
-            />
-            <TextField
-              fullWidth
-              label="Stream URL"
-              value={formData.stream_url}
-              onChange={(e) => setFormData({ ...formData, stream_url: e.target.value })}
-              margin="normal"
-            />
-            <FormControl fullWidth margin="normal">
-              <InputLabel>Status</InputLabel>
-              <Select
+      <Dialog 
+        open={openEditDialog} 
+        onClose={() => setOpenEditDialog(false)} 
+        maxWidth="sm" 
+        fullWidth
+        PaperProps={{
+          sx: {
+            backgroundColor: '#1a2035',
+            color: 'white',
+            borderRadius: '16px'
+          }
+        }}
+      >
+        <DialogTitle sx={{ 
+          borderBottom: '1px solid rgba(255,255,255,0.1)',
+          pb: 2
+        }}>
+          <VuiBox display="flex" alignItems="center">
+            <VuiBox
+              bgColor="warning"
+              color="white"
+              width="2.5rem"
+              height="2.5rem"
+              borderRadius="lg"
+              display="flex"
+              justifyContent="center"
+              alignItems="center"
+              mr={2}
+            >
+              <IoPencil size="20px" />
+            </VuiBox>
+            <VuiTypography variant="h6" color="white" fontWeight="bold">
+              Edit Camera
+            </VuiTypography>
+          </VuiBox>
+        </DialogTitle>
+        <DialogContent sx={{ pt: 3 }}>
+          <VuiBox>
+            <VuiBox mb={3}>
+              <VuiTypography variant="caption" color="text" opacity={0.7} display="block" mb={1}>
+                Camera Name
+              </VuiTypography>
+              <TextField
+                fullWidth
+                placeholder="Enter camera name"
+                value={formData.name}
+                onChange={(e) => setFormData({ ...formData, name: e.target.value })}
+                sx={{
+                  '& .MuiOutlinedInput-root': {
+                    color: 'white',
+                    '& fieldset': {
+                      borderColor: 'rgba(255,255,255,0.2)'
+                    },
+                    '&:hover fieldset': {
+                      borderColor: 'rgba(255,255,255,0.3)'
+                    },
+                    '&.Mui-focused fieldset': {
+                      borderColor: '#0075FF'
+                    }
+                  },
+                  '& .MuiInputLabel-root': {
+                    color: 'rgba(255,255,255,0.7)'
+                  }
+                }}
+              />
+            </VuiBox>
+            
+            <VuiBox mb={3}>
+              <VuiTypography variant="caption" color="text" opacity={0.7} display="block" mb={1}>
+                IP Address
+              </VuiTypography>
+              <VuiInput
+                placeholder="192.168.1.100"
+                value={formData.ip_address}
+                onChange={(e) => setFormData({ ...formData, ip_address: e.target.value })}
+                fullWidth
+              />
+            </VuiBox>
+            
+            <VuiBox mb={3}>
+              <VuiTypography variant="caption" color="text" opacity={0.7} display="block" mb={1}>
+                RTSP URL
+              </VuiTypography>
+              <VuiInput
+                placeholder="rtsp://192.168.1.100:554/stream"
+                value={formData.rtsp_url}
+                onChange={(e) => setFormData({ ...formData, rtsp_url: e.target.value })}
+                fullWidth
+              />
+            </VuiBox>
+            
+            <VuiBox mb={3}>
+              <VuiTypography variant="caption" color="text" opacity={0.7} display="block" mb={1}>
+                Status
+              </VuiTypography>
+              <VuiInput
+                select
                 value={formData.status}
-                label="Status"
                 onChange={(e) => setFormData({ ...formData, status: e.target.value })}
+                placeholder="Select status"
+                fontWeight="500"
+                sx={({ typography: { size } }) => ({
+                  fontSize: size.sm,
+                  color: 'white',
+                  '& .MuiSelect-select': {
+                    color: 'white',
+                    padding: '12px 16px',
+                  },
+                  '& .MuiSvgIcon-root': {
+                    color: 'white',
+                  },
+                })}
+                icon={{
+                  component: (
+                    <VuiBox
+                      display="flex"
+                      alignItems="center"
+                      gap={0.5}
+                      px={1}
+                      py={0.5}
+                      borderRadius="sm"
+                      bgColor={getStatusConfig(formData.status).bgColor}
+                      color="white"
+                    >
+                      {getStatusConfig(formData.status).icon}
+                      <VuiTypography variant="caption" color="white" fontWeight="medium" textTransform="capitalize">
+                        {formData.status}
+                      </VuiTypography>
+                    </VuiBox>
+                  ),
+                  direction: 'right',
+                }}
               >
-                <MenuItem value="active">Active</MenuItem>
-                <MenuItem value="offline">Offline</MenuItem>
-                <MenuItem value="maintenance">Maintenance</MenuItem>
-                <MenuItem value="error">Error</MenuItem>
-              </Select>
-            </FormControl>
+                <option value="active">Active</option>
+                <option value="offline">Offline</option>
+                <option value="maintenance">Maintenance</option>
+                <option value="error">Error</option>
+              </VuiInput>
+            </VuiBox>
           </VuiBox>
         </DialogContent>
-        <DialogActions>
-          <Button onClick={() => setOpenEditDialog(false)}>Cancel</Button>
-          <Button onClick={handleEditCamera} variant="contained" color="primary">
+        <DialogActions sx={{ 
+          borderTop: '1px solid rgba(255,255,255,0.1)',
+          pt: 2,
+          px: 3,
+          pb: 3
+        }}>
+          <VuiButton
+            variant="outlined"
+            onClick={() => setOpenEditDialog(false)}
+            sx={{ mr: 1 }}
+          >
+            Cancel
+          </VuiButton>
+          <VuiButton
+            color="warning"
+            variant="contained"
+            onClick={handleEditCamera}
+            startIcon={<IoPencil />}
+          >
             Update Camera
-          </Button>
+          </VuiButton>
         </DialogActions>
       </Dialog>
 
       {/* Delete Camera Dialog */}
-      <Dialog open={openDeleteDialog} onClose={() => setOpenDeleteDialog(false)}>
-        <DialogTitle>Delete Camera</DialogTitle>
-        <DialogContent>
-          <VuiTypography>
-            Are you sure you want to delete "{selectedCamera?.name}"? This action cannot be undone.
-          </VuiTypography>
+      <Dialog 
+        open={openDeleteDialog} 
+        onClose={() => setOpenDeleteDialog(false)}
+        PaperProps={{
+          sx: {
+            backgroundColor: '#1a2035',
+            color: 'white',
+            borderRadius: '16px'
+          }
+        }}
+      >
+        <DialogTitle sx={{ 
+          borderBottom: '1px solid rgba(255,255,255,0.1)',
+          pb: 2
+        }}>
+          <VuiBox display="flex" alignItems="center">
+            <VuiBox
+              bgColor="error"
+              color="white"
+              width="2.5rem"
+              height="2.5rem"
+              borderRadius="lg"
+              display="flex"
+              justifyContent="center"
+              alignItems="center"
+              mr={2}
+            >
+              <IoClose size="20px" />
+            </VuiBox>
+            <VuiTypography variant="h6" color="white" fontWeight="bold">
+              Delete Camera
+            </VuiTypography>
+          </VuiBox>
+        </DialogTitle>
+        <DialogContent sx={{ pt: 3 }}>
+          <VuiBox>
+            <VuiTypography variant="body1" color="white" mb={2}>
+              Are you sure you want to delete <strong>"{selectedCamera?.name}"</strong>?
+            </VuiTypography>
+            <VuiTypography variant="body2" color="text" opacity={0.7}>
+              This action cannot be undone and will permanently remove the camera from the system.
+            </VuiTypography>
+          </VuiBox>
         </DialogContent>
-        <DialogActions>
-          <Button onClick={() => setOpenDeleteDialog(false)}>Cancel</Button>
-          <Button onClick={handleDeleteCamera} variant="contained" color="error">
-            Delete
-          </Button>
+        <DialogActions sx={{ 
+          borderTop: '1px solid rgba(255,255,255,0.1)',
+          pt: 2,
+          px: 3,
+          pb: 3
+        }}>
+          <VuiButton
+            variant="outlined"
+            onClick={() => setOpenDeleteDialog(false)}
+            sx={{ mr: 1 }}
+          >
+            Cancel
+          </VuiButton>
+          <VuiButton
+            color="error"
+            variant="contained"
+            onClick={handleDeleteCamera}
+            startIcon={<IoClose />}
+          >
+            Delete Camera
+          </VuiButton>
         </DialogActions>
       </Dialog>
 
@@ -490,7 +690,6 @@ function Cameras() {
         </Alert>
       </Snackbar>
 
-      <Footer />
     </DashboardLayout>
   );
 }
