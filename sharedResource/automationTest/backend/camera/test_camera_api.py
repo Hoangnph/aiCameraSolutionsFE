@@ -107,11 +107,10 @@ class CameraAPITest:
         try:
             headers = {"Authorization": f"Bearer {self.access_token}"}
             camera_data = {
-                "name": f"Test Camera {int(time.time())}",
-                "description": "Test Location",
+                "name": "Test Camera",
                 "ip_address": "192.168.1.100",
-                "rtsp_url": "rtsp://test-camera.example.com/stream",
-                "status": "active"
+                "rtsp_url": "rtsp://192.168.1.100:554/stream",
+                "status": "online"
             }
             resp = self.session.post(
                 f"{self.base_url}/cameras",
@@ -165,7 +164,7 @@ class CameraAPITest:
             return False
         try:
             headers = {"Authorization": f"Bearer {self.access_token}"}
-            update_data = {"name": "Updated Camera Name", "description": "Updated Test Location", "status": "maintenance"}
+            update_data = {"name": "Updated Camera Name", "ip_address": "Updated Test Location", "status": "maintenance"}
             resp = self.session.put(
                 f"{self.base_url}/cameras/{self.camera_id}",
                 json=update_data,

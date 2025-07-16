@@ -20,7 +20,7 @@ logger = logging.getLogger(__name__)
 class CameraTask:
     """Camera processing task"""
     camera_id: int
-    stream_url: str
+    rtsp_url: str
     status: str = "pending"
     worker_id: Optional[str] = None
     start_time: Optional[datetime] = None
@@ -67,14 +67,14 @@ class CameraWorkerPool:
         self.executor.shutdown(wait=True)
         logger.info("Worker pool stopped")
     
-    def add_camera_task(self, camera_id: int, stream_url: str) -> bool:
-        """Add a camera task to the queue"""
+    def add_camera_task(self, camera_id: int, rtsp_url: str) -> bool:
+        """Add a new camera task to the pool"""
         with self.lock:
             if camera_id in self.tasks:
                 logger.warning(f"Camera {camera_id} already has a task")
                 return False
             
-            task = CameraTask(camera_id=camera_id, stream_url=stream_url)
+            task = CameraTask(camera_id=camera_id, rtsp_url=rtsp_url)
             self.tasks[camera_id] = task
             
             # Try to assign to available worker
@@ -155,9 +155,9 @@ class CameraWorkerPool:
             logger.info(f"Starting processing for camera {task.camera_id}")
             
             # Open camera stream
-            cap = cv2.VideoCapture(task.stream_url)
+            cap = cv2.VideoCapture(task.rtsp_url)
             if not cap.isOpened():
-                raise Exception(f"Failed to open stream: {task.stream_url}")
+                raise Exception(f"Failed to open stream: {task.rtsp_url}")
             
             frame_count = 0
             while self.running and task.camera_id in self.tasks:

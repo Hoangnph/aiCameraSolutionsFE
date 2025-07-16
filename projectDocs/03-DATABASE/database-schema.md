@@ -83,9 +83,9 @@ CREATE TRIGGER update_users_updated_at
 CREATE TABLE cameras (
     id SERIAL PRIMARY KEY,
     name VARCHAR(100) NOT NULL,
-    location VARCHAR(200),
+    ip_address VARCHAR(200),
     description TEXT,
-    stream_url VARCHAR(500) NOT NULL,
+    rtsp_url VARCHAR(500) NOT NULL,
     status VARCHAR(20) DEFAULT 'offline' CHECK (status IN ('online', 'offline', 'maintenance', 'error')),
     settings JSONB DEFAULT '{}',
     ai_model_version VARCHAR(50),
@@ -99,7 +99,7 @@ CREATE TABLE cameras (
 -- Indexes
 CREATE INDEX idx_cameras_name ON cameras(name);
 CREATE INDEX idx_cameras_status ON cameras(status);
-CREATE INDEX idx_cameras_location ON cameras(location);
+CREATE INDEX idx_cameras_ip_address ON cameras(ip_address);
 CREATE INDEX idx_cameras_created_at ON cameras(created_at);
 CREATE INDEX idx_cameras_settings ON cameras USING GIN(settings);
 

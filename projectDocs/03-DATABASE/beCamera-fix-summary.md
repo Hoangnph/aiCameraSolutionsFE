@@ -9,8 +9,8 @@ Tài liệu này mô tả các lỗi đã được sửa và trạng thái hiệ
 **Vấn đề:** beCamera service đang sử dụng schema cũ không khớp với database thực tế.
 
 **Lỗi cụ thể:**
-- Sử dụng `location` thay vì `description`
-- Sử dụng `stream_url` thay vì `rtsp_url`
+- Sử dụng `ip_address` thay vì `location`
+- Sử dụng `rtsp_url` thay vì `stream_url`
 - Sử dụng `count_data` table thay vì `counting_results`
 - Sử dụng `people_in/people_out` thay vì `count_in/count_out`
 
@@ -38,6 +38,26 @@ Tài liệu này mô tả các lỗi đã được sửa và trạng thái hiệ
 - Cập nhật `env.example` với các giá trị thực tế đang hoạt động
 - Đồng bộ JWT_SECRET giữa beAuth và beCamera
 - Cập nhật WebSocket URL trong frontend config
+
+## 4. Environment Variable Issue (2025-07-15)
+**Vấn đề:**
+- beCamera không thể xác thực token với beAuth do thiếu biến môi trường `AUTH_SERVICE_URL` trong container (dù đã có trong docker-compose).
+- Dẫn đến mọi request `/api/v1/cameras` trả về 503 (Service Unavailable) dù backend và database đều healthy.
+
+**Giải pháp:**
+- Thêm biến môi trường `AUTH_SERVICE_URL=http://ai_camera_beauth:3001` vào service `becamera` trong `docker-compose.yml`.
+- Rebuild container bằng `docker-compose up -d --build becamera` để biến môi trường được áp dụng.
+- Kiểm tra lại bằng `docker exec ai_camera_becamera env | grep AUTH_SERVICE_URL`.
+
+**Kết quả:**
+- beCamera xác thực token thành công với beAuth, API trả về đúng dữ liệu khi user đã đăng nhập.
+
+## 5. Dataflow xác thực camera API (2025-07-15)
+1. Frontend gửi request `/api/v1/cameras` kèm accessToken.
+2. beCamera nhận request, gửi token sang beAuth (`/api/v1/auth/verify`) để xác thực.
+3. Nếu token hợp lệ, truy vấn database và trả về dữ liệu camera.
+4. Nếu token không hợp lệ, trả về 401.
+5. Nếu không kết nối được beAuth, trả về 503.
 
 ## Trạng thái hiện tại
 
@@ -85,25 +105,10 @@ Tài liệu này mô tả các lỗi đã được sửa và trạng thái hiệ
 ```sql
 CREATE TABLE cameras (
     id SERIAL PRIMARY KEY,
-    name VARCHAR(100) NOT NULL,
-    description TEXT,
-    ip_address INET NOT NULL,
-    port INTEGER DEFAULT 554,
-    rtsp_url VARCHAR(500) NOT NULL,
-    username VARCHAR(50),
-    password VARCHAR(255),
-    model VARCHAR(100),
-    manufacturer VARCHAR(100),
-    resolution_width INTEGER,
-    resolution_height INTEGER,
-    fps INTEGER DEFAULT 25,
+    name VARCHAR(255) NOT NULL,
+    ip_address VARCHAR(500),
+    rtsp_url TEXT,
     status camera_status DEFAULT 'offline',
-    is_active BOOLEAN DEFAULT TRUE,
-    ai_model_id INTEGER REFERENCES ai_models(id),
-    config JSONB DEFAULT '{}',
-    last_heartbeat TIMESTAMP,
-    last_error TEXT,
-    error_count INTEGER DEFAULT 0,
     created_at TIMESTAMP DEFAULT CURRENT_TIMESTAMP,
     updated_at TIMESTAMP DEFAULT CURRENT_TIMESTAMP
 );
@@ -126,7 +131,7 @@ REDIS_PORT=6379
 JWT_SECRET=dev_jwt_secret_key_2024_ai_camera_system
 
 # Auth Service
-AUTH_SERVICE_URL=http://beauth_service:3001
+AUTH_SERVICE_URL=http://ai_camera_beauth:3001
 ```
 
 ### Port Configuration

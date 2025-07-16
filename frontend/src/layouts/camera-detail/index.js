@@ -277,7 +277,11 @@ function CameraDetail() {
               size="medium"
             />
             <VuiTypography variant="button" color="text">
-              {camera.location}
+              IP Address: {camera.ip_address}
+            </VuiTypography>
+
+            <VuiTypography variant="caption" color="text">
+              RTSP URL: {camera.rtsp_url || 'No RTSP URL configured'}
             </VuiTypography>
           </VuiBox>
         </VuiBox>
@@ -391,7 +395,7 @@ function CameraDetail() {
                       Stream URL
                     </VuiTypography>
                     <VuiTypography variant="caption" color="text" sx={{ wordBreak: 'break-all' }}>
-                      {camera.stream_url || 'No stream URL configured'}
+                      {camera.rtsp_url || 'No RTSP URL configured'}
                     </VuiTypography>
                   </VuiBox>
                 </Grid>
@@ -510,9 +514,9 @@ function CameraDetail() {
                     </VuiBox>
                     
                     <VuiBox mb={2}>
-                      <VuiTypography variant="caption" color="text">Location</VuiTypography>
-                      <VuiTypography variant="button" color="white" fontWeight="bold">
-                        {camera.location}
+                      <VuiTypography variant="caption" color="text">IP Address</VuiTypography>
+                      <VuiTypography variant="button" color="white" fontWeight="medium">
+                        {camera.ip_address}
                       </VuiTypography>
                     </VuiBox>
                   </VuiBox>

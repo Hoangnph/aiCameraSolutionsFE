@@ -36,7 +36,7 @@ import BarChart from "examples/Charts/BarCharts/BarChart";
 
 // Data
 import LineChart from "examples/Charts/LineCharts/LineChart";
-import Footer from "examples/Footer";
+
 
 // Vision UI Dashboard React example components
 import DashboardLayout from "examples/LayoutContainers/DashboardLayout";
@@ -292,7 +292,6 @@ function RTL() {
           </Grid>
         </Grid>
       </VuiBox>
-      <Footer />
     </DashboardLayout>
   );
 }

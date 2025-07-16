@@ -232,7 +232,7 @@ async def test_get_cameras():
         cursor = conn.cursor()
         
         cursor.execute("""
-            SELECT id, name, description, ip_address, rtsp_url, status, created_at 
+            SELECT id, name, ip_address, rtsp_url, status, created_at 
             FROM cameras 
             ORDER BY created_at DESC
         """)
@@ -242,11 +242,10 @@ async def test_get_cameras():
             cameras.append({
                 "id": row[0],
                 "name": row[1],
-                "description": row[2],
-                "ip_address": str(row[3]) if row[3] else None,
-                "rtsp_url": row[4],
-                "status": row[5],
-                "created_at": row[6].isoformat() if row[6] else None
+                "ip_address": row[2],
+                "rtsp_url": row[3],
+                "status": row[4],
+                "created_at": row[5].isoformat() if row[5] else None
             })
         
         cursor.close()
@@ -467,7 +466,7 @@ async def get_cameras(request: Request, current_user: dict = Depends(get_current
         cursor = conn.cursor()
         
         cursor.execute("""
-            SELECT id, name, description, ip_address, rtsp_url, status, created_at 
+            SELECT id, name, ip_address, rtsp_url, status, created_at 
             FROM cameras 
             ORDER BY created_at DESC
         """)
@@ -477,11 +476,10 @@ async def get_cameras(request: Request, current_user: dict = Depends(get_current
             cameras.append({
                 "id": row[0],
                 "name": row[1],
-                "description": row[2],
-                "ip_address": str(row[3]) if row[3] else None,
-                "rtsp_url": row[4],
-                "status": row[5],
-                "created_at": row[6].isoformat() if row[6] else None
+                "ip_address": row[2],
+                "rtsp_url": row[3],
+                "status": row[4],
+                "created_at": row[5].isoformat() if row[5] else None
             })
         
         cursor.close()
@@ -518,7 +516,7 @@ async def get_camera(request: Request, camera_id: int, current_user: dict = Depe
         cursor = conn.cursor()
         
         cursor.execute("""
-            SELECT id, name, description, ip_address, rtsp_url, status, created_at 
+            SELECT id, name, ip_address, rtsp_url, status, created_at 
             FROM cameras 
             WHERE id = %s
         """, (camera_id,))
@@ -535,11 +533,10 @@ async def get_camera(request: Request, camera_id: int, current_user: dict = Depe
             "data": {
                 "id": row[0],
                 "name": row[1],
-                "description": row[2],
-                "ip_address": str(row[3]) if row[3] else None,
-                "rtsp_url": row[4],
-                "status": row[5],
-                "created_at": row[6].isoformat() if row[6] else None
+                "ip_address": row[2],
+                "rtsp_url": row[3],
+                "status": row[4],
+                "created_at": row[5].isoformat() if row[5] else None
             }
         }
     except HTTPException:
@@ -569,24 +566,8 @@ async def create_camera(request: Request, camera_data: dict, current_user: dict 
         if description and not is_safe_string(description):
             raise HTTPException(status_code=400, detail="Camera description contains unsafe characters")
         
-        # Handle ip_address - extract from rtsp_url if not provided
-        ip_address = camera_data.get("ip_address")
+        # Handle rtsp_url
         rtsp_url = camera_data.get("rtsp_url")
-        
-        if not ip_address and rtsp_url:
-            # Extract IP from rtsp_url (e.g., rtsp://192.168.1.100:554/stream -> 192.168.1.100)
-            import re
-            ip_match = re.search(r'rtsp://([^:/]+)', rtsp_url)
-            if ip_match:
-                ip_address = ip_match.group(1)
-            else:
-                ip_address = "127.0.0.1"  # Default fallback
-        elif not ip_address:
-            ip_address = "127.0.0.1"  # Default fallback
-        
-        # Validate IP address
-        if not is_valid_ip(ip_address):
-            raise HTTPException(status_code=400, detail="Invalid IP address format")
         
         # Validate RTSP URL if provided
         if rtsp_url and not is_safe_rtsp_url(rtsp_url):
@@ -600,14 +581,13 @@ async def create_camera(request: Request, camera_data: dict, current_user: dict 
         cursor = conn.cursor()
         
         cursor.execute("""
-            INSERT INTO cameras (name, description, ip_address, rtsp_url, status)
-            VALUES (%s, %s, %s, %s, %s)
-            RETURNING id, name, description, ip_address, rtsp_url, status, created_at
+            INSERT INTO cameras (name, ip_address, rtsp_url, status)
+            VALUES (%s, %s, %s, %s)
+            RETURNING id, name, ip_address, rtsp_url, status, created_at
         """, (
             name,
-            camera_data.get("description"),
-            ip_address,
-            rtsp_url,
+            camera_data.get("ip_address"),  # Store as ip_address in DB
+            rtsp_url,                        # Store as rtsp_url in DB
             status
         ))
         
@@ -621,11 +601,10 @@ async def create_camera(request: Request, camera_data: dict, current_user: dict 
             "data": {
                 "id": row[0],
                 "name": row[1],
-                "description": row[2],
-                "ip_address": str(row[3]) if row[3] else None,
-                "rtsp_url": row[4],
-                "status": row[5],
-                "created_at": row[6].isoformat() if row[6] else None
+                "ip_address": row[2],
+                "rtsp_url": row[3],
+                "status": row[4],
+                "created_at": row[5].isoformat() if row[5] else None
             },
             "message": "Camera created successfully"
         }
@@ -697,12 +676,8 @@ async def update_camera(request: Request, camera_id: int, camera_data: dict, cur
             update_values.append(camera_data["name"])
         
         if "description" in camera_data:
-            update_fields.append("description = %s")
-            update_values.append(camera_data["description"])
-        
-        if "ip_address" in camera_data:
             update_fields.append("ip_address = %s")
-            update_values.append(camera_data["ip_address"])
+            update_values.append(camera_data["description"])
         
         if "rtsp_url" in camera_data:
             update_fields.append("rtsp_url = %s")
@@ -722,7 +697,7 @@ async def update_camera(request: Request, camera_id: int, camera_data: dict, cur
             UPDATE cameras 
             SET {', '.join(update_fields)}
             WHERE id = %s
-            RETURNING id, name, description, ip_address, rtsp_url, status, created_at
+            RETURNING id, name, ip_address, rtsp_url, status, created_at
         """
         
         cursor.execute(query, update_values)
@@ -742,11 +717,10 @@ async def update_camera(request: Request, camera_id: int, camera_data: dict, cur
             "data": {
                 "id": row[0],
                 "name": row[1],
-                "description": row[2],
-                "ip_address": str(row[3]) if row[3] else None,
-                "rtsp_url": row[4],
-                "status": row[5],
-                "created_at": row[6].isoformat() if row[6] else None
+                "ip_address": row[2],
+                "rtsp_url": row[3],
+                "status": row[4],
+                "created_at": row[5].isoformat() if row[5] else None
             },
             "message": "Camera updated successfully"
         }

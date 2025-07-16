@@ -183,8 +183,7 @@ class BackendTestSuite:
             self.delay(1.0)  # Add delay before test
             response = self.retry_request("POST", f"{self.base_url_camera}/cameras", 
                                    headers={"Authorization": f"Bearer {self.auth_token}"},
-                                   json={"name": "Test Camera 1", "description": "Test camera for counting", 
-                                        "ip_address": "192.168.1.100", "rtsp_url": "rtsp://192.168.1.100:554/stream"})
+                                   json={"name": "Test Camera 1", "ip_address": "192.168.1.100", "rtsp_url": "rtsp://192.168.1.100:554/stream"})
             if response.status_code == 200:
                 camera_id = response.json()["data"]["id"]
                 self.log_test("CAM-REG-001", "PASSED", f"Camera created with ID: {camera_id}")

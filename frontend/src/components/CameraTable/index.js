@@ -20,6 +20,17 @@ import { useState } from "react";
 import { useHistory } from "react-router-dom";
 
 // @mui material components
+import Grid from "@mui/material/Grid";
+import Card from "@mui/material/Card";
+import Icon from "@mui/material/Icon";
+import Button from "@mui/material/Button";
+import Dialog from "@mui/material/Dialog";
+import DialogTitle from "@mui/material/DialogTitle";
+import DialogContent from "@mui/material/DialogContent";
+import DialogActions from "@mui/material/DialogActions";
+import TextField from "@mui/material/TextField";
+import Alert from "@mui/material/Alert";
+import Snackbar from "@mui/material/Snackbar";
 import Table from "@mui/material/Table";
 import TableBody from "@mui/material/TableBody";
 import TableCell from "@mui/material/TableCell";
@@ -28,7 +39,7 @@ import TableHead from "@mui/material/TableHead";
 import TableRow from "@mui/material/TableRow";
 import Chip from "@mui/material/Chip";
 import ButtonGroup from "@mui/material/ButtonGroup";
-import Button from "@mui/material/Button";
+import Tooltip from "@mui/material/Tooltip";
 
 // Vision UI Dashboard React components
 import VuiBox from "components/VuiBox";
@@ -203,6 +214,7 @@ function CameraTable({ cameras, loading, onStatusChange, onEdit, onDelete }) {
       backgroundColor: 'transparent !important',
       textAlign: 'left',
       minHeight: '56px',
+      maxWidth: '200px',
       position: 'relative',
       transition: 'all 0.3s ease',
       display: 'table-cell',
@@ -229,6 +241,7 @@ function CameraTable({ cameras, loading, onStatusChange, onEdit, onDelete }) {
       backgroundColor: 'transparent !important',
       textAlign: 'center',
       minHeight: '56px',
+      maxWidth: '200px',
       position: 'relative',
       transition: 'all 0.3s ease',
       display: 'table-cell',
@@ -246,6 +259,23 @@ function CameraTable({ cameras, loading, onStatusChange, onEdit, onDelete }) {
       },
       '&:hover::before': {
         opacity: 1
+      }
+    },
+    truncatedText: {
+      overflow: 'hidden',
+      textOverflow: 'ellipsis',
+      whiteSpace: 'nowrap',
+      maxWidth: '100%',
+      display: 'block'
+    },
+    longTextCell: {
+      maxWidth: '250px',
+      '& .truncated-text': {
+        overflow: 'hidden',
+        textOverflow: 'ellipsis',
+        whiteSpace: 'nowrap',
+        maxWidth: '100%',
+        display: 'block'
       }
     },
     emptyCell: {
@@ -379,7 +409,7 @@ function CameraTable({ cameras, loading, onStatusChange, onEdit, onDelete }) {
             return (
               <TableRow key={camera.id}>
                 {/* Camera Name */}
-                <TableCell sx={tableStyles.dataCell}>
+                <TableCell sx={{...tableStyles.dataCell, maxWidth: '200px'}}>
                   <VuiBox display="flex" alignItems="center" width="100%">
                     <VuiBox
                       bgColor={statusConfig.bgColor}
@@ -396,14 +426,42 @@ function CameraTable({ cameras, loading, onStatusChange, onEdit, onDelete }) {
                     >
                       <IoCamera size="16px" />
                     </VuiBox>
-                    <VuiTypography variant="button" color="white" fontWeight="bold">
-                      {camera.name}
-                    </VuiTypography>
+                    <Tooltip 
+                      title={camera.name} 
+                      placement="top"
+                      arrow
+                      sx={{
+                        '& .MuiTooltip-tooltip': {
+                          backgroundColor: 'rgba(0,0,0,0.9)',
+                          color: 'white',
+                          fontSize: '12px',
+                          padding: '8px 12px',
+                          borderRadius: '8px',
+                          backdropFilter: 'blur(10px)',
+                          border: '1px solid rgba(255,255,255,0.1)'
+                        }
+                      }}
+                    >
+                      <VuiTypography 
+                        variant="button" 
+                        color="white" 
+                        fontWeight="bold"
+                        sx={{
+                          overflow: 'hidden',
+                          textOverflow: 'ellipsis',
+                          whiteSpace: 'nowrap',
+                          maxWidth: '120px',
+                          cursor: 'pointer'
+                        }}
+                      >
+                        {camera.name}
+                      </VuiTypography>
+                    </Tooltip>
                   </VuiBox>
                 </TableCell>
 
                 {/* IP Address */}
-                <TableCell sx={tableStyles.dataCell}>
+                <TableCell sx={{...tableStyles.dataCell, maxWidth: '180px'}}>
                   <VuiBox display="flex" alignItems="center" width="100%">
                     <VuiBox
                       bgColor="grey-600"
@@ -419,14 +477,42 @@ function CameraTable({ cameras, loading, onStatusChange, onEdit, onDelete }) {
                     >
                       <IoWifi size="12px" />
                     </VuiBox>
-                    <VuiTypography variant="button" color="white" fontWeight="medium">
-                      {camera.ip_address || 'Not configured'}
-                    </VuiTypography>
+                    <Tooltip 
+                      title={camera.ip_address || 'Not configured'} 
+                      placement="top"
+                      arrow
+                      sx={{
+                        '& .MuiTooltip-tooltip': {
+                          backgroundColor: 'rgba(0,0,0,0.9)',
+                          color: 'white',
+                          fontSize: '12px',
+                          padding: '8px 12px',
+                          borderRadius: '8px',
+                          backdropFilter: 'blur(10px)',
+                          border: '1px solid rgba(255,255,255,0.1)'
+                        }
+                      }}
+                    >
+                      <VuiTypography 
+                        variant="button" 
+                        color="white" 
+                        fontWeight="medium"
+                        sx={{
+                          overflow: 'hidden',
+                          textOverflow: 'ellipsis',
+                          whiteSpace: 'nowrap',
+                          maxWidth: '100px',
+                          cursor: 'pointer'
+                        }}
+                      >
+                        {camera.ip_address || 'Not configured'}
+                      </VuiTypography>
+                    </Tooltip>
                   </VuiBox>
                 </TableCell>
 
                 {/* RTSP URL */}
-                <TableCell sx={tableStyles.dataCell}>
+                <TableCell sx={{...tableStyles.dataCell, maxWidth: '250px'}}>
                   <VuiBox display="flex" alignItems="center" width="100%">
                     <VuiBox
                       bgColor="grey-600"
@@ -442,9 +528,39 @@ function CameraTable({ cameras, loading, onStatusChange, onEdit, onDelete }) {
                     >
                       <IoLocation size="12px" />
                     </VuiBox>
-                    <VuiTypography variant="button" color="white" fontWeight="medium">
-                      {camera.rtsp_url || 'Not configured'}
-                    </VuiTypography>
+                    <Tooltip 
+                      title={camera.rtsp_url || 'Not configured'} 
+                      placement="top"
+                      arrow
+                      sx={{
+                        '& .MuiTooltip-tooltip': {
+                          backgroundColor: 'rgba(0,0,0,0.9)',
+                          color: 'white',
+                          fontSize: '12px',
+                          padding: '8px 12px',
+                          borderRadius: '8px',
+                          backdropFilter: 'blur(10px)',
+                          border: '1px solid rgba(255,255,255,0.1)',
+                          maxWidth: '300px',
+                          wordBreak: 'break-all'
+                        }
+                      }}
+                    >
+                      <VuiTypography 
+                        variant="button" 
+                        color="white" 
+                        fontWeight="medium"
+                        sx={{
+                          overflow: 'hidden',
+                          textOverflow: 'ellipsis',
+                          whiteSpace: 'nowrap',
+                          maxWidth: '180px',
+                          cursor: 'pointer'
+                        }}
+                      >
+                        {camera.rtsp_url || 'Not configured'}
+                      </VuiTypography>
+                    </Tooltip>
                   </VuiBox>
                 </TableCell>
 

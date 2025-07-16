@@ -34,7 +34,6 @@ import VuiProgress from "components/VuiProgress";
 // Vision UI Dashboard React example components
 import DashboardLayout from "examples/LayoutContainers/DashboardLayout";
 import DashboardNavbar from "examples/Navbars/DashboardNavbar";
-import Footer from "examples/Footer";
 import MiniStatisticsCard from "examples/Cards/StatisticsCards/MiniStatisticsCard";
 
 // Charts
@@ -507,7 +506,6 @@ function Analytics() {
         </Alert>
       </Snackbar>
 
-      <Footer />
     </DashboardLayout>
   );
 }

@@ -624,3 +624,19 @@ Authorization: Bearer eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9...
 - Database should be reset between test runs
 - AI processing simulation should be consistent
 - Monitor system resources during load tests 
+
+### Test Case: Missing AUTH_SERVICE_URL (Regression)
+- **Precondition:** beCamera container chạy nhưng thiếu biến môi trường AUTH_SERVICE_URL
+- **Step:** Gửi request GET /api/v1/cameras với accessToken hợp lệ
+- **Expected:** API trả về 503 Service Unavailable, log backend báo không kết nối được beAuth
+
+### Test Case: Correct AUTH_SERVICE_URL (Happy Path)
+- **Precondition:** beCamera container có biến môi trường AUTH_SERVICE_URL=http://ai_camera_beauth:3001
+- **Step:** Gửi request GET /api/v1/cameras với accessToken hợp lệ
+- **Expected:** API trả về 200, trả về danh sách camera đúng
+
+### Troubleshooting
+- Nếu gặp lỗi 503 khi đã login, kiểm tra biến môi trường AUTH_SERVICE_URL trong container:
+  - `docker exec ai_camera_becamera env | grep AUTH_SERVICE_URL`
+- Nếu thiếu, hãy thêm vào docker-compose.yml và rebuild container:
+  - `docker-compose up -d --build becamera` 
