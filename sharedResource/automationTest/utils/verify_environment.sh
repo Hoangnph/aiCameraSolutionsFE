@@ -48,7 +48,7 @@ fi
 
 # Check if containers are running
 log "Checking Docker containers..."
-CONTAINERS=("becamera_postgres" "becamera_redis" "beauth_service" "becamera_service" "becamera_websocket")
+CONTAINERS=("ai_camera_postgres" "ai_camera_redis" "ai_camera_beauth" "ai_camera_becamera" "ai_camera_websocket")
 
 for container in "${CONTAINERS[@]}"; do
     if docker ps --format "table {{.Names}}" | grep -q "$container"; then
@@ -88,7 +88,7 @@ fi
 
 # Check database connection
 log "Checking database connection..."
-if docker exec becamera_postgres pg_isready -U postgres -d people_counting_db >/dev/null 2>&1; then
+if docker exec ai_camera_postgres pg_isready -U postgres -d people_counting_db >/dev/null 2>&1; then
     success "PostgreSQL database is ready"
 else
     error "PostgreSQL database is not ready"
@@ -97,7 +97,7 @@ fi
 
 # Check Redis connection
 log "Checking Redis connection..."
-if docker exec becamera_redis redis-cli ping >/dev/null 2>&1; then
+if docker exec ai_camera_redis redis-cli ping >/dev/null 2>&1; then
     success "Redis is responding"
 else
     error "Redis is not responding"
@@ -153,7 +153,7 @@ done
 log "Checking test data availability..."
 
 # Check if registration codes exist in database
-REG_COUNT=$(docker exec becamera_postgres psql -U postgres -d people_counting_db -t -c "SELECT COUNT(*) FROM registration_codes WHERE is_active = true;" 2>/dev/null | tr -d ' ')
+REG_COUNT=$(docker exec ai_camera_postgres psql -U postgres -d people_counting_db -t -c "SELECT COUNT(*) FROM registration_codes WHERE is_active = true;" 2>/dev/null | tr -d ' ')
 if [ "$REG_COUNT" -gt 0 ]; then
     success "Registration codes are available in database"
 else
@@ -161,7 +161,7 @@ else
 fi
 
 # Check if test users exist
-USER_COUNT=$(docker exec becamera_postgres psql -U postgres -d people_counting_db -t -c "SELECT COUNT(*) FROM users;" 2>/dev/null | tr -d ' ')
+USER_COUNT=$(docker exec ai_camera_postgres psql -U postgres -d people_counting_db -t -c "SELECT COUNT(*) FROM users;" 2>/dev/null | tr -d ' ')
 if [ "$USER_COUNT" -gt 0 ]; then
     success "Users exist in database"
 else

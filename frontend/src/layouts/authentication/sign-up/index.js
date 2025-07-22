@@ -17,7 +17,7 @@
 */
 
 import { useState, useEffect } from "react";
-import { useHistory } from "react-router-dom";
+import { useNavigate } from "react-router-dom";
 
 // react-router-dom components
 import { Link } from "react-router-dom";
@@ -61,10 +61,11 @@ import borders from "assets/theme/base/borders";
 import CoverLayout from "layouts/authentication/components/CoverLayout";
 
 // Authentication context
-import { useAuth } from "context/AuthContext";
+import { useAuth } from "contexts/AuthContext";
 
 // Images
 import bgSignIn from "assets/images/signUpImage.png";
+import LoadingSpinner from "components/LoadingSpinner";
 
 console.log('SIGNUP COMPONENT LOADED');
 
@@ -90,7 +91,26 @@ function SignUp() {
   const [showSuccessDialog, setShowSuccessDialog] = useState(false);
 
   const { register, error, clearError } = useAuth();
-  const history = useHistory();
+  const navigate = useNavigate();
+  const { isAuthenticated, isLoading } = useAuth();
+
+  // Redirect authenticated users to dashboard
+  useEffect(() => {
+    if (!isLoading && isAuthenticated) {
+      console.log("🚨 SignUp: User already authenticated, redirecting to dashboard");
+      navigate("/dashboard", { replace: true });
+    }
+  }, [isAuthenticated, isLoading, navigate]);
+
+  // Show loading while checking authentication
+  if (isLoading) {
+    return <LoadingSpinner />;
+  }
+
+  // Don't render sign-up form if user is already authenticated
+  if (isAuthenticated) {
+    return <LoadingSpinner />;
+  }
 
   // Debug useEffect to monitor state changes
   useEffect(() => {
@@ -328,7 +348,7 @@ function SignUp() {
           <Button 
             onClick={() => {
               setShowSuccessDialog(false);
-              history.push('/authentication/sign-in');
+              navigate('/authentication/sign-in');
             }} 
             variant="contained" 
             color="primary"

@@ -32,9 +32,14 @@ class LineChart extends React.Component {
   componentDidMount() {
     const { lineChartData, lineChartOptions } = this.props;
     console.log('LineChart data:', lineChartData, lineChartOptions);
+    
+    // Validate data before setting state
+    const validData = Array.isArray(lineChartData) ? lineChartData : [];
+    const validOptions = lineChartOptions || {};
+    
     this.setState({
-      chartData: lineChartData,
-      chartOptions: lineChartOptions,
+      chartData: validData,
+      chartOptions: validOptions,
     });
   }
 
@@ -44,18 +49,31 @@ class LineChart extends React.Component {
       prevProps.lineChartOptions !== this.props.lineChartOptions
     ) {
       console.log('LineChart data updated:', this.props.lineChartData, this.props.lineChartOptions);
+      
+      // Validate data before setting state
+      const validData = Array.isArray(this.props.lineChartData) ? this.props.lineChartData : [];
+      const validOptions = this.props.lineChartOptions || {};
+      
       this.setState({
-        chartData: this.props.lineChartData,
-        chartOptions: this.props.lineChartOptions,
+        chartData: validData,
+        chartOptions: validOptions,
       });
     }
   }
 
   render() {
+    const { chartData, chartOptions } = this.state;
+    
+    // Additional validation before rendering
+    if (!Array.isArray(chartData) || chartData.length === 0) {
+      console.warn('LineChart: Invalid or empty chart data');
+      return <div>No chart data available</div>;
+    }
+    
     return (
       <ReactApexChart
-        options={this.state.chartOptions}
-        series={this.state.chartData}
+        options={chartOptions}
+        series={chartData}
         type="area"
         width="100%"
         height="100%"

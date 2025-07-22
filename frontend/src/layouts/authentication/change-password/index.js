@@ -19,7 +19,7 @@
 import { useState } from "react";
 
 // @mui material components
-import { Link, useHistory } from "react-router-dom";
+import { Link, useNavigate } from "react-router-dom";
 
 // @mui icons
 import Visibility from '@mui/icons-material/Visibility';
@@ -41,13 +41,13 @@ import borders from "assets/theme/base/borders";
 import CoverLayout from "layouts/authentication/components/CoverLayout";
 
 // Auth context
-import { useAuth } from "context/AuthContext";
+import { useAuth } from "contexts/AuthContext";
 
 // Images
 import bgSignIn from "assets/images/signInImage.png";
 
 function ChangePassword() {
-  const history = useHistory();
+  const navigate = useNavigate();
   const { changePassword } = useAuth();
   
   const [formData, setFormData] = useState({
@@ -130,7 +130,7 @@ function ChangePassword() {
         
         // Redirect về profile sau 2 giây
         setTimeout(() => {
-          history.push("/profile");
+          navigate("/profile");
         }, 2000);
       } else {
         setErrors({ submit: result.error || "Có lỗi xảy ra. Vui lòng thử lại." });

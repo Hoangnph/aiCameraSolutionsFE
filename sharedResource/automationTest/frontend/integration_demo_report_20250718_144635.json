@@ -1,0 +1,120 @@
+{
+  "timestamp": "2025-07-18T14:46:35.850984",
+  "services": {
+    "frontend": {
+      "status": "running",
+      "url": "http://localhost:3000"
+    },
+    "beauth": {
+      "status": "running",
+      "url": "http://localhost:3001"
+    },
+    "becamera": {
+      "status": "running",
+      "url": "http://localhost:3002"
+    }
+  },
+  "integration_status": "successful",
+  "cors_enabled": true,
+  "api_consistency": true,
+  "performance": "excellent",
+  "demo_data": {
+    "cameras": [
+      {
+        "id": 11,
+        "name": "TestCamera",
+        "ip_address": "192.168.1.1'; DROP TABLE counts; --",
+        "rtsp_url": null,
+        "status": "offline",
+        "created_at": "2025-07-16T10:31:49.084318"
+      },
+      {
+        "id": 10,
+        "name": "TestCamera",
+        "ip_address": "192.168.1.1'; DROP TABLE counts; --",
+        "rtsp_url": null,
+        "status": "offline",
+        "created_at": "2025-07-16T10:27:21.612899"
+      },
+      {
+        "id": 9,
+        "name": "Test Camera 1752661590",
+        "ip_address": "192.168.1.100",
+        "rtsp_url": "rtsp://192.168.1.100:554/stream",
+        "status": "offline",
+        "created_at": "2025-07-16T10:26:30.877467"
+      },
+      {
+        "id": 6,
+        "name": "Frontend Test Camera",
+        "ip_address": "192.168.1.200",
+        "rtsp_url": "rtsp://192.168.1.200:554/stream",
+        "status": "active",
+        "created_at": "2025-07-15T10:49:18.726105"
+      },
+      {
+        "id": 2,
+        "name": "Parking Lot Camera",
+        "ip_address": "Building A - Parking Lot",
+        "rtsp_url": "rtsp://camera2.example.com/stream2",
+        "status": "active",
+        "created_at": "2025-07-11T03:08:51.481069"
+      },
+      {
+        "id": 1,
+        "name": "UpdatedCameraName",
+        "ip_address": "Updated camera description",
+        "rtsp_url": "rtsp://camera1.example.com/stream1",
+        "status": "active",
+        "created_at": "2025-07-11T03:08:51.481069"
+      },
+      {
+        "id": 3,
+        "name": "Lobby Camera",
+        "ip_address": "Building A - Lobby",
+        "rtsp_url": "rtsp://camera3.example.com/stream3",
+        "status": "active",
+        "created_at": "2025-07-11T03:08:51.481069"
+      }
+    ],
+    "workers": {
+      "workers": [
+        {
+          "worker_id": "worker_1",
+          "status": "idle",
+          "current_task": null,
+          "start_time": null,
+          "processed_frames": 0,
+          "error_count": 0
+        },
+        {
+          "worker_id": "worker_2",
+          "status": "idle",
+          "current_task": null,
+          "start_time": null,
+          "processed_frames": 0,
+          "error_count": 0
+        },
+        {
+          "worker_id": "worker_3",
+          "status": "idle",
+          "current_task": null,
+          "start_time": null,
+          "processed_frames": 0,
+          "error_count": 0
+        },
+        {
+          "worker_id": "worker_4",
+          "status": "idle",
+          "current_task": null,
+          "start_time": null,
+          "processed_frames": 0,
+          "error_count": 0
+        }
+      ],
+      "total_workers": 4,
+      "idle_workers": 4,
+      "busy_workers": 0
+    }
+  }
+}

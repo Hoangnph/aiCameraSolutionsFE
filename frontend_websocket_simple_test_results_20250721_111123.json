@@ -1,0 +1,9 @@
+{
+  "test_suite": "Simplified Frontend WebSocket Test",
+  "timestamp": "2025-07-21T11:11:23.290975",
+  "total_tests": 6,
+  "failures": 1,
+  "errors": 0,
+  "success_rate": 83.33333333333334,
+  "test_results": []
+}

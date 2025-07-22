@@ -1,230 +1,160 @@
 {
-  "test_suite": "Security Test Suite",
-  "version": "1.0",
-  "timestamp": "2025-07-14T08:14:50",
   "summary": {
     "total_tests": 25,
-    "passed": 25,
-    "failed": 0,
-    "success_rate": 100.0,
-    "status": "COMPLETED_SUCCESSFULLY"
+    "passed_tests": 24,
+    "failed_tests": 1,
+    "success_rate": 96.0
   },
-  "categories": {
-    "jwt_token_security": {
-      "total": 5,
-      "passed": 5,
-      "failed": 0,
-      "success_rate": 100.0,
-      "tests": [
-        {
-          "id": "SEC-JWT-001",
-          "name": "Expired token rejected",
-          "status": "PASSED",
-          "description": "System correctly rejects expired JWT tokens"
-        },
-        {
-          "id": "SEC-JWT-002",
-          "name": "Invalid token signature rejected",
-          "status": "PASSED",
-          "description": "System correctly rejects tokens with invalid signatures"
-        },
-        {
-          "id": "SEC-JWT-003",
-          "name": "Malformed token rejected",
-          "status": "PASSED",
-          "description": "System correctly rejects malformed JWT tokens"
-        },
-        {
-          "id": "SEC-JWT-004",
-          "name": "Token without Bearer prefix rejected",
-          "status": "PASSED",
-          "description": "System correctly rejects tokens without Bearer prefix"
-        },
-        {
-          "id": "SEC-JWT-005",
-          "name": "Empty token rejected",
-          "status": "PASSED",
-          "description": "System correctly rejects empty tokens"
-        }
-      ]
+  "results": [
+    {
+      "test_name": "SEC-JWT-001",
+      "status": "PASSED",
+      "details": "Expired token rejected",
+      "timestamp": "2025-07-16 17:31:27"
     },
-    "password_security": {
-      "total": 5,
-      "passed": 5,
-      "failed": 0,
-      "success_rate": 100.0,
-      "tests": [
-        {
-          "id": "SEC-PWD-001",
-          "name": "Weak password rejected",
-          "status": "PASSED",
-          "description": "System correctly rejects weak passwords"
-        },
-        {
-          "id": "SEC-PWD-002",
-          "name": "Password mismatch rejected",
-          "status": "PASSED",
-          "description": "System correctly rejects password mismatches"
-        },
-        {
-          "id": "SEC-PWD-003",
-          "name": "SQL injection in password rejected",
-          "status": "PASSED",
-          "description": "System correctly rejects SQL injection attempts in passwords"
-        },
-        {
-          "id": "SEC-PWD-004",
-          "name": "XSS in password rejected",
-          "status": "PASSED",
-          "description": "System correctly rejects XSS attempts in passwords"
-        },
-        {
-          "id": "SEC-PWD-005",
-          "name": "Excessive password length rejected",
-          "status": "PASSED",
-          "description": "System correctly rejects excessively long passwords"
-        }
-      ]
+    {
+      "test_name": "SEC-JWT-002",
+      "status": "PASSED",
+      "details": "Invalid token signature rejected",
+      "timestamp": "2025-07-16 17:31:28"
     },
-    "sql_injection_prevention": {
-      "total": 5,
-      "passed": 5,
-      "failed": 0,
-      "success_rate": 100.0,
-      "tests": [
-        {
-          "id": "SEC-SQL-001",
-          "name": "SQL injection in camera name rejected",
-          "status": "PASSED",
-          "description": "System correctly rejects SQL injection in camera names"
-        },
-        {
-          "id": "SEC-SQL-002",
-          "name": "SQL injection in description rejected",
-          "status": "PASSED",
-          "description": "System correctly rejects SQL injection in descriptions"
-        },
-        {
-          "id": "SEC-SQL-003",
-          "name": "SQL injection in IP address rejected",
-          "status": "PASSED",
-          "description": "System correctly rejects SQL injection in IP addresses"
-        },
-        {
-          "id": "SEC-SQL-004",
-          "name": "SQL injection in RTSP URL rejected",
-          "status": "PASSED",
-          "description": "System correctly rejects SQL injection in RTSP URLs"
-        },
-        {
-          "id": "SEC-SQL-005",
-          "name": "SQL injection in query parameters rejected",
-          "status": "PASSED",
-          "description": "System correctly rejects SQL injection in query parameters"
-        }
-      ]
+    {
+      "test_name": "SEC-JWT-003",
+      "status": "PASSED",
+      "details": "Malformed token rejected",
+      "timestamp": "2025-07-16 17:31:29"
     },
-    "xss_prevention": {
-      "total": 5,
-      "passed": 5,
-      "failed": 0,
-      "success_rate": 100.0,
-      "tests": [
-        {
-          "id": "SEC-XSS-001",
-          "name": "XSS in camera name rejected",
-          "status": "PASSED",
-          "description": "System correctly rejects XSS in camera names"
-        },
-        {
-          "id": "SEC-XSS-002",
-          "name": "XSS in description rejected",
-          "status": "PASSED",
-          "description": "System correctly rejects XSS in descriptions"
-        },
-        {
-          "id": "SEC-XSS-003",
-          "name": "XSS in RTSP URL rejected",
-          "status": "PASSED",
-          "description": "System correctly rejects XSS in RTSP URLs"
-        },
-        {
-          "id": "SEC-XSS-004",
-          "name": "XSS in headers handled safely",
-          "status": "PASSED",
-          "description": "System correctly handles XSS in headers"
-        },
-        {
-          "id": "SEC-XSS-005",
-          "name": "XSS in JSON body rejected",
-          "status": "PASSED",
-          "description": "System correctly rejects XSS in JSON body"
-        }
-      ]
+    {
+      "test_name": "SEC-JWT-004",
+      "status": "PASSED",
+      "details": "Token without Bearer prefix rejected",
+      "timestamp": "2025-07-16 17:31:31"
     },
-    "rate_limiting_security": {
-      "total": 5,
-      "passed": 5,
-      "failed": 0,
-      "success_rate": 100.0,
-      "tests": [
-        {
-          "id": "SEC-RATE-001",
-          "name": "Rate limiting enforced on auth endpoints",
-          "status": "PASSED",
-          "description": "Rate limiting correctly enforced on authentication endpoints"
-        },
-        {
-          "id": "SEC-RATE-002",
-          "name": "Rate limiting enforced on camera endpoints",
-          "status": "PASSED",
-          "description": "Rate limiting correctly enforced on camera endpoints"
-        },
-        {
-          "id": "SEC-RATE-003",
-          "name": "Rate limiting works per user",
-          "status": "PASSED",
-          "description": "Rate limiting correctly works per user"
-        },
-        {
-          "id": "SEC-RATE-004",
-          "name": "Rate limiting headers present",
-          "status": "PASSED",
-          "description": "Rate limiting headers correctly present in responses"
-        },
-        {
-          "id": "SEC-RATE-005",
-          "name": "Rate limiting recovery works",
-          "status": "PASSED",
-          "description": "Rate limiting recovery mechanism works correctly"
-        }
-      ]
+    {
+      "test_name": "SEC-JWT-005",
+      "status": "PASSED",
+      "details": "Empty token rejected",
+      "timestamp": "2025-07-16 17:31:32"
+    },
+    {
+      "test_name": "SEC-PWD-001",
+      "status": "PASSED",
+      "details": "Weak password rejected",
+      "timestamp": "2025-07-16 17:31:36"
+    },
+    {
+      "test_name": "SEC-PWD-002",
+      "status": "PASSED",
+      "details": "Password mismatch rejected",
+      "timestamp": "2025-07-16 17:31:37"
+    },
+    {
+      "test_name": "SEC-PWD-003",
+      "status": "PASSED",
+      "details": "SQL injection in password rejected",
+      "timestamp": "2025-07-16 17:31:38"
+    },
+    {
+      "test_name": "SEC-PWD-004",
+      "status": "PASSED",
+      "details": "XSS in password rejected",
+      "timestamp": "2025-07-16 17:31:40"
+    },
+    {
+      "test_name": "SEC-PWD-005",
+      "status": "PASSED",
+      "details": "Excessive password length rejected",
+      "timestamp": "2025-07-16 17:31:41"
+    },
+    {
+      "test_name": "SEC-SQL-001",
+      "status": "PASSED",
+      "details": "SQL injection in camera name rejected",
+      "timestamp": "2025-07-16 17:31:45"
+    },
+    {
+      "test_name": "SEC-SQL-002",
+      "status": "PASSED",
+      "details": "SQL injection in description rejected",
+      "timestamp": "2025-07-16 17:31:47"
+    },
+    {
+      "test_name": "SEC-SQL-003",
+      "status": "FAILED",
+      "details": "Expected 400, got 200",
+      "timestamp": "2025-07-16 17:31:49"
+    },
+    {
+      "test_name": "SEC-SQL-004",
+      "status": "PASSED",
+      "details": "SQL injection in RTSP URL rejected",
+      "timestamp": "2025-07-16 17:31:50"
+    },
+    {
+      "test_name": "SEC-SQL-005",
+      "status": "PASSED",
+      "details": "SQL injection in query parameters rejected (422 - validation error)",
+      "timestamp": "2025-07-16 17:31:52"
+    },
+    {
+      "test_name": "SEC-XSS-001",
+      "status": "PASSED",
+      "details": "XSS in camera name rejected",
+      "timestamp": "2025-07-16 17:32:03"
+    },
+    {
+      "test_name": "SEC-XSS-002",
+      "status": "PASSED",
+      "details": "XSS in description rejected",
+      "timestamp": "2025-07-16 17:32:05"
+    },
+    {
+      "test_name": "SEC-XSS-003",
+      "status": "PASSED",
+      "details": "XSS in RTSP URL rejected",
+      "timestamp": "2025-07-16 17:32:08"
+    },
+    {
+      "test_name": "SEC-XSS-004",
+      "status": "PASSED",
+      "details": "XSS in headers handled safely",
+      "timestamp": "2025-07-16 17:32:11"
+    },
+    {
+      "test_name": "SEC-XSS-005",
+      "status": "PASSED",
+      "details": "XSS in JSON body rejected",
+      "timestamp": "2025-07-16 17:32:14"
+    },
+    {
+      "test_name": "SEC-RATE-001",
+      "status": "PASSED",
+      "details": "Rate limit not reached (high limit configured)",
+      "timestamp": "2025-07-16 17:41:18"
+    },
+    {
+      "test_name": "SEC-RATE-002",
+      "status": "PASSED",
+      "details": "Rate limit not reached (high limit configured)",
+      "timestamp": "2025-07-16 17:44:58"
+    },
+    {
+      "test_name": "SEC-RATE-003",
+      "status": "PASSED",
+      "details": "Rate limiting works per user",
+      "timestamp": "2025-07-16 17:45:02"
+    },
+    {
+      "test_name": "SEC-RATE-004",
+      "status": "PASSED",
+      "details": "Rate limiting headers present",
+      "timestamp": "2025-07-16 17:45:04"
+    },
+    {
+      "test_name": "SEC-RATE-005",
+      "status": "PASSED",
+      "details": "Rate limiting recovery works (using refreshed token)",
+      "timestamp": "2025-07-16 17:45:06"
     }
-  },
-  "system_info": {
-    "beauth_service": "Healthy",
-    "becamera_service": "Healthy",
-    "database": "Connected",
-    "redis": "Connected",
-    "websocket": "Connected"
-  },
-  "performance_metrics": {
-    "average_response_time": "150ms",
-    "throughput": "1000+ requests/minute",
-    "concurrent_connections": "100+",
-    "error_rate": "0%"
-  },
-  "recommendations": [
-    "System is production ready",
-    "All security measures are properly implemented",
-    "Performance is optimized",
-    "Ready for frontend integration",
-    "Ready for production deployment"
-  ],
-  "next_steps": [
-    "Frontend integration",
-    "Production environment setup",
-    "Monitoring implementation",
-    "User acceptance testing"
   ]
 }

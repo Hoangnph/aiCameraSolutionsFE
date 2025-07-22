@@ -17,7 +17,7 @@
 */
 
 import { useState, useEffect } from "react";
-import { useHistory, useLocation } from "react-router-dom";
+import { useNavigate, useLocation } from "react-router-dom";
 
 // react-router-dom components
 import { Link } from "react-router-dom";
@@ -48,7 +48,10 @@ import borders from "assets/theme/base/borders";
 import CoverLayout from "layouts/authentication/components/CoverLayout";
 
 // Authentication context
-import { useAuth } from "context/AuthContext";
+import { useAuth } from "contexts/AuthContext";
+
+// Loading Spinner component
+import LoadingSpinner from "components/LoadingSpinner";
 
 // Images
 import bgSignIn from "assets/images/signInImage.png";
@@ -70,7 +73,7 @@ function SignIn() {
   const [showSnackbar, setShowSnackbar] = useState(false);
 
   const { login } = useAuth();
-  const history = useHistory();
+  const navigate = useNavigate();
   const location = useLocation();
 
   const handleSetRememberMe = () => setRememberMe(!rememberMe);
@@ -85,19 +88,34 @@ function SignIn() {
 
   const handleSubmit = async (e) => {
     e.preventDefault();
+    
+    // Prevent multiple submissions
+    if (loading || isSubmitting) {
+      return;
+    }
+    
     setLoading(true);
     setError(null);
     
     if (!formData.username || !formData.password) {
       setLoading(false);
+      setError('Vui lòng nhập đầy đủ thông tin đăng nhập');
       return;
     }
 
     try {
-      await login(formData);
-      setLoading(false);
-      // Chuyển hướng thẳng đến dashboard
-      history.push('/dashboard');
+      const result = await login(formData);
+      
+      if (result && result.success) {
+        setLoading(false);
+        // Chuyển hướng thẳng đến dashboard
+        navigate('/dashboard');
+      } else {
+        setLoading(false);
+        setError(result?.error?.message || 'Đăng nhập thất bại');
+        setOpenErrorModal(true);
+        setShowSnackbar(true);
+      }
     } catch (err) {
       setLoading(false);
       setError(err.message || 'Đăng nhập thất bại');
@@ -110,6 +128,26 @@ function SignIn() {
     setShowPassword(!showPassword);
   };
 
+  const { isAuthenticated, isLoading } = useAuth();
+
+  // Redirect authenticated users to dashboard
+  useEffect(() => {
+    if (!isLoading && isAuthenticated) {
+      console.log("🚨 SignIn: User already authenticated, redirecting to dashboard");
+      navigate("/dashboard", { replace: true });
+    }
+  }, [isAuthenticated, isLoading, navigate]);
+
+  // Show loading while checking authentication
+  if (isLoading) {
+    return <LoadingSpinner />;
+  }
+
+  // Don't render sign-in form if user is already authenticated
+  if (isAuthenticated) {
+    return <LoadingSpinner />;
+  }
+
   return (
     <CoverLayout
       title="Chào mừng bạn."
@@ -121,7 +159,7 @@ function SignIn() {
       hideNavbar={true}
       hideFooter={true}
     >
-      <VuiBox component="form" role="form" onSubmit={handleSubmit}>
+      <VuiBox component="form" role="form" onSubmit={handleSubmit} noValidate>
         <VuiBox mb={2}>
           <VuiBox mb={1} ml={0.5}>
             <VuiTypography component="label" variant="button" color="white" fontWeight="medium">
@@ -146,6 +184,7 @@ function SignIn() {
               placeholder="Nhập email của bạn vào đây"
               fontWeight="500"
               required
+              disabled={loading}
               sx={({ typography: { size } }) => ({
                 fontSize: size.sm,
                 color: 'white',
@@ -181,6 +220,7 @@ function SignIn() {
                 color: 'white',
               })}
               required
+              disabled={loading}
               icon={{
                 component: (
                   <span onClick={togglePasswordVisibility} style={{ cursor: 'pointer', color: 'white', display: 'flex', alignItems: 'center' }}>
@@ -230,7 +270,15 @@ function SignIn() {
             color="info" 
             fullWidth 
             type="submit"
-            disabled={isSubmitting || !formData.username || !formData.password}
+            disabled={loading || isSubmitting || !formData.username.trim() || !formData.password.trim()}
+            onClick={(e) => {
+              // Additional validation before submit
+              if (!formData.username.trim() || !formData.password.trim()) {
+                e.preventDefault();
+                setError('Vui lòng nhập đầy đủ thông tin đăng nhập');
+                return;
+              }
+            }}
           >
             {loading ? "ĐANG ĐĂNG NHẬP..." : "ĐĂNG NHẬP"}
           </VuiButton>

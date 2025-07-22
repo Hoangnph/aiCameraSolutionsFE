@@ -17,7 +17,7 @@
 */
 
 import { useState } from "react";
-import { useHistory } from "react-router-dom";
+import { useNavigate } from "react-router-dom";
 
 // @mui material components
 import Grid from "@mui/material/Grid";
@@ -74,7 +74,7 @@ const getStatusConfig = (status) => {
 };
 
 function CameraTable({ cameras, loading, onStatusChange, onEdit, onDelete }) {
-  const history = useHistory();
+  const navigate = useNavigate();
 
   const tableStyles = {
     container: {
@@ -754,7 +754,7 @@ function CameraTable({ cameras, loading, onStatusChange, onEdit, onDelete }) {
                     }}
                   >
                     <Button
-                      onClick={() => history.push(`/cameras/${camera.id}`)}
+                      onClick={() => navigate(`/cameras/${camera.id}`)}
                       sx={{ 
                         background: 'linear-gradient(135deg, rgba(33, 150, 243, 0.2) 0%, rgba(33, 150, 243, 0.1) 100%)',
                         color: '#2196F3',

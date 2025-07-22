@@ -1,0 +1,255 @@
+{
+  "test_suite": "Real-time Data Test Suite",
+  "total_tests": 6,
+  "passed": 6,
+  "failed": 0,
+  "success_rate": 100.0,
+  "total_time": 10.125334978103638,
+  "timestamp": "2025-07-21T03:03:23.789089",
+  "results": [
+    {
+      "test_name": "Camera Count Updates Test",
+      "status": "PASS",
+      "message": "Successfully sent 5 updates, received 0 responses",
+      "updates_sent": 5,
+      "responses_received": 0,
+      "response_time": 1753066996.374218,
+      "updates": [
+        {
+          "type": "camera_update",
+          "camera_id": "test_camera_000",
+          "data": {
+            "people_in": 1,
+            "people_out": 0,
+            "current_count": 2,
+            "status": "active",
+            "confidence": 0.85
+          },
+          "timestamp": "2025-07-21T03:03:13.757653"
+        },
+        {
+          "type": "camera_update",
+          "camera_id": "test_camera_001",
+          "data": {
+            "people_in": 2,
+            "people_out": 1,
+            "current_count": 4,
+            "status": "active",
+            "confidence": 0.87
+          },
+          "timestamp": "2025-07-21T03:03:13.859176"
+        },
+        {
+          "type": "camera_update",
+          "camera_id": "test_camera_002",
+          "data": {
+            "people_in": 3,
+            "people_out": 2,
+            "current_count": 6,
+            "status": "active",
+            "confidence": 0.89
+          },
+          "timestamp": "2025-07-21T03:03:14.068841"
+        },
+        {
+          "type": "camera_update",
+          "camera_id": "test_camera_003",
+          "data": {
+            "people_in": 4,
+            "people_out": 3,
+            "current_count": 8,
+            "status": "active",
+            "confidence": 0.9099999999999999
+          },
+          "timestamp": "2025-07-21T03:03:14.170001"
+        },
+        {
+          "type": "camera_update",
+          "camera_id": "test_camera_004",
+          "data": {
+            "people_in": 5,
+            "people_out": 4,
+            "current_count": 10,
+            "status": "active",
+            "confidence": 0.9299999999999999
+          },
+          "timestamp": "2025-07-21T03:03:14.271763"
+        }
+      ],
+      "responses": []
+    },
+    {
+      "test_name": "Analytics Streaming Test",
+      "status": "PASS",
+      "message": "Successfully sent 3 analytics updates",
+      "updates_sent": 3,
+      "responses_received": 0,
+      "response_time": 1753066996.4715772,
+      "analytics_updates": [
+        {
+          "type": "analytics_update",
+          "data": {
+            "total_cameras": 5,
+            "active_cameras": 3,
+            "total_people_count": 25,
+            "processing_fps": 30.5,
+            "average_confidence": 0.85,
+            "system_uptime": 3600
+          },
+          "timestamp": "2025-07-21T03:03:13.756557"
+        },
+        {
+          "type": "analytics_update",
+          "data": {
+            "total_cameras": 6,
+            "active_cameras": 4,
+            "total_people_count": 30,
+            "processing_fps": 31.0,
+            "average_confidence": 0.87,
+            "system_uptime": 3900
+          },
+          "timestamp": "2025-07-21T03:03:14.067187"
+        },
+        {
+          "type": "analytics_update",
+          "data": {
+            "total_cameras": 7,
+            "active_cameras": 3,
+            "total_people_count": 35,
+            "processing_fps": 31.5,
+            "average_confidence": 0.89,
+            "system_uptime": 4200
+          },
+          "timestamp": "2025-07-21T03:03:14.269534"
+        }
+      ],
+      "responses": []
+    },
+    {
+      "test_name": "System Status Streaming Test",
+      "status": "PASS",
+      "message": "Successfully sent 4 status updates",
+      "updates_sent": 4,
+      "responses_received": 0,
+      "response_time": 1753066996.376928,
+      "status_updates": [
+        {
+          "type": "system_status",
+          "data": {
+            "cpu_usage": 45.2,
+            "memory_usage": 67.8,
+            "disk_usage": 23.1,
+            "network_status": "healthy",
+            "ai_processing_status": "active",
+            "worker_pool_status": "running",
+            "active_connections": 10
+          },
+          "timestamp": "2025-07-21T03:03:13.761181"
+        },
+        {
+          "type": "system_status",
+          "data": {
+            "cpu_usage": 47.7,
+            "memory_usage": 69.0,
+            "disk_usage": 23.6,
+            "network_status": "healthy",
+            "ai_processing_status": "active",
+            "worker_pool_status": "running",
+            "active_connections": 11
+          },
+          "timestamp": "2025-07-21T03:03:13.911739"
+        },
+        {
+          "type": "system_status",
+          "data": {
+            "cpu_usage": 50.2,
+            "memory_usage": 70.2,
+            "disk_usage": 24.1,
+            "network_status": "healthy",
+            "ai_processing_status": "active",
+            "worker_pool_status": "running",
+            "active_connections": 12
+          },
+          "timestamp": "2025-07-21T03:03:14.074087"
+        },
+        {
+          "type": "system_status",
+          "data": {
+            "cpu_usage": 52.7,
+            "memory_usage": 71.39999999999999,
+            "disk_usage": 24.6,
+            "network_status": "healthy",
+            "ai_processing_status": "active",
+            "worker_pool_status": "running",
+            "active_connections": 13
+          },
+          "timestamp": "2025-07-21T03:03:14.225716"
+        }
+      ],
+      "responses": []
+    },
+    {
+      "test_name": "Alert Streaming Test",
+      "status": "PASS",
+      "message": "Successfully sent 4 alerts",
+      "alerts_sent": 4,
+      "responses_received": 0,
+      "response_time": 1753066996.2745652,
+      "alerts": [
+        {
+          "type": "alert",
+          "alert_type": "test_info_alert",
+          "message": "Test info alert message #1",
+          "severity": "info",
+          "camera_id": "camera_000",
+          "timestamp": "2025-07-21T03:03:13.762160"
+        },
+        {
+          "type": "alert",
+          "alert_type": "test_warning_alert",
+          "message": "Test warning alert message #2",
+          "severity": "warning",
+          "camera_id": "camera_001",
+          "timestamp": "2025-07-21T03:03:13.862590"
+        },
+        {
+          "type": "alert",
+          "alert_type": "test_error_alert",
+          "message": "Test error alert message #3",
+          "severity": "error",
+          "camera_id": "camera_002",
+          "timestamp": "2025-07-21T03:03:14.069655"
+        },
+        {
+          "type": "alert",
+          "alert_type": "test_success_alert",
+          "message": "Test success alert message #4",
+          "severity": "success",
+          "camera_id": null,
+          "timestamp": "2025-07-21T03:03:14.171112"
+        }
+      ],
+      "responses": []
+    },
+    {
+      "test_name": "Concurrent Streaming Test",
+      "status": "PASS",
+      "message": "Concurrent streaming test completed",
+      "connections_established": 3,
+      "messages_sent": 3,
+      "responses_received": 0,
+      "response_time": 1753066996.790849
+    },
+    {
+      "test_name": "Streaming Performance Test",
+      "status": "PASS",
+      "message": "Performance test completed",
+      "messages_sent": 20,
+      "responses_received": 0,
+      "total_time": 10.024905920028687,
+      "throughput": 1.9950311912695506,
+      "response_time": 1753067003.7868211,
+      "performance_acceptable": false
+    }
+  ]
+}

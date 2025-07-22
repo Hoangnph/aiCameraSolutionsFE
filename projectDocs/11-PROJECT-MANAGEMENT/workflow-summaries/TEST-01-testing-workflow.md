@@ -496,7 +496,7 @@ const request = require('supertest');
 const app = require('../app');
 
 describe('Camera API', () => {
-  test('GET /cameras returns 200 and cameras list', async () => {
+  test('GET /api/v1/cameras returns 200 and cameras list', async () => {
     const response = await request(app)
       .get('/api/cameras')
       .set('Authorization', `Bearer ${validToken}`);
@@ -506,7 +506,7 @@ describe('Camera API', () => {
     expect(Array.isArray(response.body.data.cameras)).toBe(true);
   });
   
-  test('POST /cameras creates new camera', async () => {
+  test('POST /api/v1/cameras creates new camera', async () => {
     const newCamera = {
       name: 'Test Camera',
       stream_url: 'rtsp://test.com/stream',

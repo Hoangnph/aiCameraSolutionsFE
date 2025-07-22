@@ -1,0 +1,74 @@
+{
+  "test_suite": "Frontend WebSocket Simple Test Suite",
+  "total_tests": 5,
+  "passed": 5,
+  "failed": 0,
+  "success_rate": 100.0,
+  "total_time": 0.0006148815155029297,
+  "timestamp": "2025-07-21T03:03:01.645550",
+  "results": [
+    {
+      "test_name": "WebSocket Structure Test",
+      "status": "PASS",
+      "message": "WebSocket structure test passed",
+      "response_time": 1753066981.6447191,
+      "methods_tested": [
+        "connect",
+        "disconnect",
+        "on",
+        "off",
+        "emit",
+        "sendPing",
+        "sendCameraUpdate",
+        "sendAnalyticsUpdate",
+        "sendSystemStatus",
+        "sendAlert",
+        "getConnectionStatus"
+      ]
+    },
+    {
+      "test_name": "WebSocket Methods Test",
+      "status": "PASS",
+      "message": "WebSocket methods test passed",
+      "response_time": 1753066981.6448221,
+      "messages_sent": 5
+    },
+    {
+      "test_name": "WebSocket Events Test",
+      "status": "PASS",
+      "message": "WebSocket events test passed",
+      "response_time": 1753066981.6449149
+    },
+    {
+      "test_name": "WebSocket Hook Test",
+      "status": "PASS",
+      "message": "WebSocket hook test passed",
+      "response_time": 1753066981.644982,
+      "hook_methods": [
+        "connect",
+        "disconnect",
+        "on",
+        "off",
+        "emit",
+        "isConnected",
+        "getConnectionStatus",
+        "sendPing",
+        "sendCameraUpdate",
+        "sendAnalyticsUpdate",
+        "sendSystemStatus",
+        "sendAlert",
+        "subscribeToRealTimeAnalytics",
+        "subscribeToRealTimeSystemStatus",
+        "subscribeToRealTimeAlerts"
+      ]
+    },
+    {
+      "test_name": "WebSocket Performance Test",
+      "status": "PASS",
+      "message": "WebSocket performance test passed",
+      "response_time": 1753066981.645189,
+      "performance_time": 0.00010895729064941406,
+      "events_processed": 100
+    }
+  ]
+}

@@ -1,0 +1,60 @@
+{
+  "test_suite": "Frontend WebSocket Test Suite",
+  "total_tests": 7,
+  "passed": 0,
+  "failed": 7,
+  "success_rate": 0.0,
+  "total_time": 0.0016582012176513672,
+  "timestamp": "2025-07-21T02:57:17.747739",
+  "results": [
+    {
+      "test_name": "WebSocket Service Initialization Test",
+      "status": "FAIL",
+      "message": "WebSocket service initialization test failed: hook connect method missing",
+      "response_time": 1753066637.7461061,
+      "error": "hook connect method missing"
+    },
+    {
+      "test_name": "WebSocket Connection Test",
+      "status": "FAIL",
+      "message": "WebSocket connection test failed: No module named 'services'",
+      "response_time": 1753066637.746316,
+      "error": "No module named 'services'"
+    },
+    {
+      "test_name": "WebSocket Message Handling Test",
+      "status": "FAIL",
+      "message": "WebSocket message handling test failed: No module named 'services'",
+      "response_time": 1753066637.746581,
+      "error": "No module named 'services'"
+    },
+    {
+      "test_name": "WebSocket Event Listeners Test",
+      "status": "FAIL",
+      "message": "WebSocket event listeners test failed: No module named 'services'",
+      "response_time": 1753066637.746797,
+      "error": "No module named 'services'"
+    },
+    {
+      "test_name": "WebSocket Real-time Methods Test",
+      "status": "FAIL",
+      "message": "WebSocket real-time methods test failed: No module named 'services'",
+      "response_time": 1753066637.747009,
+      "error": "No module named 'services'"
+    },
+    {
+      "test_name": "WebSocket Hook Integration Test",
+      "status": "FAIL",
+      "message": "WebSocket hook integration test failed: No module named 'services'",
+      "response_time": 1753066637.747207,
+      "error": "No module named 'services'"
+    },
+    {
+      "test_name": "WebSocket Error Handling Test",
+      "status": "FAIL",
+      "message": "WebSocket error handling test failed: No module named 'services'",
+      "response_time": 1753066637.747391,
+      "error": "No module named 'services'"
+    }
+  ]
+}

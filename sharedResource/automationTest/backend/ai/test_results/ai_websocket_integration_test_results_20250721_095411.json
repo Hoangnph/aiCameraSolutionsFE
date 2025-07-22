@@ -1,0 +1,74 @@
+{
+  "test_suite": "AI WebSocket Integration Test Suite",
+  "total_tests": 6,
+  "passed": 6,
+  "failed": 0,
+  "success_rate": 100.0,
+  "total_time": 0.0016930103302001953,
+  "timestamp": "2025-07-21T02:54:11.501755",
+  "results": [
+    {
+      "test_name": "AI Model Initialization Test",
+      "status": "PASS",
+      "message": "AI model service initialized successfully",
+      "response_time": 1753066451.4996228,
+      "model_status": {
+        "model_loaded": false
+      }
+    },
+    {
+      "test_name": "Frame Processing Test",
+      "status": "PASS",
+      "message": "Frame processing structure working (model not loaded as expected)",
+      "response_time": 1753066451.500515,
+      "note": "Model not loaded - this is expected in test environment"
+    },
+    {
+      "test_name": "WebSocket Notification Structure Test",
+      "status": "PASS",
+      "message": "WebSocket notification structure working",
+      "response_time": 1753066451.500643,
+      "notification_data": {
+        "camera_id": "test_camera_001",
+        "people_in": 5,
+        "people_out": 3,
+        "current_count": 12,
+        "confidence": 0.85,
+        "status": "active",
+        "processing_time": 0.1,
+        "frame_count": 100
+      }
+    },
+    {
+      "test_name": "WebSocket Notification Send Test",
+      "status": "PASS",
+      "message": "WebSocket notification sent successfully",
+      "response_time": 1753066451.50069,
+      "camera_id": "test_camera_002"
+    },
+    {
+      "test_name": "Integrated Processing Test",
+      "status": "PASS",
+      "message": "Integrated processing working",
+      "response_time": 1753066451.500802,
+      "result": {
+        "people_in": 0,
+        "people_out": 0,
+        "current_count": 0,
+        "confidence": 0.0,
+        "processing_time": 0.0
+      }
+    },
+    {
+      "test_name": "Performance Metrics Test",
+      "status": "PASS",
+      "message": "Performance metrics calculated",
+      "response_time": 1753066451.500988,
+      "performance": {
+        "average_processing_time": 9.5367431640625e-07,
+        "max_processing_time": 2.6226043701171875e-06,
+        "total_frames": 5
+      }
+    }
+  ]
+}

@@ -76,7 +76,7 @@ Tài liệu này cung cấp hướng dẫn chi tiết về triển khai bảo m�
 CREATE EXTENSION IF NOT EXISTS pgcrypto;
 
 -- Encrypt camera stream credentials
-ALTER TABLE camera_configurations 
+ALTER TABLE cameras 
 ADD COLUMN stream_password_encrypted BYTEA;
 
 -- Function to encrypt camera credentials
@@ -132,7 +132,7 @@ END;
 $$ LANGUAGE plpgsql SECURITY DEFINER;
 
 -- Update existing camera configurations with encrypted passwords
-UPDATE camera_configurations 
+UPDATE cameras 
 SET stream_password_encrypted = encode(
     pgp_sym_encrypt(stream_password, current_setting('app.camera_encryption_key')), 
     'base64'
@@ -221,7 +221,7 @@ $$ LANGUAGE plpgsql SECURITY DEFINER;
 -- Privacy Compliance Table
 CREATE TABLE privacy_compliance (
     id SERIAL PRIMARY KEY,
-    camera_id VARCHAR(100) REFERENCES camera_configurations(camera_id),
+    camera_id VARCHAR(100) REFERENCES cameras(camera_id),
     
     -- GDPR Compliance
     data_retention_days INTEGER DEFAULT 30,
@@ -366,7 +366,7 @@ GRANT ALL PRIVILEGES ON ALL SEQUENCES IN SCHEMA public TO ai_camera_admin;
 ALTER TABLE counting_results ENABLE ROW LEVEL SECURITY;
 ALTER TABLE camera_events ENABLE ROW LEVEL SECURITY;
 ALTER TABLE analytics ENABLE ROW LEVEL SECURITY;
-ALTER TABLE camera_configurations ENABLE ROW LEVEL SECURITY;
+ALTER TABLE cameras ENABLE ROW LEVEL SECURITY;
 ALTER TABLE video_streams ENABLE ROW LEVEL SECURITY;
 
 -- Create RLS Policies
@@ -397,7 +397,7 @@ CREATE POLICY camera_events_policy ON camera_events
     );
 
 -- Camera Configuration RLS
-CREATE POLICY camera_config_policy ON camera_configurations
+CREATE POLICY camera_config_policy ON cameras
     FOR ALL
     TO ai_camera_app
     USING (
@@ -410,7 +410,7 @@ CREATE POLICY video_stream_policy ON video_streams
     TO ai_camera_app
     USING (
         camera_id IN (
-            SELECT camera_id FROM camera_configurations 
+            SELECT camera_id FROM cameras 
             WHERE tenant_id = current_setting('app.current_tenant_id')::integer
         )
     );
@@ -462,7 +462,7 @@ WITH (encryption = 'on');
 ALTER TABLE users SET TABLESPACE encrypted_tablespace;
 ALTER TABLE audit_logs SET TABLESPACE encrypted_tablespace;
 ALTER TABLE user_sessions SET TABLESPACE encrypted_tablespace;
-ALTER TABLE camera_configurations SET TABLESPACE encrypted_tablespace;
+ALTER TABLE cameras SET TABLESPACE encrypted_tablespace;
 ALTER TABLE privacy_compliance SET TABLESPACE encrypted_tablespace;
 ```
 
@@ -585,8 +585,8 @@ END;
 $$ LANGUAGE plpgsql;
 
 -- Create audit triggers
-CREATE TRIGGER audit_camera_configurations
-    AFTER INSERT OR UPDATE OR DELETE ON camera_configurations
+CREATE TRIGGER audit_cameras
+    AFTER INSERT OR UPDATE OR DELETE ON cameras
     FOR EACH ROW EXECUTE FUNCTION audit_camera_changes();
 
 CREATE TRIGGER audit_video_streams
@@ -668,7 +668,7 @@ $$ LANGUAGE plpgsql;
 -- Camera Feed Access Control Table
 CREATE TABLE camera_feed_access (
     id SERIAL PRIMARY KEY,
-    camera_id VARCHAR(100) REFERENCES camera_configurations(camera_id),
+    camera_id VARCHAR(100) REFERENCES cameras(camera_id),
     user_id INTEGER REFERENCES users(id),
     
     -- Access Permissions
@@ -783,7 +783,7 @@ $$ LANGUAGE plpgsql SECURITY DEFINER;
 -- Camera Access Log
 CREATE TABLE camera_access_log (
     id SERIAL PRIMARY KEY,
-    camera_id VARCHAR(100) REFERENCES camera_configurations(camera_id),
+    camera_id VARCHAR(100) REFERENCES cameras(camera_id),
     user_id INTEGER REFERENCES users(id),
     
     -- Access Details

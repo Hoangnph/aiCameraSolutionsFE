@@ -60,7 +60,7 @@ import {
 } from "context";
 
 // Authentication context
-import { useAuth } from "context/AuthContext";
+import { useAuth } from "contexts/AuthContext";
 
 // Images
 import team2 from "assets/images/team-2.jpg";

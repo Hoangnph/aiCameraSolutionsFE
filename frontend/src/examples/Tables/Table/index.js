@@ -40,7 +40,7 @@ import colors from "assets/theme/base/colors";
 import typography from "assets/theme/base/typography";
 import borders from "assets/theme/base/borders";
 
-function Table({ columns, rows }) {
+function Table({ columns = [], rows = [{}] }) {
   const { grey } = colors;
   const { size, fontWeightBold } = typography;
   const { borderWidth } = borders;
@@ -153,10 +153,7 @@ function Table({ columns, rows }) {
 }
 
 // Setting default values for the props of Table
-Table.defaultProps = {
-  columns: [],
-  rows: [{}],
-};
+// Removed defaultProps - using default parameters instead
 
 // Typechecking props for the Table
 Table.propTypes = {

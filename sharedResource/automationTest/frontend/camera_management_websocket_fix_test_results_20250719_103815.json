@@ -1,0 +1,36 @@
+{
+  "test_name": "Camera Management WebSocket Fix Test",
+  "timestamp": "2025-07-19T10:36:50.683580",
+  "results": [
+    {
+      "test": "Page Load",
+      "status": "PASS",
+      "message": "Page loaded successfully: Vision UI Dashboard Free React",
+      "timestamp": "2025-07-19T10:36:55.141644"
+    },
+    {
+      "test": "WebSocket Connection",
+      "status": "FAIL",
+      "message": "WebSocket test error: Message: script timeout\n  (Session info: chrome=138.0.7204.158)\nStacktrace:\n0   chromedriver                        0x0000000103574308 chromedriver + 6148872\n1   chromedriver                        0x000000010356b8ba chromedriver + 6113466\n2   chromedriver                        0x0000000102ffcc53 chromedriver + 416851\n3   chromedriver                        0x000000010309d8d3 chromedriver + 1075411\n4   chromedriver                        0x0000000103074cc2 chromedriver + 908482\n5   chromedriver                        0x000000010309c18c chromedriver + 1069452\n6   chromedriver                        0x0000000103074a93 chromedriver + 907923\n7   chromedriver                        0x00000001030410f7 chromedriver + 696567\n8   chromedriver                        0x0000000103041d61 chromedriver + 699745\n9   chromedriver                        0x0000000103531250 chromedriver + 5874256\n10  chromedriver                        0x0000000103535289 chromedriver + 5890697\n11  chromedriver                        0x000000010350d022 chromedriver + 5726242\n12  chromedriver                        0x0000000103535bff chromedriver + 5893119\n13  chromedriver                        0x00000001034fbd14 chromedriver + 5655828\n14  chromedriver                        0x0000000103558de8 chromedriver + 6036968\n15  chromedriver                        0x0000000103558fb0 chromedriver + 6037424\n16  chromedriver                        0x000000010356b451 chromedriver + 6112337\n17  libsystem_pthread.dylib             0x00007ff811117df1 _pthread_start + 99\n18  libsystem_pthread.dylib             0x00007ff811113857 thread_start + 15\n",
+      "timestamp": "2025-07-19T10:37:25.151194"
+    },
+    {
+      "test": "Console Errors",
+      "status": "PASS",
+      "message": "No WebSocket errors found in console",
+      "timestamp": "2025-07-19T10:37:25.153118"
+    },
+    {
+      "test": "Camera Table Load",
+      "status": "WARN",
+      "message": "Camera table not found (may be expected)",
+      "timestamp": "2025-07-19T10:37:35.702061"
+    },
+    {
+      "test": "Reconnection Test",
+      "status": "FAIL",
+      "message": "Reconnection test error: Message: script timeout\n  (Session info: chrome=138.0.7204.158)\nStacktrace:\n0   chromedriver                        0x0000000103574308 chromedriver + 6148872\n1   chromedriver                        0x000000010356b8ba chromedriver + 6113466\n2   chromedriver                        0x0000000102ffcc53 chromedriver + 416851\n3   chromedriver                        0x000000010309d8d3 chromedriver + 1075411\n4   chromedriver                        0x0000000103074cc2 chromedriver + 908482\n5   chromedriver                        0x000000010309c18c chromedriver + 1069452\n6   chromedriver                        0x0000000103074a93 chromedriver + 907923\n7   chromedriver                        0x00000001030410f7 chromedriver + 696567\n8   chromedriver                        0x0000000103041d61 chromedriver + 699745\n9   chromedriver                        0x0000000103531250 chromedriver + 5874256\n10  chromedriver                        0x0000000103535289 chromedriver + 5890697\n11  chromedriver                        0x000000010350d022 chromedriver + 5726242\n12  chromedriver                        0x0000000103535bff chromedriver + 5893119\n13  chromedriver                        0x00000001034fbd14 chromedriver + 5655828\n14  chromedriver                        0x0000000103558de8 chromedriver + 6036968\n15  chromedriver                        0x0000000103558fb0 chromedriver + 6037424\n16  chromedriver                        0x000000010356b451 chromedriver + 6112337\n17  libsystem_pthread.dylib             0x00007ff811117df1 _pthread_start + 99\n18  libsystem_pthread.dylib             0x00007ff811113857 thread_start + 15\n",
+      "timestamp": "2025-07-19T10:38:15.745968"
+    }
+  ]
+}

@@ -91,8 +91,8 @@ CREATE TABLE query_performance_benchmarks (
 
 -- Camera Query Benchmarks
 INSERT INTO query_performance_benchmarks (benchmark_name, query_type, table_name) VALUES
-('Camera Config by ID', 'SELECT', 'camera_configurations'),
-('Active Cameras List', 'SELECT', 'camera_configurations'),
+('Camera Config by ID', 'SELECT', 'cameras'),
+('Active Cameras List', 'SELECT', 'cameras'),
 ('Stream by Camera ID', 'SELECT', 'video_streams'),
 ('Detection by Camera', 'SELECT', 'detection_data'),
 ('Model Performance', 'SELECT', 'ai_model_performance_monitoring'),

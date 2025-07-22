@@ -44,13 +44,13 @@ import Header from "layouts/profile/components/Header";
 import PlatformSettings from "layouts/profile/components/PlatformSettings";
 import Welcome from "../profile/components/Welcome/index";
 import CarInformations from "./components/CarInformations";
-import { useHistory } from "react-router-dom";
+import { useNavigate } from "react-router-dom";
 
 function Overview() {
-  const history = useHistory();
+  const navigate = useNavigate();
 
   const handleChangePassword = () => {
-    history.push("/authentication/change-password");
+    navigate("/authentication/change-password");
   };
 
   return (

@@ -738,7 +738,7 @@ const request = require('supertest');
 const app = require('../app');
 
 describe('Camera API', () => {
-  test('GET /cameras returns cameras list', async () => {
+  test('GET /api/v1/cameras returns cameras list', async () => {
     const response = await request(app)
       .get('/api/cameras')
       .set('Authorization', `Bearer ${token}`);

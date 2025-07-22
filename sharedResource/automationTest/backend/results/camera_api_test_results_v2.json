@@ -1,0 +1,110 @@
+{
+  "test_suite": "Camera Management API Tests (v2.0)",
+  "start_time": "2025-07-19T10:05:08.590607",
+  "end_time": "2025-07-19T10:05:40.436018",
+  "duration_seconds": 31.845411,
+  "total_tests": 14,
+  "passed_tests": 11,
+  "failed_tests": 3,
+  "success_rate": "78.6%",
+  "results": [
+    {
+      "test_name": "CAMERA-000",
+      "status": "PASS",
+      "message": "User registration for camera test successful",
+      "timestamp": "2025-07-19T10:05:08.993555",
+      "details": null
+    },
+    {
+      "test_name": "CAMERA-001",
+      "status": "PASS",
+      "message": "Health check successful",
+      "timestamp": "2025-07-19T10:05:09.007522",
+      "details": "Status: healthy"
+    },
+    {
+      "test_name": "CAMERA-002",
+      "status": "PASS",
+      "message": "Camera created successfully",
+      "timestamp": "2025-07-19T10:05:09.169987",
+      "details": "ID: 22"
+    },
+    {
+      "test_name": "CAMERA-003",
+      "status": "PASS",
+      "message": "Camera list fetched successfully",
+      "timestamp": "2025-07-19T10:05:09.295562",
+      "details": "Count: 10"
+    },
+    {
+      "test_name": "CAMERA-004",
+      "status": "PASS",
+      "message": "Camera retrieved successfully",
+      "timestamp": "2025-07-19T10:05:09.448907",
+      "details": null
+    },
+    {
+      "test_name": "CAMERA-005",
+      "status": "PASS",
+      "message": "Camera updated successfully",
+      "timestamp": "2025-07-19T10:05:09.549741",
+      "details": null
+    },
+    {
+      "test_name": "CAMERA-006",
+      "status": "PASS",
+      "message": "Camera status updated successfully",
+      "timestamp": "2025-07-19T10:05:09.696212",
+      "details": null
+    },
+    {
+      "test_name": "CAMERA-007",
+      "status": "PASS",
+      "message": "Count data retrieved successfully",
+      "timestamp": "2025-07-19T10:05:09.764762",
+      "details": null
+    },
+    {
+      "test_name": "CAMERA-008",
+      "status": "PASS",
+      "message": "Analytics summary retrieved successfully",
+      "timestamp": "2025-07-19T10:05:09.832923",
+      "details": null
+    },
+    {
+      "test_name": "CAMERA-009",
+      "status": "PASS",
+      "message": "Worker pool status retrieved successfully",
+      "timestamp": "2025-07-19T10:05:09.927366",
+      "details": null
+    },
+    {
+      "test_name": "CAMERA-010",
+      "status": "FAIL",
+      "message": "Exception: HTTPConnectionPool(host='localhost', port=3002): Read timed out. (read timeout=10)",
+      "timestamp": "2025-07-19T10:05:19.929474",
+      "details": null
+    },
+    {
+      "test_name": "CAMERA-011",
+      "status": "FAIL",
+      "message": "Exception: HTTPConnectionPool(host='localhost', port=3002): Read timed out. (read timeout=10)",
+      "timestamp": "2025-07-19T10:05:29.932412",
+      "details": null
+    },
+    {
+      "test_name": "CAMERA-012",
+      "status": "FAIL",
+      "message": "Exception: HTTPConnectionPool(host='localhost', port=3002): Read timed out. (read timeout=10)",
+      "timestamp": "2025-07-19T10:05:39.934941",
+      "details": null
+    },
+    {
+      "test_name": "CAMERA-CLEANUP",
+      "status": "PASS",
+      "message": "Test cleanup completed",
+      "timestamp": "2025-07-19T10:05:40.435948",
+      "details": null
+    }
+  ]
+}

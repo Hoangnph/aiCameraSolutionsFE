@@ -1,0 +1,31 @@
+[0;34m[2025-07-18 11:25:50][0m Starting database tests...
+[0;34m[2025-07-18 11:25:50][0m Log file: /Users/macintoshhd/Project/Project/AI_OCR/feMain/sharedResource/automationTest/backend/database/logs/database_tests_20250718_112550.log
+[0;34m[2025-07-18 11:25:50][0m Running database connection test...
+==========================================
+🧪 DATABASE CONNECTION TESTS
+AI Camera Counting System
+==========================================
+Start time: 2025-07-18 11:25:50
+
+🔍 Connecting to database: people_counting_db on localhost:5432
+✅ DB-CONN-001: Database connection successful
+   Details: PostgreSQL version: PostgreSQL 13.21 (Debian 13.21-1.pgdg120+1) on x86_64-pc-linux-gnu, compiled by gcc (Debian 12.2.0-14) 12.2.0, 64-bit
+✅ DB-TABLES-001: All required tables exist (20 tables)
+   Details: Tables: users, cameras, refresh_tokens, user_sessions, registration_codes, audit_log, ai_models, zones, counting_results, analytics, alerts, audit_logs, files, system_logs, migrations, migration_log, deployment_migrations, deployment_execution_logs, model_logs, camera_events
+✅ DB-PERM-001: Database permissions verified (4 permissions)
+   Details: Permissions: SELECT, INSERT, UPDATE, DELETE
+✅ DB-PERF-001: Database performance acceptable
+   Details: Simple query: 0.002s, Complex query: 0.004s
+
+==========================================
+📊 TEST SUMMARY
+==========================================
+Total tests: 4
+Passed: 4
+Failed: 0
+Success rate: 100.0%
+🎉 All database tests passed!
+
+📊 Results saved to: /Users/macintoshhd/Project/Project/AI_OCR/feMain/sharedResource/automationTest/backend/database/../results/database_connection_test_results.json
+[0;32m✅ Database connection test completed successfully[0m
+[0;31m❌ Results file not found[0m

@@ -1,3 +1,12 @@
+"""
+YouTube Video Extractor
+----------------------
+Trích xuất stream video từ YouTube cho AI processing.
+
+Usage Example:
+--------------
+python youtube_extractor.py --url <youtube_url> --test
+"""
 #!/usr/bin/env python3
 """
 YouTube Video Extractor for Labs Research
@@ -402,7 +411,7 @@ def main():
     print(f"Time: {result.extraction_time:.2f}s")
     
     if result.success and result.stream_info:
-        print(f"\n�� Stream Information:")
+        print(f"\n Stream Information:")
         print(f"Quality: {result.stream_info.quality}")
         print(f"Resolution: {result.stream_info.width}x{result.stream_info.height}")
         print(f"FPS: {result.stream_info.fps}")

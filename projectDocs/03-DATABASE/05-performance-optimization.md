@@ -62,11 +62,11 @@ Tài liệu này cung cấp hướng dẫn chi tiết về tối ưu hóa hiệu
 
 ```sql
 -- Camera Configuration Optimization
-CREATE INDEX idx_camera_configurations_active_tenant 
-ON camera_configurations(is_active, tenant_id) WHERE is_active = TRUE;
+CREATE INDEX idx_cameras_active_tenant 
+ON cameras(is_active, tenant_id) WHERE is_active = TRUE;
 
-CREATE INDEX idx_camera_configurations_location_type 
-ON camera_configurations(location_id, camera_type);
+CREATE INDEX idx_cameras_location_type 
+ON cameras(location_id, camera_type);
 
 -- Camera Health Monitoring Optimization
 CREATE INDEX idx_camera_health_status_timestamp 
@@ -368,20 +368,20 @@ FOR VALUES FROM ('2024-01-15 00:00:00') TO ('2024-01-16 00:00:00');
 -- Optimized Camera Status Query
 -- Before optimization
 SELECT c.*, ch.status, ch.last_heartbeat
-FROM camera_configurations c
+FROM cameras c
 LEFT JOIN camera_health ch ON c.camera_id = ch.camera_id
 WHERE c.tenant_id = $1 AND c.is_active = true;
 
 -- After optimization (using covering index)
 CREATE INDEX idx_camera_status_covering 
-ON camera_configurations(tenant_id, is_active, camera_id, camera_name, camera_type, location_id)
+ON cameras(tenant_id, is_active, camera_id, camera_name, camera_type, location_id)
 WHERE is_active = true;
 
 -- Optimized Real-time Counting Query
 -- Before optimization
 SELECT cr.*, c.camera_name, z.zone_name
 FROM counting_results cr
-JOIN camera_configurations c ON cr.camera_id = c.camera_id
+JOIN cameras c ON cr.camera_id = c.camera_id
 JOIN counting_zones z ON cr.zone_id = z.id
 WHERE cr.camera_id = $1 
   AND cr.result_timestamp > NOW() - INTERVAL '1 hour'
@@ -400,7 +400,7 @@ SELECT
     cr.current_total,
     cr.result_timestamp
 FROM counting_results cr
-JOIN camera_configurations c ON cr.camera_id = c.camera_id
+JOIN cameras c ON cr.camera_id = c.camera_id
 JOIN counting_zones z ON cr.zone_id = z.id
 WHERE cr.result_timestamp > NOW() - INTERVAL '1 hour';
 
@@ -583,7 +583,7 @@ SELECT
         ELSE 'normal'
     END as performance_status
 FROM camera_performance cp
-JOIN camera_configurations cc ON cp.camera_id = cc.camera_id
+JOIN cameras cc ON cp.camera_id = cc.camera_id
 WHERE cc.is_active = true
 ORDER BY cp.avg_query_time DESC;
 ```
@@ -596,7 +596,7 @@ ORDER BY cp.avg_query_time DESC;
 -- Benchmark Camera Status Query
 EXPLAIN (ANALYZE, BUFFERS) 
 SELECT c.*, ch.status, ch.last_heartbeat
-FROM camera_configurations c
+FROM cameras c
 LEFT JOIN camera_health ch ON c.camera_id = ch.camera_id
 WHERE c.tenant_id = 1 AND c.is_active = true;
 
@@ -609,7 +609,7 @@ WHERE c.tenant_id = 1 AND c.is_active = true;
 EXPLAIN (ANALYZE, BUFFERS)
 SELECT cr.*, c.camera_name
 FROM counting_results cr
-JOIN camera_configurations c ON cr.camera_id = c.camera_id
+JOIN cameras c ON cr.camera_id = c.camera_id
 WHERE cr.camera_id = 'cam_001'
   AND cr.result_timestamp > NOW() - INTERVAL '1 hour'
 ORDER BY cr.result_timestamp DESC

@@ -1,54 +1,8 @@
-/*!
-
-=========================================================
-* Vision UI Free React - v1.0.0
-=========================================================
-
-* Product Page: https://www.creative-tim.com/product/vision-ui-free-react
-* Copyright 2021 Creative Tim (https://www.creative-tim.com/)
-* Licensed under MIT (https://github.com/creativetimofficial/vision-ui-free-react/blob/master LICENSE.md)
-
-* Design and Coded by Simmmple & Creative Tim
-
-=========================================================
-
-* The above copyright notice and this permission notice shall be included in all copies or substantial portions of the software.
-
-*/
-
-import { useState, useEffect, useMemo } from "react";
-
-// react-router components
-import { Route, Switch, Redirect, useLocation } from "react-router-dom";
-
-// @mui material components
+import React from "react";
+import { BrowserRouter as Router, Routes, Route, Navigate, useLocation } from "react-router-dom";
 import { ThemeProvider } from "@mui/material/styles";
 import CssBaseline from "@mui/material/CssBaseline";
-import Icon from "@mui/material/Icon";
-
-// Vision UI Dashboard React components
-import VuiBox from "components/VuiBox";
-
-// Vision UI Dashboard React example components
-import Sidenav from "examples/Sidenav";
-
-// Vision UI Dashboard React themes
 import theme from "assets/theme";
-import themeRTL from "assets/theme/theme-rtl";
-
-// RTL plugins
-import rtlPlugin from "stylis-plugin-rtl";
-import { CacheProvider } from "@emotion/react";
-import createCache from "@emotion/cache";
-
-// Vision UI Dashboard React routes
-import routes from "routes";
-
-// Vision UI Dashboard React contexts
-import { useVisionUIController, setMiniSidenav, setOpenConfigurator } from "context";
-
-// Authentication context
-import { AuthProvider, useAuth } from "context/AuthContext";
 
 // Protected Route component
 import ProtectedRoute from "components/ProtectedRoute";
@@ -69,147 +23,158 @@ import ResetPassword from "layouts/authentication/reset-password";
 // Import ChangePassword component
 import ChangePassword from "layouts/authentication/change-password";
 
-function AppContent() {
-  const [controller, dispatch] = useVisionUIController();
-  const { miniSidenav, direction, layout, openConfigurator, sidenavColor } = controller;
-  const [onMouseEnter, setOnMouseEnter] = useState(false);
-  const [rtlCache, setRtlCache] = useState(null);
-  const { pathname } = useLocation();
+// Test component
+import TestAuth from "components/TestAuth";
+
+// Debug component
+import DebugRoute from "components/DebugRoute";
+
+// Debug Protected Route component
+import DebugProtectedRoute from "components/DebugProtectedRoute";
+
+// AI Camera Counting System layouts
+import Cameras from "layouts/cameras";
+import Analytics from "layouts/analytics";
+import CameraDetail from "layouts/camera-detail";
+
+// Vision UI Dashboard React layouts
+import Dashboard from "layouts/dashboard";
+import Tables from "layouts/tables";
+import Billing from "layouts/billing";
+import RTL from "layouts/rtl";
+import Profile from "layouts/profile";
+
+// Vision UI Dashboard React components
+import Sidenav from "examples/Sidenav";
+
+// Vision UI Dashboard React example components
+import PageLayout from "examples/LayoutContainers/PageLayout";
+
+// Routes
+import routes from "routes";
+
+// Auth context
+import { AuthProvider, useAuth } from "contexts/AuthContext";
+
+// Component to conditionally render layout
+function AppLayout({ children }) {
+  const location = useLocation();
   const { isAuthenticated, isLoading } = useAuth();
-
-  // Cache for the rtl
-  useMemo(() => {
-    const cacheRtl = createCache({
-      key: "rtl",
-      stylisPlugins: [rtlPlugin],
-    });
-
-    setRtlCache(cacheRtl);
-  }, []);
-
-  // Open sidenav when mouse enter on mini sidenav
-  const handleOnMouseEnter = () => {
-    if (miniSidenav && !onMouseEnter) {
-      setMiniSidenav(dispatch, false);
-      setOnMouseEnter(true);
-    }
-  };
-
-  // Close sidenav when mouse leave mini sidenav
-  const handleOnMouseLeave = () => {
-    if (onMouseEnter) {
-      setMiniSidenav(dispatch, true);
-      setOnMouseEnter(false);
-    }
-  };
-
-  // Setting the dir attribute for the body element
-  useEffect(() => {
-    document.body.setAttribute("dir", direction);
-  }, [direction]);
-
-  // Setting page scroll to 0 when changing the route
-  useEffect(() => {
-    document.documentElement.scrollTop = 0;
-    document.scrollingElement.scrollTop = 0;
-  }, [pathname]);
-
-  const getRoutes = (allRoutes) =>
-    allRoutes.map((route) => {
-      if (route.collapse) {
-        return getRoutes(route.collapse);
-      }
-
-      if (route.route) {
-        return (
-          <ProtectedRoute
-            exact={!route.route.includes(':')}
-            path={route.route}
-            component={route.component}
-            key={route.key}
-          />
-        );
-      }
-
-      return null;
-    });
-
-  // Show loading screen while checking authentication
-  if (isLoading) {
-    return <LoadingSpinner message="Verifying authentication..." />;
+  
+  // Check if current path is authentication page
+  const isAuthPage = location.pathname.includes('/authentication/') || 
+                     location.pathname === '/test-auth' ||
+                     location.pathname === '/debug-route' ||
+                     location.pathname === '/debug-protected';
+  
+  // Check if current path is public page (not authenticated)
+  const isPublicPage = location.pathname === '/' || isAuthPage;
+  
+  // If it's a public page, render without Sidenav
+  if (isPublicPage) {
+    return (
+      <PageLayout>
+        {children}
+      </PageLayout>
+    );
   }
+  
+  // If it's a protected page and user is authenticated, render with Sidenav
+  if (isAuthenticated) {
+    return (
+      <PageLayout>
+        <Sidenav
+          color="info"
+          brandName="Vision UI Dashboard"
+          routes={routes}
+        />
+        {children}
+      </PageLayout>
+    );
+  }
+  
+  // If user is not authenticated on protected page, let ProtectedRoute handle it
+  // This prevents infinite loading by not showing loading spinner here
+  return (
+    <PageLayout>
+      {children}
+    </PageLayout>
+  );
+}
 
-  return direction === "rtl" ? (
-    <CacheProvider value={rtlCache}>
-      <ThemeProvider theme={themeRTL}>
-        <CssBaseline />
-        {layout === "dashboard" && isAuthenticated && (
-          <>
-            <Sidenav
-              color={sidenavColor}
-              brand=""
-              brandName="VISION UI FREE"
-              routes={routes}
-              onMouseEnter={handleOnMouseEnter}
-              onMouseLeave={handleOnMouseLeave}
-            />
-          </>
-        )}
-        <Switch>
-          {/* Public routes */}
-          <Route exact path="/authentication/sign-in" component={SignIn} />
-          <Route exact path="/authentication/sign-up" component={SignUp} />
-          <Route exact path="/authentication/forgot-password" component={ForgotPassword} />
-          <Route exact path="/authentication/reset-password" component={ResetPassword} />
-          <Route exact path="/authentication/change-password" component={ChangePassword} />
-          
-          {/* Protected routes */}
-          {getRoutes(routes)}
-          
-          {/* Default redirects */}
-          <Redirect from="/" to="/authentication/sign-in" />
-          <Redirect from="*" to="/authentication/sign-in" />
-        </Switch>
-      </ThemeProvider>
-    </CacheProvider>
-  ) : (
+function AppContent() {
+  return (
     <ThemeProvider theme={theme}>
       <CssBaseline />
-      {layout === "dashboard" && isAuthenticated && (
-        <>
-          <Sidenav
-            color={sidenavColor}
-            brand=""
-            brandName="VISION UI FREE"
-            routes={routes}
-            onMouseEnter={handleOnMouseEnter}
-            onMouseLeave={handleOnMouseLeave}
-          />
-        </>
-      )}
-      <Switch>
-        {/* Public routes */}
-        <Route exact path="/authentication/sign-in" component={SignIn} />
-        <Route exact path="/authentication/sign-up" component={SignUp} />
-        <Route exact path="/authentication/forgot-password" component={ForgotPassword} />
-        <Route exact path="/authentication/reset-password" component={ResetPassword} />
-        <Route exact path="/authentication/change-password" component={ChangePassword} />
-        
-        {/* Protected routes */}
-        {getRoutes(routes)}
-        
-        {/* Default redirects */}
-        <Redirect from="/" to="/authentication/sign-in" />
-        <Redirect from="*" to="/authentication/sign-in" />
-      </Switch>
+      <Router future={{ v7_startTransition: true, v7_relativeSplatPath: true }}>
+        <AuthProvider>
+          <AppLayout>
+            <Routes>
+            {/* Public routes */}
+            <Route path="/authentication/sign-in" element={<SignIn />} />
+            <Route path="/authentication/sign-up" element={<SignUp />} />
+            <Route path="/authentication/forgot-password" element={<ForgotPassword />} />
+            <Route path="/authentication/reset-password" element={<ResetPassword />} />
+            <Route path="/authentication/change-password" element={<ChangePassword />} />
+            <Route path="/test-auth" element={<TestAuth />} />
+            <Route path="/debug-route" element={<DebugRoute />} />
+            <Route path="/debug-protected" element={
+              <DebugProtectedRoute>
+                <div>This is protected content</div>
+              </DebugProtectedRoute>
+            } />
+            
+            {/* Protected routes - Using comprehensive ProtectedRoute */}
+            <Route path="/dashboard" element={
+              <ProtectedRoute>
+                <Dashboard />
+              </ProtectedRoute>
+            } />
+            <Route path="/cameras" element={
+              <ProtectedRoute>
+                <Cameras />
+              </ProtectedRoute>
+            } />
+            <Route path="/analytics" element={
+              <ProtectedRoute>
+                <Analytics />
+              </ProtectedRoute>
+            } />
+            <Route path="/tables" element={
+              <ProtectedRoute>
+                <Tables />
+              </ProtectedRoute>
+            } />
+            <Route path="/billing" element={
+              <ProtectedRoute>
+                <Billing />
+              </ProtectedRoute>
+            } />
+            <Route path="/rtl" element={
+              <ProtectedRoute>
+                <RTL />
+              </ProtectedRoute>
+            } />
+            <Route path="/profile" element={
+              <ProtectedRoute>
+                <Profile />
+              </ProtectedRoute>
+            } />
+            <Route path="/cameras/:id" element={
+              <ProtectedRoute>
+                <CameraDetail />
+              </ProtectedRoute>
+            } />
+            
+            {/* Default redirects */}
+            <Route path="/" element={<Navigate to="/authentication/sign-in" replace />} />
+            <Route path="*" element={<Navigate to="/authentication/sign-in" replace />} />
+          </Routes>
+          </AppLayout>
+        </AuthProvider>
+      </Router>
     </ThemeProvider>
   );
 }
 
-export default function App() {
-  return (
-    <AuthProvider>
-      <AppContent />
-    </AuthProvider>
-  );
-}
+export default AppContent;

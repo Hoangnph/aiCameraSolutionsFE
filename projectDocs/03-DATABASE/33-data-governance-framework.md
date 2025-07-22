@@ -55,10 +55,10 @@ CREATE TABLE data_classification_mapping (
 -- Camera System Data Classification
 INSERT INTO data_classification_mapping (table_name, column_name, classification_level, classification_reason, pii_flag, encryption_method, masking_required) VALUES
 -- Camera Configuration Data
-('camera_configurations', 'camera_id', 'Internal', 'System identifier', FALSE, 'AES-256', FALSE),
-('camera_configurations', 'camera_name', 'Internal', 'Business identifier', FALSE, 'AES-256', FALSE),
-('camera_configurations', 'location_address', 'Confidential', 'Location information', FALSE, 'AES-256', TRUE),
-('camera_configurations', 'ip_address', 'Restricted', 'Network security', FALSE, 'AES-256', TRUE),
+('cameras', 'camera_id', 'Internal', 'System identifier', FALSE, 'AES-256', FALSE),
+('cameras', 'camera_name', 'Internal', 'Business identifier', FALSE, 'AES-256', FALSE),
+('cameras', 'location_address', 'Confidential', 'Location information', FALSE, 'AES-256', TRUE),
+('cameras', 'ip_address', 'Restricted', 'Network security', FALSE, 'AES-256', TRUE),
 
 -- Detection Data
 ('detection_data', 'detection_id', 'Internal', 'System identifier', FALSE, 'AES-256', FALSE),
@@ -292,7 +292,7 @@ INSERT INTO gdpr_compliance (compliance_type, table_name, column_name, pii_categ
 ('data_processing', 'users', 'username', 'personal_data', 'legitimate_interest', 2555, FALSE),
 
 -- Camera Data
-('data_processing', 'camera_configurations', 'location_address', 'personal_data', 'legitimate_interest', 1825, FALSE),
+('data_processing', 'cameras', 'location_address', 'personal_data', 'legitimate_interest', 1825, FALSE),
 ('data_processing', 'detection_data', 'detection_timestamp', 'personal_data', 'legitimate_interest', 1095, FALSE),
 
 -- AI Model Data
@@ -419,18 +419,18 @@ CREATE TABLE data_quality_rules (
 -- Data Quality Rules for Camera System
 INSERT INTO data_quality_rules (rule_name, table_name, column_name, rule_type, rule_condition, severity) VALUES
 -- Completeness Rules
-('Camera ID Not Null', 'camera_configurations', 'camera_id', 'completeness', 'camera_id IS NOT NULL', 'critical'),
+('Camera ID Not Null', 'cameras', 'camera_id', 'completeness', 'camera_id IS NOT NULL', 'critical'),
 ('Detection Timestamp Not Null', 'detection_data', 'detection_timestamp', 'completeness', 'detection_timestamp IS NOT NULL', 'critical'),
 ('User Email Not Null', 'users', 'email', 'completeness', 'email IS NOT NULL', 'high'),
 
 -- Accuracy Rules
 ('Detection Confidence Range', 'detection_data', 'detection_confidence', 'accuracy', 'detection_confidence BETWEEN 0 AND 1', 'high'),
-('Camera Status Valid', 'camera_configurations', 'camera_status', 'accuracy', 'camera_status IN (''online'', ''offline'', ''maintenance'', ''error'')', 'high'),
+('Camera Status Valid', 'cameras', 'camera_status', 'accuracy', 'camera_status IN (''online'', ''offline'', ''maintenance'', ''error'')', 'high'),
 ('Stream Quality Range', 'stream_quality_monitoring', 'quality_score', 'accuracy', 'quality_score BETWEEN 0 AND 1', 'medium'),
 
 -- Consistency Rules
-('Camera Reference Integrity', 'detection_data', 'camera_id', 'consistency', 'EXISTS (SELECT 1 FROM camera_configurations WHERE camera_id = detection_data.camera_id)', 'critical'),
-('User Reference Integrity', 'camera_configurations', 'created_by', 'consistency', 'EXISTS (SELECT 1 FROM users WHERE id = camera_configurations.created_by)', 'high'),
+('Camera Reference Integrity', 'detection_data', 'camera_id', 'consistency', 'EXISTS (SELECT 1 FROM cameras WHERE camera_id = detection_data.camera_id)', 'critical'),
+('User Reference Integrity', 'cameras', 'created_by', 'consistency', 'EXISTS (SELECT 1 FROM users WHERE id = cameras.created_by)', 'high'),
 
 -- Timeliness Rules
 ('Recent Detection Data', 'detection_data', 'detection_timestamp', 'timeliness', 'detection_timestamp > NOW() - INTERVAL ''1 day''', 'medium'),

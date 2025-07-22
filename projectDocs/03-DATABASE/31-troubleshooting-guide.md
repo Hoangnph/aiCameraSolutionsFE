@@ -74,11 +74,11 @@ ORDER BY n_distinct DESC;
 **Solutions**:
 ```sql
 -- Create missing indexes
-CREATE INDEX CONCURRENTLY idx_camera_configurations_status 
-ON camera_configurations(camera_status);
+CREATE INDEX CONCURRENTLY idx_cameras_status 
+ON cameras(camera_status);
 
 -- Analyze tables for better statistics
-ANALYZE camera_configurations;
+ANALYZE cameras;
 ANALYZE detection_data;
 ```
 
@@ -108,7 +108,7 @@ WHERE quality_score < 0.7
 **Solutions**:
 ```sql
 -- Reset camera status
-UPDATE camera_configurations
+UPDATE cameras
 SET camera_status = 'online',
     last_heartbeat = NOW()
 WHERE camera_id = 'camera_001';
@@ -270,7 +270,7 @@ WHERE schemaname = 'public'
 -- Check for orphaned records
 SELECT COUNT(*) as orphaned_detections
 FROM detection_data dd
-LEFT JOIN camera_configurations cc ON dd.camera_id = cc.camera_id
+LEFT JOIN cameras cc ON dd.camera_id = cc.camera_id
 WHERE cc.camera_id IS NULL;
 
 -- Check for duplicate records
@@ -288,7 +288,7 @@ HAVING COUNT(*) > 1;
 -- Remove orphaned records
 DELETE FROM detection_data dd
 WHERE NOT EXISTS (
-    SELECT 1 FROM camera_configurations cc 
+    SELECT 1 FROM cameras cc 
     WHERE cc.camera_id = dd.camera_id
 );
 
@@ -301,7 +301,7 @@ WHERE dd1.id < dd2.id
 
 -- Rebuild corrupted indexes
 REINDEX INDEX CONCURRENTLY idx_detection_data_camera_timestamp;
-REINDEX INDEX CONCURRENTLY idx_camera_configurations_camera_id;
+REINDEX INDEX CONCURRENTLY idx_cameras_camera_id;
 ```
 
 ### 2. Backup and Recovery
@@ -412,7 +412,7 @@ BEGIN
     
     IF cache_hit_ratio < 80 THEN
         -- Analyze tables to update statistics
-        ANALYZE camera_configurations;
+        ANALYZE cameras;
         ANALYZE detection_data;
         ANALYZE video_streams;
         
@@ -430,7 +430,7 @@ BEGIN
     
     IF offline_cameras > 0 THEN
         -- Reset camera status for cameras offline too long
-        UPDATE camera_configurations
+        UPDATE cameras
         SET camera_status = 'maintenance'
         WHERE camera_id IN (
             SELECT camera_id 

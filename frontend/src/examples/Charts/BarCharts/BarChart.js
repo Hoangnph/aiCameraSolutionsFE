@@ -31,9 +31,14 @@ class BarChart extends Component {
   componentDidMount() {
     const { barChartData, barChartOptions } = this.props;
     console.log('BarChart data:', barChartData, barChartOptions);
+    
+    // Validate data before setting state
+    const validData = Array.isArray(barChartData) ? barChartData : [];
+    const validOptions = barChartOptions || {};
+    
     this.setState({
-      chartData: barChartData,
-      chartOptions: barChartOptions,
+      chartData: validData,
+      chartOptions: validOptions,
     });
   }
 
@@ -43,18 +48,31 @@ class BarChart extends Component {
       prevProps.barChartOptions !== this.props.barChartOptions
     ) {
       console.log('BarChart data updated:', this.props.barChartData, this.props.barChartOptions);
+      
+      // Validate data before setting state
+      const validData = Array.isArray(this.props.barChartData) ? this.props.barChartData : [];
+      const validOptions = this.props.barChartOptions || {};
+      
       this.setState({
-        chartData: this.props.barChartData,
-        chartOptions: this.props.barChartOptions,
+        chartData: validData,
+        chartOptions: validOptions,
       });
     }
   }
 
   render() {
+    const { chartData, chartOptions } = this.state;
+    
+    // Additional validation before rendering
+    if (!Array.isArray(chartData) || chartData.length === 0) {
+      console.warn('BarChart: Invalid or empty chart data');
+      return <div>No chart data available</div>;
+    }
+    
     return (
       <Chart
-        options={this.state.chartOptions}
-        series={this.state.chartData}
+        options={chartOptions}
+        series={chartData}
         type="bar"
         width="100%"
         height="100%"

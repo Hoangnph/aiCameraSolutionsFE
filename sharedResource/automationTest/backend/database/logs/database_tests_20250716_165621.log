@@ -1,0 +1,33 @@
+[0;34m[2025-07-16 16:56:21][0m Starting database tests...
+[0;34m[2025-07-16 16:56:21][0m Log file: /Users/macintoshhd/Project/Project/AI_OCR/feMain/sharedResource/automationTest/backend/database/logs/database_tests_20250716_165621.log
+[0;34m[2025-07-16 16:56:21][0m Running database connection test...
+==========================================
+🧪 DATABASE CONNECTION TESTS
+AI Camera Counting System
+==========================================
+Start time: 2025-07-16 16:56:21
+
+🔍 Connecting to database: people_counting_db on localhost:5432
+✅ DB-CONN-001: Database connection successful
+   Details: PostgreSQL version: PostgreSQL 13.21 (Debian 13.21-1.pgdg120+1) on x86_64-pc-linux-gnu, compiled by gcc (Debian 12.2.0-14) 12.2.0, 64-bit
+❌ DB-TABLES-001: Missing tables: ai_models, zones, counting_results, analytics, alerts, audit_logs, files, system_logs, migrations, migration_log, deployment_migrations, deployment_execution_logs, model_logs, camera_events
+   Details: Existing: users, cameras, refresh_tokens, user_sessions, registration_codes, audit_log
+✅ DB-PERM-001: Database permissions verified (4 permissions)
+   Details: Permissions: SELECT, INSERT, UPDATE, DELETE
+❌ DB-PERF-001: Performance test failed: relation "counting_results" does not exist
+LINE 5:                 LEFT JOIN counting_results cr ON c.id = cr.c...
+                                  ^
+
+   Details: Error code: 42P01
+
+==========================================
+📊 TEST SUMMARY
+==========================================
+Total tests: 4
+Passed: 2
+Failed: 2
+Success rate: 50.0%
+⚠️  Some database tests failed!
+
+📊 Results saved to: /Users/macintoshhd/Project/Project/AI_OCR/feMain/sharedResource/automationTest/backend/database/../results/database_connection_test_results.json
+[0;31m❌ Database connection test failed[0m

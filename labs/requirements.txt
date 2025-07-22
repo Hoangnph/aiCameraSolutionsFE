@@ -1,0 +1,36 @@
+# AI People Counter - Requirements
+# Core dependencies for real-time people counting system
+
+# Computer Vision
+opencv-python==4.8.1.78
+opencv-python-headless==4.8.1.78
+
+# Numerical Computing
+numpy==1.24.3
+scipy==1.11.1
+
+# Video Processing
+yt-dlp==2023.10.13
+
+# GUI Framework
+Pillow==10.0.1
+
+# Optional: GPU Acceleration (NVIDIA)
+# opencv-python-cuda==4.8.1.78
+
+# Optional: Development Tools
+# pytest==7.4.2
+# black==23.9.1
+# flake8==6.1.0
+# mypy==1.5.1
+
+# Optional: Additional Features
+# requests==2.31.0
+# matplotlib==3.7.2
+# seaborn==0.12.2
+# pandas==2.0.3
+
+# System-specific dependencies (install manually if needed):
+# Ubuntu/Debian: sudo apt install python3-tk ffmpeg
+# macOS: brew install ffmpeg
+# Windows: ffmpeg included in PATH or install separately 

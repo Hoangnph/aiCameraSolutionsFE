@@ -1,0 +1,134 @@
+{
+  "demo_date": "2025-07-18T16:54:12.241478",
+  "success_rate": 87.5,
+  "successful_steps": 7,
+  "total_steps": 8,
+  "results": [
+    {
+      "step": "beAuth Health",
+      "success": true,
+      "details": "Service healthy",
+      "data": null,
+      "timestamp": "2025-07-18T16:54:02.470315"
+    },
+    {
+      "step": "beCamera Health",
+      "success": true,
+      "details": "Service healthy",
+      "data": null,
+      "timestamp": "2025-07-18T16:54:02.481815"
+    },
+    {
+      "step": "Frontend Health",
+      "success": true,
+      "details": "Service accessible",
+      "data": null,
+      "timestamp": "2025-07-18T16:54:02.489563"
+    },
+    {
+      "step": "User Login",
+      "success": true,
+      "details": "Logged in as testuser (user)",
+      "data": null,
+      "timestamp": "2025-07-18T16:54:04.156606"
+    },
+    {
+      "step": "AI Model Status",
+      "success": true,
+      "details": "Model active and working",
+      "data": null,
+      "timestamp": "2025-07-18T16:54:05.289331"
+    },
+    {
+      "step": "AI Model Processing",
+      "success": true,
+      "details": "Count: 0, Confidence: 0.000",
+      "data": null,
+      "timestamp": "2025-07-18T16:54:05.289418"
+    },
+    {
+      "step": "AI Model Config",
+      "success": true,
+      "details": "Threshold: 0.4, Skip Frames: 30",
+      "data": null,
+      "timestamp": "2025-07-18T16:54:05.289467"
+    },
+    {
+      "step": "Worker Pool Status",
+      "success": true,
+      "details": "Total: 4, Active: 0",
+      "data": null,
+      "timestamp": "2025-07-18T16:54:06.454877"
+    },
+    {
+      "step": "AI Integration",
+      "success": true,
+      "details": "AI Model Workers: 0",
+      "data": null,
+      "timestamp": "2025-07-18T16:54:06.454940"
+    },
+    {
+      "step": "Camera Creation",
+      "success": true,
+      "details": "Camera ID: 21",
+      "data": null,
+      "timestamp": "2025-07-18T16:54:07.614605"
+    },
+    {
+      "step": "Camera Details",
+      "success": true,
+      "details": "Name: Demo RTSP Camera, Status: active",
+      "data": null,
+      "timestamp": "2025-07-18T16:54:07.614649"
+    },
+    {
+      "step": "RTSP Configuration",
+      "success": true,
+      "details": "URL: rtsp://Fd320bYbaxJoe0GT:Mg3jsKE5bailKccS@192.168.1.7/live0",
+      "data": null,
+      "timestamp": "2025-07-18T16:54:07.614662"
+    },
+    {
+      "step": "AI Processing Test",
+      "success": false,
+      "details": "Status: 500",
+      "data": null,
+      "timestamp": "2025-07-18T16:54:08.783158"
+    },
+    {
+      "step": "Camera Processing Start",
+      "success": true,
+      "details": "Processing started successfully",
+      "data": null,
+      "timestamp": "2025-07-18T16:54:09.943252"
+    },
+    {
+      "step": "Worker Assignment",
+      "success": true,
+      "details": "Camera assigned to worker pool",
+      "data": null,
+      "timestamp": "2025-07-18T16:54:09.943359"
+    },
+    {
+      "step": "Real-time Updates",
+      "success": true,
+      "details": "WebSocket updates enabled",
+      "data": null,
+      "timestamp": "2025-07-18T16:54:09.943374"
+    },
+    {
+      "step": "Camera Stop",
+      "success": true,
+      "details": "Processing stopped",
+      "data": null,
+      "timestamp": "2025-07-18T16:54:11.079009"
+    },
+    {
+      "step": "Camera Deletion",
+      "success": true,
+      "details": "Demo camera deleted",
+      "data": null,
+      "timestamp": "2025-07-18T16:54:11.239249"
+    }
+  ]
+}

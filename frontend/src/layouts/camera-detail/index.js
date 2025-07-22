@@ -17,7 +17,7 @@
 */
 
 import { useState, useEffect } from "react";
-import { useParams, useHistory } from "react-router-dom";
+import { useParams, useNavigate } from "react-router-dom";
 
 // @mui material components
 import Grid from "@mui/material/Grid";
@@ -79,7 +79,7 @@ const getStatusColor = (status) => {
 
 function CameraDetail() {
   const { id } = useParams();
-  const history = useHistory();
+  const navigate = useNavigate();
   const [camera, setCamera] = useState(null);
   const [countData, setCountData] = useState([]);
   const [loading, setLoading] = useState(true);
@@ -260,7 +260,7 @@ function CameraDetail() {
               color="info"
               variant="text"
               startIcon={<IoArrowBack />}
-              onClick={() => history.push('/cameras')}
+                              onClick={() => navigate('/cameras')}
               sx={{ mr: 2 }}
             >
               Back to Cameras

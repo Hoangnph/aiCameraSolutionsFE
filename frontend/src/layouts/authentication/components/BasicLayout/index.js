@@ -33,7 +33,7 @@ import PageLayout from "examples/LayoutContainers/PageLayout";
 // Authentication layout components
 import Footer from "layouts/authentication/components/Footer";
 
-function BasicLayout({ title, description, image, children }) {
+function BasicLayout({ title = "", description = "", image, children }) {
   return (
     <PageLayout>
       <DefaultNavbar
@@ -93,10 +93,7 @@ function BasicLayout({ title, description, image, children }) {
 }
 
 // Setting default values for the props of BasicLayout
-BasicLayout.defaultProps = {
-  title: "",
-  description: "",
-};
+// Removed defaultProps - using default parameters instead
 
 // Typechecking props for the BasicLayout
 BasicLayout.propTypes = {

@@ -324,7 +324,7 @@ Authorization: Bearer <jwt_token>
 
 #### 1.1 Get All Cameras
 
-**Endpoint:** `GET /cameras`
+**Endpoint:** `GET /api/v1/cameras`
 
 **Description:** Lấy danh sách tất cả cameras
 
@@ -378,7 +378,7 @@ Authorization: Bearer <jwt_token>
 
 #### 1.2 Get Camera by ID
 
-**Endpoint:** `GET /cameras/{id}`
+**Endpoint:** `GET /api/v1/cameras/{id}`
 
 **Description:** Lấy thông tin chi tiết của camera
 
@@ -426,7 +426,7 @@ Authorization: Bearer <jwt_token>
 
 #### 1.3 Add New Camera
 
-**Endpoint:** `POST /cameras`
+**Endpoint:** `POST /api/v1/cameras`
 
 **Description:** Thêm camera mới vào hệ thống
 
@@ -475,7 +475,7 @@ Authorization: Bearer <jwt_token>
 
 #### 1.4 Update Camera
 
-**Endpoint:** `PUT /cameras/{id}`
+**Endpoint:** `PUT /api/v1/cameras/{id}`
 
 **Description:** Cập nhật thông tin camera
 
@@ -494,7 +494,7 @@ Authorization: Bearer <jwt_token>
 
 #### 1.5 Delete Camera
 
-**Endpoint:** `DELETE /cameras/{id}`
+**Endpoint:** `DELETE /api/v1/cameras/{id}`
 
 **Description:** Xóa camera khỏi hệ thống
 
@@ -513,7 +513,7 @@ Authorization: Bearer <jwt_token>
 
 #### 2.1 Start Camera Processing
 
-**Endpoint:** `POST /cameras/{id}/start`
+**Endpoint:** `POST /api/v1/cameras/{id}/start`
 
 **Description:** Bắt đầu xử lý camera stream
 
@@ -532,7 +532,7 @@ Authorization: Bearer <jwt_token>
 
 #### 2.2 Stop Camera Processing
 
-**Endpoint:** `POST /cameras/{id}/stop`
+**Endpoint:** `POST /api/v1/cameras/{id}/stop`
 
 **Description:** Dừng xử lý camera stream
 
@@ -550,7 +550,7 @@ Authorization: Bearer <jwt_token>
 
 #### 2.3 Restart Camera Processing
 
-**Endpoint:** `POST /cameras/{id}/restart`
+**Endpoint:** `POST /api/v1/cameras/{id}/restart`
 
 **Description:** Khởi động lại xử lý camera stream
 
@@ -571,7 +571,7 @@ Authorization: Bearer <jwt_token>
 
 #### 3.1 Update Camera Settings
 
-**Endpoint:** `PUT /cameras/{id}/settings`
+**Endpoint:** `PUT /api/v1/cameras/{id}/settings`
 
 **Description:** Cập nhật cài đặt camera
 
@@ -602,7 +602,7 @@ Authorization: Bearer <jwt_token>
 
 #### 3.2 Get Camera Settings
 
-**Endpoint:** `GET /cameras/{id}/settings`
+**Endpoint:** `GET /api/v1/cameras/{id}/settings`
 
 **Description:** Lấy cài đặt camera
 
@@ -629,7 +629,7 @@ Authorization: Bearer <jwt_token>
 
 #### 4.1 Get Camera Health
 
-**Endpoint:** `GET /cameras/{id}/health`
+**Endpoint:** `GET /api/v1/cameras/{id}/health`
 
 **Description:** Lấy thông tin sức khỏe camera
 
@@ -657,7 +657,7 @@ Authorization: Bearer <jwt_token>
 
 #### 4.2 Get Camera Status
 
-**Endpoint:** `GET /cameras/{id}/status`
+**Endpoint:** `GET /api/v1/cameras/{id}/status`
 
 **Description:** Lấy trạng thái camera
 
@@ -682,7 +682,7 @@ Authorization: Bearer <jwt_token>
 
 #### 5.1 Get Camera Analytics
 
-**Endpoint:** `GET /cameras/{id}/analytics`
+**Endpoint:** `GET /api/v1/cameras/{id}/analytics`
 
 **Description:** Lấy analytics data của camera
 
@@ -724,7 +724,7 @@ Authorization: Bearer <jwt_token>
 
 #### 5.2 Get Camera Performance Metrics
 
-**Endpoint:** `GET /cameras/{id}/performance`
+**Endpoint:** `GET /api/v1/cameras/{id}/performance`
 
 **Description:** Lấy performance metrics của camera
 

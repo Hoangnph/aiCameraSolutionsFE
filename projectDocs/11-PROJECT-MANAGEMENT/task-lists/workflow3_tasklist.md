@@ -791,7 +791,7 @@ GET    /cameras                    # List cameras with pagination, filtering, so
 POST   /cameras                    # Create new camera with validation
 GET    /cameras/{id}              # Get camera details with related data
 PUT    /cameras/{id}              # Update camera with optimistic locking
-DELETE /cameras/{id}              # Delete camera with cascade handling
+DELETE /api/v1/cameras/{id}              # Delete camera with cascade handling
 PATCH  /cameras/{id}/status       # Update status with state validation
 
 # Camera Control với worker pool integration

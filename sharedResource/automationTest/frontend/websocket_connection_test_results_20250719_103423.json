@@ -1,0 +1,48 @@
+{
+  "test_name": "WebSocket Connection Test",
+  "timestamp": "2025-07-19T10:34:19.864507",
+  "results": [
+    {
+      "test": "WebSocket Connection",
+      "status": "PASS",
+      "message": "Successfully connected to WebSocket server",
+      "timestamp": "2025-07-19T10:34:20.434806"
+    },
+    {
+      "test": "Message Send",
+      "status": "PASS",
+      "message": "Successfully sent ping message",
+      "timestamp": "2025-07-19T10:34:20.435294"
+    },
+    {
+      "test": "Message Receive",
+      "status": "PASS",
+      "message": "Successfully received pong response",
+      "timestamp": "2025-07-19T10:34:20.436749"
+    },
+    {
+      "test": "Subscription",
+      "status": "PASS",
+      "message": "Successfully sent camera subscription",
+      "timestamp": "2025-07-19T10:34:20.437089"
+    },
+    {
+      "test": "Camera Update",
+      "status": "PASS",
+      "message": "Successfully sent camera update message",
+      "timestamp": "2025-07-19T10:34:20.448682"
+    },
+    {
+      "test": "Broadcast Receive",
+      "status": "INFO",
+      "message": "No broadcast messages received (expected)",
+      "timestamp": "2025-07-19T10:34:23.449950"
+    },
+    {
+      "test": "Multiple Connections",
+      "status": "PASS",
+      "message": "Successfully created 3 connections",
+      "timestamp": "2025-07-19T10:34:23.793898"
+    }
+  ]
+}

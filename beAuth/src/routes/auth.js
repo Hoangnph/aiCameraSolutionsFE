@@ -9,6 +9,35 @@ const logger = require('../utils/logger');
 
 const router = express.Router();
 
+// Standardized response helper functions
+const createSuccessResponse = (data, message = "Operation completed successfully", statusCode = 200) => {
+  return {
+    success: true,
+    data: data,
+    message: message,
+    timestamp: new Date().toISOString(),
+    request_id: require('crypto').randomUUID()
+  };
+};
+
+const createErrorResponse = (code, message, details = null, field = null, statusCode = 400) => {
+  const errorData = {
+    code: code,
+    message: message,
+    details: details || []
+  };
+  if (field) {
+    errorData.field = field;
+  }
+  
+  return {
+    success: false,
+    error: errorData,
+    timestamp: new Date().toISOString(),
+    request_id: require('crypto').randomUUID()
+  };
+};
+
 // @desc    Register user
 // @route   POST /api/v1/auth/register
 // @access  Public
@@ -19,25 +48,23 @@ router.post('/register', validate('register'), async (req, res, next) => {
     // Check if username is available
     const isUsernameAvailable = await customValidations.isUsernameAvailable(username);
     if (!isUsernameAvailable) {
-      return res.status(400).json({
-        success: false,
-        error: {
-          code: 400,
-          message: 'Username already exists'
-        }
-      });
+      return res.status(400).json(createErrorResponse(
+        400,
+        'Username already exists',
+        ['Username is already taken'],
+        'username'
+      ));
     }
 
     // Check if email is available
     const isEmailAvailable = await customValidations.isEmailAvailable(email);
     if (!isEmailAvailable) {
-      return res.status(400).json({
-        success: false,
-        error: {
-          code: 400,
-          message: 'Email already exists'
-        }
-      });
+      return res.status(400).json(createErrorResponse(
+        400,
+        'Email already exists',
+        ['Email is already registered'],
+        'email'
+      ));
     }
 
     // Validate registration code
@@ -49,48 +76,44 @@ router.post('/register', validate('register'), async (req, res, next) => {
     const registrationCodeResult = await executeQuery(registrationCodeQuery, [registrationCode]);
 
     if (registrationCodeResult.rows.length === 0) {
-      return res.status(400).json({
-        success: false,
-        error: {
-          code: 400,
-          message: 'Mã đăng ký không hợp lệ'
-        }
-      });
+      return res.status(400).json(createErrorResponse(
+        400,
+        'Mã đăng ký không hợp lệ',
+        ['Invalid registration code provided'],
+        'registrationCode'
+      ));
     }
 
     const registrationCodeData = registrationCodeResult.rows[0];
 
     // Check if registration code is active
     if (!registrationCodeData.is_active) {
-      return res.status(400).json({
-        success: false,
-        error: {
-          code: 400,
-          message: 'Mã đăng ký đã bị vô hiệu hóa'
-        }
-      });
+      return res.status(400).json(createErrorResponse(
+        400,
+        'Mã đăng ký đã bị vô hiệu hóa',
+        ['Registration code has been deactivated'],
+        'registrationCode'
+      ));
     }
 
     // Check if registration code has expired
     if (registrationCodeData.expires_at && new Date() > new Date(registrationCodeData.expires_at)) {
-      return res.status(400).json({
-        success: false,
-        error: {
-          code: 400,
-          message: 'Mã đăng ký đã hết hạn'
-        }
-      });
+      return res.status(400).json(createErrorResponse(
+        400,
+        'Mã đăng ký đã hết hạn',
+        ['Registration code has expired'],
+        'registrationCode'
+      ));
     }
 
     // Check if registration code has reached max uses
     if (registrationCodeData.max_uses && registrationCodeData.used_count >= registrationCodeData.max_uses) {
-      return res.status(400).json({
-        success: false,
-        error: {
-          code: 400,
-          message: 'Mã đăng ký đã đạt giới hạn sử dụng'
-        }
-      });
+      return res.status(400).json(createErrorResponse(
+        400,
+        'Mã đăng ký đã đạt giới hạn sử dụng',
+        ['Registration code usage limit reached'],
+        'registrationCode'
+      ));
     }
 
     // Hash password
@@ -130,20 +153,18 @@ router.post('/register', validate('register'), async (req, res, next) => {
 
     logger.info(`User registered successfully: ${user.username} with registration code: ${registrationCode}`);
 
-    res.status(201).json({
-      success: true,
-      data: {
-        user: {
-          id: user.id,
-          username: user.username,
-          email: user.email,
-          firstName: user.first_name,
-          lastName: user.last_name,
-          role: user.role
-        },
-        ...tokens
-      }
-    });
+    res.status(201).json(createSuccessResponse({
+      user: {
+        id: user.id,
+        username: user.username,
+        email: user.email,
+        firstName: user.first_name,
+        lastName: user.last_name,
+        role: user.role
+      },
+      accessToken: tokens.accessToken,
+      refreshToken: tokens.refreshToken
+    }, "User registered successfully", 201));
   } catch (error) {
     next(error);
   }
@@ -166,38 +187,35 @@ router.post('/login', validate('login'), async (req, res, next) => {
     const userResult = await executeQuery(userQuery, [username]);
 
     if (userResult.rows.length === 0) {
-      return res.status(401).json({
-        success: false,
-        error: {
-          code: 401,
-          message: 'Invalid credentials'
-        }
-      });
+      return res.status(401).json(createErrorResponse(
+        401,
+        'Invalid credentials',
+        ['Username or password is incorrect'],
+        'username'
+      ));
     }
 
     const user = userResult.rows[0];
 
     // Check if user is active
     if (!user.is_active) {
-      return res.status(401).json({
-        success: false,
-        error: {
-          code: 401,
-          message: 'Account is deactivated'
-        }
-      });
+      return res.status(401).json(createErrorResponse(
+        401,
+        'Account is deactivated',
+        ['Your account has been deactivated'],
+        'username'
+      ));
     }
 
     // Check password
     const isPasswordValid = await bcrypt.compare(password, user.password_hash);
     if (!isPasswordValid) {
-      return res.status(401).json({
-        success: false,
-        error: {
-          code: 401,
-          message: 'Invalid credentials'
-        }
-      });
+      return res.status(401).json(createErrorResponse(
+        401,
+        'Invalid credentials',
+        ['Username or password is incorrect'],
+        'password'
+      ));
     }
 
     // Update last login
@@ -209,20 +227,18 @@ router.post('/login', validate('login'), async (req, res, next) => {
 
     logger.info(`User logged in successfully: ${user.username}`);
 
-    res.status(200).json({
-      success: true,
-      data: {
-        user: {
-          id: user.id,
-          username: user.username,
-          email: user.email,
-          firstName: user.first_name,
-          lastName: user.last_name,
-          role: user.role
-        },
-        ...tokens
-      }
-    });
+    res.status(200).json(createSuccessResponse({
+      user: {
+        id: user.id,
+        username: user.username,
+        email: user.email,
+        firstName: user.first_name,
+        lastName: user.last_name,
+        role: user.role
+      },
+      accessToken: tokens.accessToken,
+      refreshToken: tokens.refreshToken
+    }, "User logged in successfully", 200));
   } catch (error) {
     next(error);
   }
@@ -240,13 +256,12 @@ router.post('/refresh', validate('refreshToken'), async (req, res, next) => {
     const decoded = verifyToken(refreshToken);
 
     if (decoded.type !== 'refresh') {
-      return res.status(401).json({
-        success: false,
-        error: {
-          code: 401,
-          message: 'Invalid refresh token'
-        }
-      });
+      return res.status(401).json(createErrorResponse(
+        401,
+        'Invalid refresh token',
+        ['Invalid refresh token provided'],
+        'refreshToken'
+      ));
     }
 
     // Check if user exists and is active
@@ -254,13 +269,12 @@ router.post('/refresh', validate('refreshToken'), async (req, res, next) => {
     const userResult = await executeQuery(userQuery, [decoded.userId]);
 
     if (userResult.rows.length === 0 || !userResult.rows[0].is_active) {
-      return res.status(401).json({
-        success: false,
-        error: {
-          code: 401,
-          message: 'User not found or inactive'
-        }
-      });
+      return res.status(401).json(createErrorResponse(
+        401,
+        'User not found or inactive',
+        ['User not found or inactive'],
+        'userId'
+      ));
     }
 
     const user = userResult.rows[0];
@@ -270,20 +284,18 @@ router.post('/refresh', validate('refreshToken'), async (req, res, next) => {
 
     logger.info(`Token refreshed for user: ${user.username}`);
 
-    res.status(200).json({
-      success: true,
-      data: {
-        user: {
-          id: user.id,
-          username: user.username,
-          email: user.email,
-          firstName: user.first_name,
-          lastName: user.last_name,
-          role: user.role
-        },
-        ...tokens
-      }
-    });
+    res.status(200).json(createSuccessResponse({
+      user: {
+        id: user.id,
+        username: user.username,
+        email: user.email,
+        firstName: user.first_name,
+        lastName: user.last_name,
+        role: user.role
+      },
+      accessToken: tokens.accessToken,
+      refreshToken: tokens.refreshToken
+    }, "Token refreshed successfully", 200));
   } catch (error) {
     next(error);
   }
@@ -300,10 +312,7 @@ router.post('/logout', protect, async (req, res, next) => {
 
     logger.info(`User logged out: ${req.user.username}`);
 
-    res.status(200).json({
-      success: true,
-      message: 'Logged out successfully'
-    });
+    res.status(200).json(createSuccessResponse(null, "Logged out successfully", 200));
   } catch (error) {
     next(error);
   }
@@ -322,10 +331,7 @@ router.post('/forgot-password', validate('forgotPassword'), async (req, res, nex
 
     if (userResult.rows.length === 0) {
       // Don't reveal if email exists or not for security
-      return res.status(200).json({
-        success: true,
-        message: 'If the email exists, a password reset link has been sent'
-      });
+      return res.status(200).json(createSuccessResponse(null, 'If the email exists, a password reset link has been sent', 200));
     }
 
     const user = userResult.rows[0];
@@ -348,10 +354,7 @@ router.post('/forgot-password', validate('forgotPassword'), async (req, res, nex
     // For now, we'll just log the token (in production, send email)
     logger.info(`Password reset token for ${user.email}: ${resetToken}`);
 
-    res.status(200).json({
-      success: true,
-      message: 'If the email exists, a password reset link has been sent'
-    });
+    res.status(200).json(createSuccessResponse(null, 'If the email exists, a password reset link has been sent', 200));
   } catch (error) {
     next(error);
   }
@@ -383,13 +386,12 @@ router.post('/reset-password', validate('resetPassword'), async (req, res, next)
     }
 
     if (!user) {
-      return res.status(400).json({
-        success: false,
-        error: {
-          code: 400,
-          message: 'Invalid or expired reset token'
-        }
-      });
+      return res.status(400).json(createErrorResponse(
+        400,
+        'Invalid or expired reset token',
+        ['Invalid or expired reset token provided'],
+        'token'
+      ));
     }
 
     // Hash new password
@@ -407,10 +409,7 @@ router.post('/reset-password', validate('resetPassword'), async (req, res, next)
 
     logger.info(`Password reset successfully for user: ${user.username}`);
 
-    res.status(200).json({
-      success: true,
-      message: 'Password reset successfully'
-    });
+    res.status(200).json(createSuccessResponse(null, 'Password reset successfully', 200));
   } catch (error) {
     next(error);
   }
@@ -421,19 +420,16 @@ router.post('/reset-password', validate('resetPassword'), async (req, res, next)
 // @access  Private
 router.get('/me', protect, async (req, res, next) => {
   try {
-    res.status(200).json({
-      success: true,
-      data: {
-        user: {
-          id: req.user.id,
-          username: req.user.username,
-          email: req.user.email,
-          firstName: req.user.first_name,
-          lastName: req.user.last_name,
-          role: req.user.role
-        }
+    res.status(200).json(createSuccessResponse({
+      user: {
+        id: req.user.id,
+        username: req.user.username,
+        email: req.user.email,
+        firstName: req.user.first_name,
+        lastName: req.user.last_name,
+        role: req.user.role
       }
-    });
+    }, "User retrieved successfully", 200));
   } catch (error) {
     next(error);
   }
@@ -446,7 +442,12 @@ router.post('/verify', async (req, res) => {
   try {
     const authHeader = req.headers['authorization'] || req.headers['Authorization'];
     if (!authHeader || !authHeader.startsWith('Bearer ')) {
-      return res.status(401).json({ success: false, error: { code: 401, message: 'No token provided' } });
+      return res.status(401).json(createErrorResponse(
+        401,
+        'No token provided',
+        ['No token provided in the request'],
+        'authorization'
+      ));
     }
     const token = authHeader.split(' ')[1];
     const { verifyToken } = require('../utils/jwt');
@@ -454,31 +455,44 @@ router.post('/verify', async (req, res) => {
     try {
       decoded = verifyToken(token);
     } catch (err) {
-      return res.status(401).json({ success: false, error: { code: 401, message: 'Invalid token' } });
+      return res.status(401).json(createErrorResponse(
+        401,
+        'Invalid token',
+        ['Invalid token provided'],
+        'authorization'
+      ));
     }
     // Check if user exists and is active
     const userQuery = 'SELECT id, username, email, first_name, last_name, role, is_active FROM users WHERE id = $1';
     const userResult = await executeQuery(userQuery, [decoded.userId]);
     if (userResult.rows.length === 0 || !userResult.rows[0].is_active) {
-      return res.status(401).json({ success: false, error: { code: 401, message: 'User not found or inactive' } });
+      return res.status(401).json(createErrorResponse(
+        401,
+        'User not found or inactive',
+        ['User not found or inactive'],
+        'userId'
+      ));
     }
     const user = userResult.rows[0];
-    res.status(200).json({
-      success: true,
-      data: {
-        user: {
-          id: user.id,
-          username: user.username,
-          email: user.email,
-          firstName: user.first_name,
-          lastName: user.last_name,
-          role: user.role
-        },
-        tokenClaims: decoded
-      }
-    });
+    res.status(200).json(createSuccessResponse({
+      user: {
+        id: user.id,
+        username: user.username,
+        email: user.email,
+        firstName: user.first_name,
+        lastName: user.last_name,
+        role: user.role
+      },
+      tokenClaims: decoded
+    }, "Token verified successfully", 200));
   } catch (error) {
-    res.status(500).json({ success: false, error: { code: 500, message: 'Token verification failed' } });
+    res.status(500).json(createErrorResponse(
+      500,
+      'Token verification failed',
+      ['An error occurred during token verification'],
+      null,
+      500
+    ));
   }
 });
 

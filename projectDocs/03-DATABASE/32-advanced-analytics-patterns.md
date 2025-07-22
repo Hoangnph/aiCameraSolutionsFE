@@ -22,7 +22,7 @@ Tài liệu này trình bày advanced analytics patterns cho AI Camera Counting 
 -- Feature Engineering Tables
 CREATE TABLE ml_features (
     id SERIAL PRIMARY KEY,
-    camera_id VARCHAR(100) REFERENCES camera_configurations(camera_id),
+    camera_id VARCHAR(100) REFERENCES cameras(camera_id),
     feature_timestamp TIMESTAMP DEFAULT CURRENT_TIMESTAMP,
     
     -- Time-based Features
@@ -131,7 +131,7 @@ $$ LANGUAGE plpgsql;
 -- Data Preprocessing Tables
 CREATE TABLE ml_preprocessed_data (
     id SERIAL PRIMARY KEY,
-    camera_id VARCHAR(100) REFERENCES camera_configurations(camera_id),
+    camera_id VARCHAR(100) REFERENCES cameras(camera_id),
     preprocessing_timestamp TIMESTAMP DEFAULT CURRENT_TIMESTAMP,
     
     -- Normalized Features
@@ -234,7 +234,7 @@ $$ LANGUAGE plpgsql;
 -- Traffic Prediction Tables
 CREATE TABLE traffic_predictions (
     id SERIAL PRIMARY KEY,
-    camera_id VARCHAR(100) REFERENCES camera_configurations(camera_id),
+    camera_id VARCHAR(100) REFERENCES cameras(camera_id),
     prediction_timestamp TIMESTAMP DEFAULT CURRENT_TIMESTAMP,
     
     -- Prediction Timeframe
@@ -356,7 +356,7 @@ $$ LANGUAGE plpgsql;
 -- Anomaly Detection Tables
 CREATE TABLE anomaly_detections (
     id SERIAL PRIMARY KEY,
-    camera_id VARCHAR(100) REFERENCES camera_configurations(camera_id),
+    camera_id VARCHAR(100) REFERENCES cameras(camera_id),
     detection_timestamp TIMESTAMP DEFAULT CURRENT_TIMESTAMP,
     
     -- Anomaly Information
@@ -483,7 +483,7 @@ WITH real_time_metrics AS (
         COUNT(*) as current_value,
         COUNT(*) FILTER (WHERE camera_status = 'online') as target_value,
         'count' as unit
-    FROM camera_configurations
+    FROM cameras
     
     UNION ALL
     

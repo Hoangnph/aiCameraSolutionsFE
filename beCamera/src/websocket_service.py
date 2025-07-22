@@ -67,6 +67,19 @@ class WebSocketManager:
             'timestamp': datetime.utcnow().isoformat()
         }
         await self.broadcast(json.dumps(message), 'camera_updates')
+        
+        # Also send to analytics channel for real-time updates
+        analytics_message = {
+            'type': 'analytics_update',
+            'data': {
+                'camera_id': camera_id,
+                'people_count': data.get('current_count', 0),
+                'confidence': data.get('confidence', 0.0),
+                'status': data.get('status', 'unknown')
+            },
+            'timestamp': datetime.utcnow().isoformat()
+        }
+        await self.broadcast(json.dumps(analytics_message), 'analytics')
 
     async def broadcast_alert(self, alert_type: str, message: str, severity: str = 'info'):
         """Broadcast system alerts"""
@@ -98,6 +111,67 @@ class WebSocketManager:
         await self.broadcast(json.dumps(message), 'system_status')
 
     async def setup_redis_subscriber(self):
+        """Setup Redis subscriber for real-time updates"""
+        try:
+            self.redis_client = redis.Redis(host='localhost', port=6379, decode_responses=True)
+            await self.redis_client.ping()
+            logger.info("Redis connection established for WebSocket service")
+        except Exception as e:
+            logger.warning(f"Redis connection failed: {e}. WebSocket service will work without Redis.")
+
+    async def handle_client_message(self, websocket: WebSocket, message: str, channel: str):
+        """Handle incoming client messages"""
+        try:
+            data = json.loads(message)
+            message_type = data.get('type', 'unknown')
+            
+            # Handle different message types
+            if message_type == 'ping':
+                # Respond to ping with pong
+                await self.send_personal_message(json.dumps({'type': 'pong'}), websocket)
+                
+            elif message_type == 'camera_update':
+                # Broadcast camera update to all clients
+                await self.broadcast_camera_update(data.get('camera_id'), data.get('data', {}))
+                
+            elif message_type == 'analytics_update':
+                # Broadcast analytics update
+                await self.broadcast_analytics(data.get('data', {}))
+                
+            elif message_type == 'system_status':
+                # Broadcast system status
+                await self.broadcast_system_status(data.get('data', {}))
+                
+            elif message_type == 'alert':
+                # Broadcast alert
+                await self.broadcast_alert(
+                    data.get('alert_type', 'system_alert'),
+                    data.get('message', ''),
+                    data.get('severity', 'info')
+                )
+                
+            else:
+                # Echo back unknown message types
+                await self.send_personal_message(json.dumps({
+                    'type': 'echo',
+                    'original_message': data,
+                    'timestamp': datetime.utcnow().isoformat()
+                }), websocket)
+                
+        except json.JSONDecodeError:
+            logger.error("Invalid JSON message received")
+            await self.send_personal_message(json.dumps({
+                'type': 'error',
+                'message': 'Invalid JSON format',
+                'timestamp': datetime.utcnow().isoformat()
+            }), websocket)
+        except Exception as e:
+            logger.error(f"Error handling client message: {e}")
+            await self.send_personal_message(json.dumps({
+                'type': 'error',
+                'message': f'Server error: {str(e)}',
+                'timestamp': datetime.utcnow().isoformat()
+            }), websocket)
         """Setup Redis subscriber for cross-service communication"""
         if not self.redis_client:
             self.redis_client = redis.Redis(host='redis', port=6379, decode_responses=True)
@@ -169,14 +243,9 @@ async def websocket_camera_updates(websocket: WebSocket, client_id: str):
     await manager.connect(websocket, 'camera_updates')
     try:
         while True:
-            # Keep connection alive and handle incoming messages
+            # Handle incoming messages
             data = await websocket.receive_text()
-            try:
-                message = json.loads(data)
-                if message.get('type') == 'ping':
-                    await manager.send_personal_message(json.dumps({'type': 'pong'}), websocket)
-            except json.JSONDecodeError:
-                logger.warning(f"Invalid JSON received from client {client_id}")
+            await manager.handle_client_message(websocket, data, 'camera_updates')
     except WebSocketDisconnect:
         manager.disconnect(websocket, 'camera_updates')
     except Exception as e:
@@ -189,13 +258,9 @@ async def websocket_alerts(websocket: WebSocket, client_id: str):
     await manager.connect(websocket, 'alerts')
     try:
         while True:
+            # Handle incoming messages
             data = await websocket.receive_text()
-            try:
-                message = json.loads(data)
-                if message.get('type') == 'ping':
-                    await manager.send_personal_message(json.dumps({'type': 'pong'}), websocket)
-            except json.JSONDecodeError:
-                logger.warning(f"Invalid JSON received from client {client_id}")
+            await manager.handle_client_message(websocket, data, 'alerts')
     except WebSocketDisconnect:
         manager.disconnect(websocket, 'alerts')
     except Exception as e:
@@ -208,13 +273,9 @@ async def websocket_analytics(websocket: WebSocket, client_id: str):
     await manager.connect(websocket, 'analytics')
     try:
         while True:
+            # Handle incoming messages
             data = await websocket.receive_text()
-            try:
-                message = json.loads(data)
-                if message.get('type') == 'ping':
-                    await manager.send_personal_message(json.dumps({'type': 'pong'}), websocket)
-            except json.JSONDecodeError:
-                logger.warning(f"Invalid JSON received from client {client_id}")
+            await manager.handle_client_message(websocket, data, 'analytics')
     except WebSocketDisconnect:
         manager.disconnect(websocket, 'analytics')
     except Exception as e:
@@ -227,13 +288,9 @@ async def websocket_system_status(websocket: WebSocket, client_id: str):
     await manager.connect(websocket, 'system_status')
     try:
         while True:
+            # Handle incoming messages
             data = await websocket.receive_text()
-            try:
-                message = json.loads(data)
-                if message.get('type') == 'ping':
-                    await manager.send_personal_message(json.dumps({'type': 'pong'}), websocket)
-            except json.JSONDecodeError:
-                logger.warning(f"Invalid JSON received from client {client_id}")
+            await manager.handle_client_message(websocket, data, 'system_status')
     except WebSocketDisconnect:
         manager.disconnect(websocket, 'system_status')
     except Exception as e:

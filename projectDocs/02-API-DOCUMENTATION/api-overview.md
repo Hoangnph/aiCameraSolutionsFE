@@ -82,7 +82,7 @@ Authorization: Bearer <token>
 
 #### Get All Cameras
 ```http
-GET /cameras
+GET /api/v1/cameras
 Authorization: Bearer <token>
 ```
 
@@ -113,13 +113,13 @@ Authorization: Bearer <token>
 
 #### Get Camera by ID
 ```http
-GET /cameras/{camera_id}
+GET /api/v1/cameras/{camera_id}
 Authorization: Bearer <token>
 ```
 
 #### Add Camera
 ```http
-POST /cameras
+POST /api/v1/cameras
 Authorization: Bearer <token>
 Content-Type: application/json
 
@@ -136,7 +136,7 @@ Content-Type: application/json
 
 #### Update Camera
 ```http
-PUT /cameras/{camera_id}
+PUT /api/v1/cameras/{camera_id}
 Authorization: Bearer <token>
 Content-Type: application/json
 
@@ -150,13 +150,13 @@ Content-Type: application/json
 
 #### Delete Camera
 ```http
-DELETE /cameras/{camera_id}
+DELETE /api/v1/cameras/{camera_id}
 Authorization: Bearer <token>
 ```
 
 #### Get Camera Stream
 ```http
-GET /cameras/{camera_id}/stream
+GET /api/v1/cameras/{camera_id}/stream
 Authorization: Bearer <token>
 ```
 
@@ -535,56 +535,5 @@ ws.onmessage = (event) => {
 For endpoints that return lists, pagination is supported:
 
 ```http
-GET /cameras?page=1&limit=10
+GET /api/v1/cameras?page=1&limit=10
 ```
-
-**Response:**
-```json
-{
-  "data": [...],
-  "pagination": {
-    "page": 1,
-    "limit": 10,
-    "total": 100,
-    "pages": 10
-  }
-}
-```
-
-## Data Types
-
-### TimeRange
-```typescript
-interface TimeRange {
-  start: string; // ISO 8601 date string
-  end: string;   // ISO 8601 date string
-}
-```
-
-### Camera
-```typescript
-interface Camera {
-  id: number;
-  name: string;
-  location: string;
-  stream_url: string;
-  status: 'online' | 'offline' | 'maintenance';
-  settings: CameraSettings;
-  statistics: CameraStatistics;
-  created_at: string;
-}
-```
-
-### Alert
-```typescript
-interface Alert {
-  id: number;
-  type: 'camera_offline' | 'system_error' | 'high_traffic' | 'maintenance';
-  severity: 'low' | 'medium' | 'high' | 'critical';
-  title: string;
-  message: string;
-  camera_id?: number;
-  is_read: boolean;
-  created_at: string;
-}
-``` 

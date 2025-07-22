@@ -130,11 +130,11 @@ CREATE TABLE api_endpoint_mappings (
 -- Insert API endpoint mappings
 INSERT INTO api_endpoint_mappings (endpoint_path, http_method, service_name, database_operation, target_table, query_template) VALUES
 -- Camera Management
-('/api/v1/cameras', 'GET', 'camera_service', 'SELECT', 'camera_configurations', 'SELECT * FROM camera_configurations WHERE tenant_id = $1 AND is_active = true'),
-('/api/v1/cameras/{id}', 'GET', 'camera_service', 'SELECT', 'camera_configurations', 'SELECT * FROM camera_configurations WHERE camera_id = $1 AND tenant_id = $2'),
-('/api/v1/cameras', 'POST', 'camera_service', 'INSERT', 'camera_configurations', 'INSERT INTO camera_configurations (camera_id, camera_name, ...) VALUES ($1, $2, ...)'),
-('/api/v1/cameras/{id}', 'PUT', 'camera_service', 'UPDATE', 'camera_configurations', 'UPDATE camera_configurations SET ... WHERE camera_id = $1'),
-('/api/v1/cameras/{id}', 'DELETE', 'camera_service', 'UPDATE', 'camera_configurations', 'UPDATE camera_configurations SET is_active = false WHERE camera_id = $1'),
+('/api/v1/cameras', 'GET', 'camera_service', 'SELECT', 'cameras', 'SELECT * FROM cameras WHERE tenant_id = $1 AND is_active = true'),
+('/api/v1/cameras/{id}', 'GET', 'camera_service', 'SELECT', 'cameras', 'SELECT * FROM cameras WHERE camera_id = $1 AND tenant_id = $2'),
+('/api/v1/cameras', 'POST', 'camera_service', 'INSERT', 'cameras', 'INSERT INTO cameras (camera_id, camera_name, ...) VALUES ($1, $2, ...)'),
+('/api/v1/cameras/{id}', 'PUT', 'camera_service', 'UPDATE', 'cameras', 'UPDATE cameras SET ... WHERE camera_id = $1'),
+('/api/v1/cameras/{id}', 'DELETE', 'camera_service', 'UPDATE', 'cameras', 'UPDATE cameras SET is_active = false WHERE camera_id = $1'),
 
 -- Camera Health
 ('/api/v1/cameras/{id}/health', 'GET', 'camera_service', 'SELECT', 'camera_health', 'SELECT * FROM camera_health WHERE camera_id = $1'),

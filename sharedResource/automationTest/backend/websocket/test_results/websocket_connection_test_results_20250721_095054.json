@@ -1,0 +1,56 @@
+{
+  "test_suite": "WebSocket Connection Test Suite",
+  "total_tests": 6,
+  "passed": 2,
+  "failed": 4,
+  "success_rate": 33.33333333333333,
+  "total_time": 5.097677946090698,
+  "timestamp": "2025-07-21T02:50:54.440477",
+  "results": [
+    {
+      "test_name": "WebSocket Connection Test",
+      "status": "PASS",
+      "message": "WebSocket connection successful",
+      "response_time": 1753066249.438504,
+      "response_data": {
+        "type": "pong"
+      }
+    },
+    {
+      "test_name": "Camera Updates Channel Test",
+      "status": "FAIL",
+      "message": "Camera updates channel test failed: ",
+      "response_time": 1753066254.439735,
+      "error": ""
+    },
+    {
+      "test_name": "Alerts Channel Test",
+      "status": "FAIL",
+      "message": "Alerts channel test failed: ",
+      "response_time": 1753066254.4394681,
+      "error": ""
+    },
+    {
+      "test_name": "Analytics Channel Test",
+      "status": "FAIL",
+      "message": "Analytics channel test failed: ",
+      "response_time": 1753066254.439657,
+      "error": ""
+    },
+    {
+      "test_name": "System Status Channel Test",
+      "status": "FAIL",
+      "message": "System status channel test failed: ",
+      "response_time": 1753066254.440259,
+      "error": ""
+    },
+    {
+      "test_name": "WebSocket Performance Test",
+      "status": "PASS",
+      "message": "Performance test completed",
+      "connection_time": 0.021754980087280273,
+      "round_trip_time": 0.0020248889923095703,
+      "performance_acceptable": true
+    }
+  ]
+}

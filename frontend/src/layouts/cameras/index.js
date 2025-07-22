@@ -17,7 +17,7 @@
 */
 
 import { useState, useEffect } from "react";
-import { useHistory } from "react-router-dom";
+import { useNavigate } from "react-router-dom";
 
 // @mui material components
 import Grid from "@mui/material/Grid";
@@ -79,7 +79,7 @@ const getStatusConfig = (status) => {
 };
 
 function Cameras() {
-  const history = useHistory();
+  const navigate = useNavigate();
   const [cameras, setCameras] = useState([]);
   const [loading, setLoading] = useState(true);
   const [error, setError] = useState(null);
@@ -104,27 +104,150 @@ function Cameras() {
     status: 'offline'
   });
 
+  // Form validation states
+  const [formErrors, setFormErrors] = useState({});
+  const [isSubmitting, setIsSubmitting] = useState(false);
+
   // Load cameras on component mount
   useEffect(() => {
     loadCameras();
+    
+    // Setup WebSocket connection for real-time updates
+    cameraAPI.connectWebSocket((message) => {
+      handleWebSocketMessage(message);
+    });
+    
+    // Cleanup WebSocket on component unmount
+    return () => {
+      cameraAPI.disconnectWebSocket();
+    };
   }, []);
 
   const loadCameras = async () => {
     try {
       setLoading(true);
+      setError(null);
+      
+      // Check if backend is available, if not use mock data
+      const isBackendHealthy = await cameraAPI.checkBackendHealth();
+      if (!isBackendHealthy) {
+        console.log('Backend not available, using mock data for development');
+        cameraAPI.enableMockData();
+      }
+      
       const data = await cameraAPI.getCameras();
       setCameras(data);
-      setError(null);
     } catch (err) {
-      setError(err.message);
-      setSnackbar({ open: true, message: err.message, severity: 'error' });
+      console.error('Error loading cameras:', err);
+      setError(err.message || 'Failed to load cameras');
+      setSnackbar({ open: true, message: err.message || 'Failed to load cameras', severity: 'error' });
     } finally {
       setLoading(false);
     }
   };
 
+  const handleWebSocketMessage = (message) => {
+    console.log('Received WebSocket message:', message);
+    
+    switch (message.type) {
+      case 'camera_update':
+        // Update camera status in real-time
+        setCameras(prevCameras => 
+          prevCameras.map(camera => 
+            camera.id === message.data.camera_id 
+              ? { ...camera, status: message.data.status }
+              : camera
+          )
+        );
+        
+        // Show notification for status changes
+        if (message.data.status !== 'active') {
+          setSnackbar({ 
+            open: true, 
+            message: `Camera ${message.data.camera_id} status changed to ${message.data.status}`, 
+            severity: 'warning' 
+          });
+        }
+        break;
+        
+      case 'camera_added':
+        // Refresh camera list when new camera is added
+        loadCameras();
+        setSnackbar({ 
+          open: true, 
+          message: 'New camera detected and added to system', 
+          severity: 'info' 
+        });
+        break;
+        
+      case 'camera_deleted':
+        // Remove camera from list when deleted
+        setCameras(prevCameras => 
+          prevCameras.filter(camera => camera.id !== message.data.camera_id)
+        );
+        setSnackbar({ 
+          open: true, 
+          message: 'Camera removed from system', 
+          severity: 'info' 
+        });
+        break;
+        
+      default:
+        console.log('Unknown WebSocket message type:', message.type);
+    }
+  };
+
+  const resetForm = () => {
+    setFormData({
+      name: '',
+      ip_address: '',
+      rtsp_url: '',
+      status: 'offline'
+    });
+    setFormErrors({});
+  };
+
+  // Form validation
+  const validateForm = (data) => {
+    const errors = {};
+    
+    // Camera name validation
+    if (!data.name.trim()) {
+      errors.name = 'Camera name is required';
+    } else if (data.name.trim().length < 3) {
+      errors.name = 'Camera name must be at least 3 characters';
+    }
+    
+    // IP address validation
+    const ipRegex = /^(?:(?:25[0-5]|2[0-4][0-9]|[01]?[0-9][0-9]?)\.){3}(?:25[0-5]|2[0-4][0-9]|[01]?[0-9][0-9]?)$/;
+    if (!data.ip_address.trim()) {
+      errors.ip_address = 'IP address is required';
+    } else if (!ipRegex.test(data.ip_address.trim())) {
+      errors.ip_address = 'Please enter a valid IP address';
+    }
+    
+    // RTSP URL validation
+    const rtspRegex = /^rtsp:\/\/.+/i;
+    if (!data.rtsp_url.trim()) {
+      errors.rtsp_url = 'RTSP URL is required';
+    } else if (!rtspRegex.test(data.rtsp_url.trim())) {
+      errors.rtsp_url = 'RTSP URL must start with rtsp://';
+    }
+    
+    return errors;
+  };
+
   const handleAddCamera = async () => {
+    // Validate form
+    const errors = validateForm(formData);
+    if (Object.keys(errors).length > 0) {
+      setFormErrors(errors);
+      setSnackbar({ open: true, message: 'Please fix the form errors', severity: 'error' });
+      return;
+    }
+
     try {
+      setIsSubmitting(true);
       await cameraAPI.createCamera(formData);
       setSnackbar({ open: true, message: 'Camera added successfully!', severity: 'success' });
       setOpenAddDialog(false);
@@ -132,6 +255,8 @@ function Cameras() {
       loadCameras();
     } catch (err) {
       setSnackbar({ open: true, message: err.message, severity: 'error' });
+    } finally {
+      setIsSubmitting(false);
     }
   };
 
@@ -166,15 +291,6 @@ function Cameras() {
     } catch (err) {
       setSnackbar({ open: true, message: err.message, severity: 'error' });
     }
-  };
-
-  const resetForm = () => {
-    setFormData({
-      name: '',
-      ip_address: '',
-      rtsp_url: '',
-      status: 'offline'
-    });
   };
 
   const openEditModal = (camera) => {
@@ -253,7 +369,6 @@ function Cameras() {
           <VuiButton
             color="info"
             variant="contained"
-            startIcon={<IoAdd />}
             onClick={() => setOpenAddDialog(true)}
           >
             Add Camera
@@ -320,26 +435,36 @@ function Cameras() {
               <VuiTypography variant="caption" color="text" opacity={0.7} display="block" mb={1}>
                 Camera Name
               </VuiTypography>
-              <TextField
-                fullWidth
+            <TextField
+              fullWidth
                 placeholder="Enter camera name"
-                value={formData.name}
-                onChange={(e) => setFormData({ ...formData, name: e.target.value })}
+              value={formData.name}
+                onChange={(e) => {
+                  setFormData({ ...formData, name: e.target.value });
+                  if (formErrors.name) {
+                    setFormErrors({ ...formErrors, name: null });
+                  }
+                }}
+                error={!!formErrors.name}
+                helperText={formErrors.name}
                 sx={{
                   '& .MuiOutlinedInput-root': {
                     color: 'white',
                     '& fieldset': {
-                      borderColor: 'rgba(255,255,255,0.2)'
+                      borderColor: formErrors.name ? '#f44336' : 'rgba(255,255,255,0.2)'
                     },
                     '&:hover fieldset': {
-                      borderColor: 'rgba(255,255,255,0.3)'
+                      borderColor: formErrors.name ? '#f44336' : 'rgba(255,255,255,0.3)'
                     },
                     '&.Mui-focused fieldset': {
-                      borderColor: '#0075FF'
+                      borderColor: formErrors.name ? '#f44336' : '#0075FF'
                     }
                   },
                   '& .MuiInputLabel-root': {
                     color: 'rgba(255,255,255,0.7)'
+                  },
+                  '& .MuiFormHelperText-root': {
+                    color: '#f44336'
                   }
                 }}
               />
@@ -352,8 +477,14 @@ function Cameras() {
               <VuiInput
                 placeholder="192.168.1.100"
                 value={formData.ip_address}
-                onChange={(e) => setFormData({ ...formData, ip_address: e.target.value })}
-                fullWidth
+                onChange={(e) => {
+                  setFormData({ ...formData, ip_address: e.target.value });
+                  if (formErrors.ip_address) {
+                    setFormErrors({ ...formErrors, ip_address: null });
+                  }
+                }}
+                error={!!formErrors.ip_address}
+                helperText={formErrors.ip_address}
               />
             </VuiBox>
             
@@ -364,8 +495,14 @@ function Cameras() {
               <VuiInput
                 placeholder="rtsp://192.168.1.100:554/stream"
                 value={formData.rtsp_url}
-                onChange={(e) => setFormData({ ...formData, rtsp_url: e.target.value })}
-                fullWidth
+                onChange={(e) => {
+                  setFormData({ ...formData, rtsp_url: e.target.value });
+                  if (formErrors.rtsp_url) {
+                    setFormErrors({ ...formErrors, rtsp_url: null });
+                  }
+                }}
+                error={!!formErrors.rtsp_url}
+                helperText={formErrors.rtsp_url}
               />
             </VuiBox>
             
@@ -437,8 +574,9 @@ function Cameras() {
             variant="contained"
             onClick={handleAddCamera}
             startIcon={<IoAdd />}
+            disabled={isSubmitting}
           >
-            Add Camera
+            {isSubmitting ? 'Adding...' : 'Add Camera'}
           </VuiButton>
         </DialogActions>
       </Dialog>
@@ -486,11 +624,11 @@ function Cameras() {
               <VuiTypography variant="caption" color="text" opacity={0.7} display="block" mb={1}>
                 Camera Name
               </VuiTypography>
-              <TextField
-                fullWidth
+            <TextField
+              fullWidth
                 placeholder="Enter camera name"
-                value={formData.name}
-                onChange={(e) => setFormData({ ...formData, name: e.target.value })}
+              value={formData.name}
+              onChange={(e) => setFormData({ ...formData, name: e.target.value })}
                 sx={{
                   '& .MuiOutlinedInput-root': {
                     color: 'white',
@@ -519,7 +657,7 @@ function Cameras() {
                 placeholder="192.168.1.100"
                 value={formData.ip_address}
                 onChange={(e) => setFormData({ ...formData, ip_address: e.target.value })}
-                fullWidth
+              fullWidth
               />
             </VuiBox>
             
@@ -531,7 +669,7 @@ function Cameras() {
                 placeholder="rtsp://192.168.1.100:554/stream"
                 value={formData.rtsp_url}
                 onChange={(e) => setFormData({ ...formData, rtsp_url: e.target.value })}
-                fullWidth
+              fullWidth
               />
             </VuiBox>
             
@@ -651,7 +789,7 @@ function Cameras() {
             </VuiTypography>
             <VuiTypography variant="body2" color="text" opacity={0.7}>
               This action cannot be undone and will permanently remove the camera from the system.
-            </VuiTypography>
+          </VuiTypography>
           </VuiBox>
         </DialogContent>
         <DialogActions sx={{ 

@@ -92,7 +92,7 @@ Tài liệu này trình bày hệ thống monitoring và alerting production-rea
 -- Camera Health Monitoring Table
 CREATE TABLE camera_health_monitoring (
     id SERIAL PRIMARY KEY,
-    camera_id VARCHAR(100) REFERENCES camera_configurations(camera_id),
+    camera_id VARCHAR(100) REFERENCES cameras(camera_id),
     metric_timestamp TIMESTAMP DEFAULT CURRENT_TIMESTAMP,
     
     -- Camera Status
@@ -202,7 +202,7 @@ $$ LANGUAGE plpgsql;
 CREATE TABLE stream_quality_monitoring (
     id SERIAL PRIMARY KEY,
     stream_id VARCHAR(100) REFERENCES video_streams(stream_id),
-    camera_id VARCHAR(100) REFERENCES camera_configurations(camera_id),
+    camera_id VARCHAR(100) REFERENCES cameras(camera_id),
     metric_timestamp TIMESTAMP DEFAULT CURRENT_TIMESTAMP,
     
     -- Quality Metrics
@@ -414,7 +414,7 @@ $$ LANGUAGE plpgsql;
 -- Real-time Processing Monitoring Table
 CREATE TABLE realtime_processing_monitoring (
     id SERIAL PRIMARY KEY,
-    camera_id VARCHAR(100) REFERENCES camera_configurations(camera_id),
+    camera_id VARCHAR(100) REFERENCES cameras(camera_id),
     metric_timestamp TIMESTAMP DEFAULT CURRENT_TIMESTAMP,
     
     -- Processing Performance

@@ -126,11 +126,12 @@ const routes = [
     noCollapse: true,
   },
   {
-    type: 'route',
-    name: 'Camera Detail',
-    key: 'camera-detail',
-    route: '/cameras/:id',
+    type: "collapse",
+    name: "Camera Detail",
+    key: "camera-detail",
+    route: "/cameras/:id",
     component: CameraDetail,
+    noCollapse: true,
   },
 ];
 

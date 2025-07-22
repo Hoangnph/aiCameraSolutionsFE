@@ -50,7 +50,7 @@ check_services() {
     fi
     
     # Check PostgreSQL
-    if docker exec becamera_postgres pg_isready -U postgres > /dev/null 2>&1; then
+    if docker exec ai_camera_postgres pg_isready -U postgres > /dev/null 2>&1; then
         echo -e "${GREEN}✅ PostgreSQL Database: Healthy${NC}"
     else
         echo -e "${RED}❌ PostgreSQL Database: Not responding${NC}"
@@ -163,7 +163,7 @@ $(jq -r '.results[] | select(.status == "FAILED") | "- " + .test_name + ": " + .
 ### Services Status
 - **beAuth Service**: $(curl -s http://localhost:3001/health > /dev/null && echo "✅ Healthy" || echo "❌ Not responding")
 - **beCamera Service**: $(curl -s http://localhost:3002/health > /dev/null && echo "✅ Healthy" || echo "❌ Not responding")
-- **PostgreSQL Database**: $(docker exec becamera_postgres pg_isready -U postgres > /dev/null 2>&1 && echo "✅ Healthy" || echo "❌ Not responding")
+- **PostgreSQL Database**: $(docker exec ai_camera_postgres pg_isready -U postgres > /dev/null 2>&1 && echo "✅ Healthy" || echo "❌ Not responding")
 - **Redis Cache**: $(docker exec becamera_redis redis-cli ping > /dev/null 2>&1 && echo "✅ Healthy" || echo "❌ Not responding")
 
 ## Recommendations

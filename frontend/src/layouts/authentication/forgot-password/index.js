@@ -16,7 +16,8 @@
 
 */
 
-import { useState } from "react";
+import { useState, useEffect } from "react";
+import { useNavigate } from "react-router-dom";
 
 // @mui material components
 import { Link } from "react-router-dom";
@@ -46,7 +47,31 @@ import GradientBorder from "examples/GradientBorder";
 // Images
 import bgSignIn from "assets/images/signInImage.png";
 
+import { useAuth } from "contexts/AuthContext";
+import LoadingSpinner from "components/LoadingSpinner";
+
 function ForgotPassword() {
+  const navigate = useNavigate();
+  const { isAuthenticated, isLoading } = useAuth();
+
+  // Redirect authenticated users to dashboard
+  useEffect(() => {
+    if (!isLoading && isAuthenticated) {
+      console.log("🚨 ForgotPassword: User already authenticated, redirecting to dashboard");
+      navigate("/dashboard", { replace: true });
+    }
+  }, [isAuthenticated, isLoading, navigate]);
+
+  // Show loading while checking authentication
+  if (isLoading) {
+    return <LoadingSpinner />;
+  }
+
+  // Don't render forgot-password form if user is already authenticated
+  if (isAuthenticated) {
+    return <LoadingSpinner />;
+  }
+
   const [formData, setFormData] = useState({
     email: "",
   });

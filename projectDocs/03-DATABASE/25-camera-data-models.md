@@ -92,7 +92,7 @@ Tài liệu này trình bày chi tiết data models cho camera management, strea
 
 ```sql
 -- Camera configuration table
-CREATE TABLE camera_configurations (
+CREATE TABLE cameras (
     id SERIAL PRIMARY KEY,
     camera_id VARCHAR(100) UNIQUE NOT NULL,
     camera_name VARCHAR(200) NOT NULL,
@@ -145,7 +145,7 @@ CREATE TABLE camera_configurations (
 -- Camera health monitoring
 CREATE TABLE camera_health (
     id SERIAL PRIMARY KEY,
-    camera_id VARCHAR(100) REFERENCES camera_configurations(camera_id),
+    camera_id VARCHAR(100) REFERENCES cameras(camera_id),
     
     -- Health metrics
     status VARCHAR(20) DEFAULT 'online', -- online, offline, error, maintenance
@@ -215,7 +215,7 @@ CREATE TABLE camera_groups (
 -- Camera group assignments
 CREATE TABLE camera_group_assignments (
     id SERIAL PRIMARY KEY,
-    camera_id VARCHAR(100) REFERENCES camera_configurations(camera_id),
+    camera_id VARCHAR(100) REFERENCES cameras(camera_id),
     group_id INTEGER REFERENCES camera_groups(id),
     assigned_at TIMESTAMP DEFAULT CURRENT_TIMESTAMP,
     UNIQUE(camera_id, group_id)
@@ -231,7 +231,7 @@ CREATE TABLE camera_group_assignments (
 CREATE TABLE video_streams (
     id SERIAL PRIMARY KEY,
     stream_id VARCHAR(100) UNIQUE NOT NULL,
-    camera_id VARCHAR(100) REFERENCES camera_configurations(camera_id),
+    camera_id VARCHAR(100) REFERENCES cameras(camera_id),
     
     -- Stream information
     stream_url VARCHAR(500) NOT NULL,
@@ -345,7 +345,7 @@ CREATE TABLE stream_events (
 -- Person detection events
 CREATE TABLE person_detections (
     id SERIAL PRIMARY KEY,
-    camera_id VARCHAR(100) REFERENCES camera_configurations(camera_id),
+    camera_id VARCHAR(100) REFERENCES cameras(camera_id),
     frame_timestamp TIMESTAMP NOT NULL,
     detection_timestamp TIMESTAMP DEFAULT CURRENT_TIMESTAMP,
     
@@ -373,7 +373,7 @@ CREATE TABLE person_detections (
 -- Person tracking data
 CREATE TABLE person_tracking (
     id SERIAL PRIMARY KEY,
-    camera_id VARCHAR(100) REFERENCES camera_configurations(camera_id),
+    camera_id VARCHAR(100) REFERENCES cameras(camera_id),
     track_id VARCHAR(100) NOT NULL,
     
     -- Tracking details
@@ -407,7 +407,7 @@ CREATE TABLE person_tracking (
 -- Counting events
 CREATE TABLE counting_events (
     id SERIAL PRIMARY KEY,
-    camera_id VARCHAR(100) REFERENCES camera_configurations(camera_id),
+    camera_id VARCHAR(100) REFERENCES cameras(camera_id),
     event_timestamp TIMESTAMP DEFAULT CURRENT_TIMESTAMP,
     
     -- Event details
@@ -438,7 +438,7 @@ CREATE TABLE counting_events (
 -- Real-time counting results
 CREATE TABLE counting_results (
     id SERIAL PRIMARY KEY,
-    camera_id VARCHAR(100) REFERENCES camera_configurations(camera_id),
+    camera_id VARCHAR(100) REFERENCES cameras(camera_id),
     result_timestamp TIMESTAMP DEFAULT CURRENT_TIMESTAMP,
     
     -- Count data
@@ -468,7 +468,7 @@ CREATE TABLE counting_results (
 -- Counting zones and lines
 CREATE TABLE counting_zones (
     id SERIAL PRIMARY KEY,
-    camera_id VARCHAR(100) REFERENCES camera_configurations(camera_id),
+    camera_id VARCHAR(100) REFERENCES cameras(camera_id),
     zone_name VARCHAR(200) NOT NULL,
     zone_type VARCHAR(50), -- counting_line, area, region
     
@@ -501,7 +501,7 @@ CREATE TABLE counting_zones (
 -- Real-time analytics metrics
 CREATE TABLE realtime_analytics (
     id SERIAL PRIMARY KEY,
-    camera_id VARCHAR(100) REFERENCES camera_configurations(camera_id),
+    camera_id VARCHAR(100) REFERENCES cameras(camera_id),
     metric_timestamp TIMESTAMP DEFAULT CURRENT_TIMESTAMP,
     
     -- Current metrics
@@ -535,7 +535,7 @@ CREATE TABLE realtime_analytics (
 -- Historical analytics data
 CREATE TABLE historical_analytics (
     id SERIAL PRIMARY KEY,
-    camera_id VARCHAR(100) REFERENCES camera_configurations(camera_id),
+    camera_id VARCHAR(100) REFERENCES cameras(camera_id),
     data_date DATE NOT NULL,
     time_period VARCHAR(20) NOT NULL, -- hour, day, week, month
     
@@ -571,7 +571,7 @@ CREATE TABLE historical_analytics (
 -- Analytics alerts and notifications
 CREATE TABLE analytics_alerts (
     id SERIAL PRIMARY KEY,
-    camera_id VARCHAR(100) REFERENCES camera_configurations(camera_id),
+    camera_id VARCHAR(100) REFERENCES cameras(camera_id),
     alert_timestamp TIMESTAMP DEFAULT CURRENT_TIMESTAMP,
     
     -- Alert details
@@ -651,9 +651,9 @@ CREATE TABLE dashboard_widgets (
 
 ```sql
 -- Performance indexes for camera data
-CREATE INDEX idx_camera_configurations_tenant ON camera_configurations(tenant_id);
-CREATE INDEX idx_camera_configurations_location ON camera_configurations(location_id);
-CREATE INDEX idx_camera_configurations_active ON camera_configurations(is_active) WHERE is_active = TRUE;
+CREATE INDEX idx_cameras_tenant ON cameras(tenant_id);
+CREATE INDEX idx_cameras_location ON cameras(location_id);
+CREATE INDEX idx_cameras_active ON cameras(is_active) WHERE is_active = TRUE;
 
 -- Stream processing indexes
 CREATE INDEX idx_video_streams_camera ON video_streams(camera_id);

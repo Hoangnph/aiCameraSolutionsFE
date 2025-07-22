@@ -1,0 +1,42 @@
+{
+  "test_name": "LoadingSpinner Component Test",
+  "timestamp": "2025-07-20 15:42:59",
+  "tests": [
+    {
+      "name": "Server Status",
+      "status": "PASS",
+      "message": "Server is running",
+      "timestamp": "2025-07-20 15:42:59"
+    },
+    {
+      "name": "Sign-in Page No Errors",
+      "status": "PASS",
+      "message": "No LoadingSpinner errors found",
+      "timestamp": "2025-07-20 15:42:59"
+    },
+    {
+      "name": "Sign-up Page No Errors",
+      "status": "PASS",
+      "message": "No LoadingSpinner errors found",
+      "timestamp": "2025-07-20 15:42:59"
+    },
+    {
+      "name": "Forgot Password No Errors",
+      "status": "PASS",
+      "message": "No LoadingSpinner errors found",
+      "timestamp": "2025-07-20 15:42:59"
+    },
+    {
+      "name": "Reset Password No Errors",
+      "status": "PASS",
+      "message": "No LoadingSpinner errors found",
+      "timestamp": "2025-07-20 15:42:59"
+    },
+    {
+      "name": "Dashboard No Errors",
+      "status": "PASS",
+      "message": "No LoadingSpinner errors found",
+      "timestamp": "2025-07-20 15:42:59"
+    }
+  ]
+}

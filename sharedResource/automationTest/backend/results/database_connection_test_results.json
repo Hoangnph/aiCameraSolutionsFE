@@ -1,8 +1,8 @@
 {
   "test_suite": "Database Connection Tests",
-  "start_time": "2025-07-11T17:48:02.733618",
-  "end_time": "2025-07-11T17:48:02.896304",
-  "duration_seconds": 0.162686,
+  "start_time": "2025-07-19T10:04:52.992274",
+  "end_time": "2025-07-19T10:04:53.105064",
+  "duration_seconds": 0.11279,
   "total_tests": 4,
   "passed_tests": 4,
   "failed_tests": 0,
@@ -11,29 +11,29 @@
       "test_name": "DB-CONN-001",
       "status": "PASS",
       "message": "Database connection successful",
-      "timestamp": "2025-07-11T17:48:02.798027",
+      "timestamp": "2025-07-19T10:04:53.024571",
       "details": "PostgreSQL version: PostgreSQL 13.21 (Debian 13.21-1.pgdg120+1) on x86_64-pc-linux-gnu, compiled by gcc (Debian 12.2.0-14) 12.2.0, 64-bit"
     },
     {
       "test_name": "DB-TABLES-001",
       "status": "PASS",
       "message": "All required tables exist (20 tables)",
-      "timestamp": "2025-07-11T17:48:02.851791",
+      "timestamp": "2025-07-19T10:04:53.068446",
       "details": "Tables: users, cameras, refresh_tokens, user_sessions, registration_codes, audit_log, ai_models, zones, counting_results, analytics, alerts, audit_logs, files, system_logs, migrations, migration_log, deployment_migrations, deployment_execution_logs, model_logs, camera_events"
     },
     {
       "test_name": "DB-PERM-001",
       "status": "PASS",
       "message": "Database permissions verified (4 permissions)",
-      "timestamp": "2025-07-11T17:48:02.878466",
+      "timestamp": "2025-07-19T10:04:53.089400",
       "details": "Permissions: SELECT, INSERT, UPDATE, DELETE"
     },
     {
       "test_name": "DB-PERF-001",
       "status": "PASS",
       "message": "Database performance acceptable",
-      "timestamp": "2025-07-11T17:48:02.896195",
-      "details": "Simple query: 0.004s, Complex query: 0.004s"
+      "timestamp": "2025-07-19T10:04:53.104947",
+      "details": "Simple query: 0.003s, Complex query: 0.002s"
     }
   ]
 }

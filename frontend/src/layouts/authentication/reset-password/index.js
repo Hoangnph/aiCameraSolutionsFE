@@ -16,7 +16,8 @@
 
 */
 
-import { useState } from "react";
+import { useState, useEffect } from "react";
+import { useNavigate } from "react-router-dom";
 
 // @mui material components
 import { Link, useLocation } from "react-router-dom";
@@ -41,10 +42,32 @@ import borders from "assets/theme/base/borders";
 
 // Vision UI Dashboard theme components
 import GradientBorder from "examples/GradientBorder";
+import LoadingSpinner from "components/LoadingSpinner";
+import { useAuth } from "contexts/AuthContext";
 
 function ResetPassword() {
+  const navigate = useNavigate();
+  const { isAuthenticated, isLoading } = useAuth();
   const location = useLocation();
   
+  // Redirect authenticated users to dashboard
+  useEffect(() => {
+    if (!isLoading && isAuthenticated) {
+      console.log("🚨 ResetPassword: User already authenticated, redirecting to dashboard");
+      navigate("/dashboard", { replace: true });
+    }
+  }, [isAuthenticated, isLoading, navigate]);
+
+  // Show loading while checking authentication
+  if (isLoading) {
+    return <LoadingSpinner />;
+  }
+
+  // Don't render reset-password form if user is already authenticated
+  if (isAuthenticated) {
+    return <LoadingSpinner />;
+  }
+
   // Lấy token từ URL nếu có (từ email reset)
   const searchParams = new URLSearchParams(location.search);
   const token = searchParams.get('token');

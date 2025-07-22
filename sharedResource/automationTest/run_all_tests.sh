@@ -119,7 +119,7 @@ run_all_backend_tests() {
     local backend_phases=(
         "Database Tests" "backend/database/run_database_tests.sh" "Database connection and schema validation"
         "Authentication Tests" "backend/auth/run_auth_tests.sh" "User authentication and authorization"
-        "Camera Management Tests" "backend/camera/run_camera_tests.sh" "Camera CRUD operations and management"
+        "Camera Management Tests" "backend/camera/run_camera_tests.sh" "Camera CRUD operations with standardized response format"
         "Worker Pool Tests" "backend/worker/run_worker_tests.sh" "Worker pool processing and task management"
         "Integration Tests" "backend/integration/run_integration_tests.sh" "Cross-service integration testing"
         "Security Tests" "backend/security/run_security_tests.sh" "Security validation and penetration testing"
@@ -155,6 +155,7 @@ run_all_frontend_tests() {
         "Authentication Tests" "frontend/authentication/run_auth_tests.sh" "Complete authentication testing"
         "Change Password Tests" "frontend/authentication/run_change_password_tests.sh" "Change password flow testing"
         "Frontend Integration Tests" "frontend/run_frontend_tests.sh" "Complete frontend test suite"
+        "Frontend-Backend Integration" "frontend/test_frontend_integration.py" "Frontend-backend API integration testing"
     )
     
     for ((i=0; i<${#frontend_phases[@]}; i+=3)); do
@@ -162,7 +163,22 @@ run_all_frontend_tests() {
         local script_path="$SCRIPT_DIR/${frontend_phases[i+1]}"
         local description="${frontend_phases[i+2]}"
         
-        run_test_phase "$phase_name" "$script_path" "$description"
+        # Handle Python scripts differently
+        if [[ "$script_path" == *.py ]]; then
+            log "Starting $phase_name: $description"
+            if python3 "$script_path"; then
+                success "$phase_name completed successfully"
+                ((PASSED_TESTS++))
+                TEST_RESULTS+=("✅ $phase_name: PASSED")
+            else
+                error "$phase_name failed"
+                ((FAILED_TESTS++))
+                TEST_RESULTS+=("❌ $phase_name: FAILED")
+            fi
+            ((TOTAL_TESTS++))
+        else
+            run_test_phase "$phase_name" "$script_path" "$description"
+        fi
         
         # If any test fails, ask if user wants to continue
         if [ $? -ne 0 ]; then

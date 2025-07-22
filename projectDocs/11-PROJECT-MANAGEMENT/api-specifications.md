@@ -258,7 +258,7 @@ http://localhost:3002/api/v1
 
 #### 1. Get All Cameras
 ```http
-GET /cameras?page=1&limit=10&status=active
+GET /api/v1/cameras?page=1&limit=10&status=active
 Authorization: Bearer <access_token>
 ```
 
@@ -283,7 +283,7 @@ Authorization: Bearer <access_token>
 
 #### 2. Create Camera
 ```http
-POST /cameras
+POST /api/v1/cameras
 Authorization: Bearer <access_token>
 Content-Type: application/json
 
@@ -313,13 +313,13 @@ Content-Type: application/json
 
 #### 3. Get Camera by ID
 ```http
-GET /cameras/{id}
+GET /api/v1/cameras/{id}
 Authorization: Bearer <access_token>
 ```
 
 #### 4. Update Camera
 ```http
-PUT /cameras/{id}
+PUT /api/v1/cameras/{id}
 Authorization: Bearer <access_token>
 Content-Type: application/json
 
@@ -333,7 +333,7 @@ Content-Type: application/json
 
 #### 5. Delete Camera
 ```http
-DELETE /cameras/{id}
+DELETE /api/v1/cameras/{id}
 Authorization: Bearer <access_token>
 ```
 

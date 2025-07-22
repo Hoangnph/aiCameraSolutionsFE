@@ -1,0 +1,36 @@
+{
+  "test_name": "Simple Authentication Loading Test",
+  "timestamp": "2025-07-20 15:34:38",
+  "tests": [
+    {
+      "name": "Server Status",
+      "status": "PASS",
+      "message": "Server is running",
+      "timestamp": "2025-07-20 15:34:38"
+    },
+    {
+      "name": "Sign-in Page Loading",
+      "status": "FAIL",
+      "message": "Page content doesn't match expected",
+      "timestamp": "2025-07-20 15:34:38"
+    },
+    {
+      "name": "Dashboard Redirect",
+      "status": "FAIL",
+      "message": "No redirect, status: 200",
+      "timestamp": "2025-07-20 15:34:38"
+    },
+    {
+      "name": "No Menu on Auth Pages",
+      "status": "PASS",
+      "message": "Menu not present on sign-in page",
+      "timestamp": "2025-07-20 15:34:38"
+    },
+    {
+      "name": "Page Load Time",
+      "status": "PASS",
+      "message": "Page loaded in 0.01 seconds",
+      "timestamp": "2025-07-20 15:34:38"
+    }
+  ]
+}

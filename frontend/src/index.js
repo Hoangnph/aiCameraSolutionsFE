@@ -17,20 +17,45 @@
 */
 
 import React from "react";
-import { createRoot} from "react-dom/client";
-import { BrowserRouter } from "react-router-dom";
+import { createRoot } from "react-dom/client";
+
+// Immediate Client-Side Protection - Runs before React loads
+(function() {
+  const protectedPaths = ['/dashboard', '/cameras', '/analytics', '/tables', '/billing', '/profile', '/rtl'];
+  const currentPath = window.location.pathname;
+  
+  console.log('🚨 Immediate Auth Check:', {
+    currentPath,
+    isProtected: protectedPaths.some(path => currentPath.startsWith(path))
+  });
+  
+  if (protectedPaths.some(path => currentPath.startsWith(path))) {
+    const token = localStorage.getItem('authToken');
+    const user = localStorage.getItem('user');
+    
+    console.log('🚨 Immediate Auth Check - Protected Path:', {
+      hasToken: !!token,
+      hasUser: !!user
+    });
+    
+    if (!token || !user) {
+      console.log('🚨 Immediate Redirect: No auth, redirecting to login');
+      window.location.href = '/authentication/sign-in';
+      return;
+    }
+  }
+})();
+
+// Vision UI Dashboard React App
 import App from "App";
 
-// Vision UI Dashboard React Context Provider
+// Soft UI Context Provider
 import { VisionUIControllerProvider } from "context";
 
-const rootElement = document.getElementById('root');
-const root = createRoot(rootElement);
-
-
-root.render(<BrowserRouter>
+const root = createRoot(document.getElementById("root"));
+root.render(
   <VisionUIControllerProvider>
     <App />
   </VisionUIControllerProvider>
-</BrowserRouter>)
+);
 

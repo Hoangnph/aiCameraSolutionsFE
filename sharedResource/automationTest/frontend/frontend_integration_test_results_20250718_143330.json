@@ -1,0 +1,102 @@
+{
+  "total_tests": 7,
+  "passed": 6,
+  "failed": 1,
+  "success_rate": 85.71428571428571,
+  "duration": 0.224442,
+  "start_time": "2025-07-18T14:33:30.170327",
+  "end_time": "2025-07-18T14:33:30.394769",
+  "results": [
+    {
+      "test_name": "Frontend Accessibility",
+      "success": true,
+      "message": "Status: 200",
+      "data": null,
+      "timestamp": "2025-07-18T14:33:30.212032"
+    },
+    {
+      "test_name": "Backend API - beAuth Health",
+      "success": true,
+      "message": "Status: 200",
+      "data": null,
+      "timestamp": "2025-07-18T14:33:30.219925"
+    },
+    {
+      "test_name": "Backend API - beCamera Health",
+      "success": true,
+      "message": "Status: 200",
+      "data": null,
+      "timestamp": "2025-07-18T14:33:30.242387"
+    },
+    {
+      "test_name": "Backend API - beCamera Test Cameras",
+      "success": true,
+      "message": "Status: 200",
+      "data": null,
+      "timestamp": "2025-07-18T14:33:30.261051"
+    },
+    {
+      "test_name": "Backend API - beCamera Test Workers",
+      "success": true,
+      "message": "Status: 200",
+      "data": null,
+      "timestamp": "2025-07-18T14:33:30.268881"
+    },
+    {
+      "test_name": "Camera API Integration",
+      "success": true,
+      "message": "Successfully retrieved 7 cameras",
+      "data": null,
+      "timestamp": "2025-07-18T14:33:30.291559"
+    },
+    {
+      "test_name": "Worker Pool API Integration",
+      "success": true,
+      "message": "Successfully retrieved worker pool status with 4 workers",
+      "data": null,
+      "timestamp": "2025-07-18T14:33:30.299137"
+    },
+    {
+      "test_name": "API Response Format",
+      "success": true,
+      "message": "All APIs return consistent format",
+      "data": null,
+      "timestamp": "2025-07-18T14:33:30.329171"
+    },
+    {
+      "test_name": "CORS Headers",
+      "success": false,
+      "message": "Missing CORS headers: ['Access-Control-Allow-Origin', 'Access-Control-Allow-Methods', 'Access-Control-Allow-Headers']",
+      "data": null,
+      "timestamp": "2025-07-18T14:33:30.338638"
+    },
+    {
+      "test_name": "Error Handling - 404",
+      "success": true,
+      "message": "Properly handles non-existent endpoints",
+      "data": null,
+      "timestamp": "2025-07-18T14:33:30.347349"
+    },
+    {
+      "test_name": "Error Handling - Invalid ID",
+      "success": true,
+      "message": "Properly handles invalid camera ID",
+      "data": null,
+      "timestamp": "2025-07-18T14:33:30.358882"
+    },
+    {
+      "test_name": "Performance - Camera API",
+      "success": true,
+      "message": "Response time: 0.02s",
+      "data": null,
+      "timestamp": "2025-07-18T14:33:30.380052"
+    },
+    {
+      "test_name": "Performance - Worker API",
+      "success": true,
+      "message": "Response time: 0.01s",
+      "data": null,
+      "timestamp": "2025-07-18T14:33:30.394615"
+    }
+  ]
+}
