@@ -14,12 +14,19 @@ import cv2
 import numpy as np
 from typing import List, Tuple, Dict
 from collections import defaultdict
+from config import (
+    CONFIDENCE_THRESHOLD, NMS_THRESHOLD, DISTANCE_THRESHOLD, 
+    DIRECTION_THRESHOLD, LINE_TOLERANCE, MIN_MOVEMENT_DISTANCE,
+    BBOX_COLOR, BBOX_THICKNESS, ID_TEXT_COLOR,
+    COUNTING_LINE_COLOR, COUNTING_LINE_THICKNESS,
+    DEBUG_MODE, PERSON_CLASS_INDEX, CLASSES
+)
 
 class PeopleDetector:
     """
     PeopleDetector class for detecting people in frames using a pre-trained model.
     """
-    def __init__(self, prototxt_path: str, model_path: str, confidence: float = 0.4):
+    def __init__(self, prototxt_path: str, model_path: str, confidence: float = CONFIDENCE_THRESHOLD):
         """
         Initializes the PeopleDetector.
 
@@ -30,12 +37,7 @@ class PeopleDetector:
         """
         self.net = cv2.dnn.readNetFromCaffe(prototxt_path, model_path)
         self.confidence = confidence
-        self.CLASSES = [
-            "background", "aeroplane", "bicycle", "bird", "boat",
-            "bottle", "bus", "car", "cat", "chair", "cow", "diningtable",
-            "dog", "horse", "motorbike", "person", "pottedplant", "sheep",
-            "sofa", "train", "tvmonitor"
-        ]
+        self.CLASSES = CLASSES
 
     def detect_people(self, frame: np.ndarray) -> List[Tuple[int, int, int, int]]:
         """
@@ -171,7 +173,7 @@ class PeopleCounterAdapter:
         self,
         prototxt_path: str,
         model_path: str,
-        confidence: float = 0.4,
+        confidence: float = CONFIDENCE_THRESHOLD,
         skip_frames: int = 5,
         resize_width: int = 1920,
         max_disappeared: int = 50,  # <-- thêm tham số này
@@ -293,7 +295,7 @@ class PeopleCounterAdapter:
         
         return cross_product
 
-    def _segment_crosses_line(self, p1, p2, l1, l2, tolerance=5):
+    def _segment_crosses_line(self, p1, p2, l1, l2, tolerance=LINE_TOLERANCE):
         """
         Kiểm tra đoạn nối giữa 2 centroid (p1, p2) có cắt qua line (l1, l2) không.
         Sử dụng thuật toán kiểm tra giao nhau 2 đoạn thẳng dựa trên cross product.
@@ -312,7 +314,7 @@ class PeopleCounterAdapter:
         
         # Kiểm tra khoảng cách tối thiểu giữa 2 centroid
         distance = ((p2[0] - p1[0])**2 + (p2[1] - p1[1])**2)**0.5
-        if distance < 2:  # Nếu di chuyển quá ít, không đếm
+        if distance < MIN_MOVEMENT_DISTANCE:  # Nếu di chuyển quá ít, không đếm
             return False
         
         # Mở rộng line theo hướng pháp tuyến
@@ -335,7 +337,7 @@ class PeopleCounterAdapter:
         
         return crosses
 
-    def _get_crossing_direction(self, prev_centroid, curr_centroid, line_start, line_end, direction_threshold=1):
+    def _get_crossing_direction(self, prev_centroid, curr_centroid, line_start, line_end, direction_threshold=DIRECTION_THRESHOLD):
         """
         Xác định hướng crossing khi object cắt qua line bất kỳ (ngang, dọc, chéo).
         Sử dụng vector pháp tuyến của line để tính toán hướng di chuyển tương đối:

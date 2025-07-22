@@ -30,6 +30,12 @@ sys.path.append(str(Path(__file__).parent))
 from youtube_extractor import YouTubeExtractor, StreamInfo, ExtractionResult
 from ai_processor import AIProcessor, DetectionResult
 from ai_people_counter_adapter import PeopleCounterAdapter
+from config import (
+    DEFAULT_SKIP_FRAMES, CONFIDENCE_THRESHOLD, DEFAULT_MAX_DISAPPEARED,
+    TARGET_FPS, FPS_LOW_THRESHOLD, FPS_HIGH_THRESHOLD,
+    MIN_SKIP_FRAMES, MAX_SKIP_FRAMES, MAX_DISAPPEARED_MULTIPLIER,
+    get_max_disappeared, get_adaptive_skip_frames
+)
 
 class YouTubeAIUI:
     """Simple UI for YouTube AI integration"""
@@ -50,15 +56,15 @@ class YouTubeAIUI:
         base_dir = os.path.abspath(os.path.join(os.path.dirname(__file__), '../models/detector'))
         prototxt = os.path.join(base_dir, 'MobileNetSSD_deploy.prototxt')
         model = os.path.join(base_dir, 'MobileNetSSD_deploy.caffemodel')
-        self.skip_frames_var = tk.IntVar(value=5)  # Giảm từ 10 xuống 5
-        self.confidence_var = tk.DoubleVar(value=0.4)  # Tham số confidence mặc định 0.4
+        self.skip_frames_var = tk.IntVar(value=DEFAULT_SKIP_FRAMES)  # Sử dụng config
+        self.confidence_var = tk.DoubleVar(value=CONFIDENCE_THRESHOLD)  # Sử dụng config
         # self.max_disappeared_var = tk.IntVar(value=50) # Thêm input max_disappeared vào Control Panel
         self.ai_processor = PeopleCounterAdapter(
             prototxt, model,
             skip_frames=self.skip_frames_var.get(),
             resize_width=1920,  # Luôn detect trên frame gốc
             confidence=self.confidence_var.get(),
-            max_disappeared=3 * self.skip_frames_var.get()  # <-- truyền giá trị này
+            max_disappeared=get_max_disappeared(self.skip_frames_var.get())  # Sử dụng config function
         )
         
         # Stream variables
@@ -701,13 +707,13 @@ class YouTubeAIUI:
         if int(self.log_text.index('end-1c').split('.')[0]) > 1000:
             self.log_text.delete('1.0', '500.0')
 
-    def adaptive_frame_skipping(self, current_fps, target_fps=25):
+    def adaptive_frame_skipping(self, current_fps, target_fps=TARGET_FPS):
         # Tự động điều chỉnh skip_frames dựa trên FPS thực tế
         skip_frames = self.skip_frames_var.get()
-        if current_fps < target_fps * 0.8:
-            skip_frames = min(skip_frames + 1, 30)
-        elif current_fps > target_fps * 1.2:
-            skip_frames = max(skip_frames - 1, 1)
+        if current_fps < target_fps * FPS_LOW_THRESHOLD:
+            skip_frames = min(skip_frames + 1, MAX_SKIP_FRAMES)
+        elif current_fps > target_fps * FPS_HIGH_THRESHOLD:
+            skip_frames = max(skip_frames - 1, MIN_SKIP_FRAMES)
         self.skip_frames_var.set(skip_frames)
         return skip_frames
 
