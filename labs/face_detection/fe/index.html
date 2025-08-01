@@ -809,6 +809,169 @@
             align-items: center;
             min-height: 300px;
         }
+
+        /* Auto Recognition Styles */
+        .auto-recognition-container {
+            position: relative;
+            width: 100%;
+            max-width: 640px;
+            margin: 0 auto;
+            border-radius: 12px;
+            overflow: hidden;
+            box-shadow: 0 8px 32px rgba(0, 0, 0, 0.1);
+        }
+
+        .auto-recognition-overlay {
+            position: absolute;
+            top: 0;
+            left: 0;
+            width: 100%;
+            height: 100%;
+            pointer-events: none;
+            z-index: 10;
+        }
+
+        .auto-recognition-status {
+            position: absolute;
+            top: 20px;
+            left: 20px;
+            background: rgba(0, 0, 0, 0.8);
+            color: white;
+            padding: 12px 16px;
+            border-radius: 8px;
+            font-size: 14px;
+            font-weight: 500;
+            display: flex;
+            align-items: center;
+            gap: 8px;
+            backdrop-filter: blur(10px);
+        }
+
+        .auto-recognition-results {
+            position: absolute;
+            bottom: 20px;
+            right: 20px;
+            background: rgba(0, 0, 0, 0.9);
+            color: white;
+            padding: 16px;
+            border-radius: 12px;
+            min-width: 200px;
+            backdrop-filter: blur(10px);
+            border: 1px solid rgba(255, 255, 255, 0.1);
+        }
+
+        .recognition-result-item {
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            margin-bottom: 8px;
+            font-size: 13px;
+        }
+
+        .recognition-result-item:last-child {
+            margin-bottom: 0;
+        }
+
+        .result-label {
+            color: #a0a0a0;
+            font-weight: 500;
+        }
+
+        .result-value {
+            color: #ffffff;
+            font-weight: 600;
+        }
+
+        .auto-recognition-controls {
+            display: flex;
+            gap: 12px;
+            margin: 20px 0;
+            justify-content: center;
+            flex-wrap: wrap;
+        }
+
+        .recognition-info {
+            background: linear-gradient(135deg, #f8fafc 0%, #e2e8f0 100%);
+            border-radius: 12px;
+            padding: 20px;
+            margin: 20px 0;
+            border: 1px solid #e2e8f0;
+        }
+
+        .info-item {
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            margin-bottom: 12px;
+            padding: 8px 0;
+            border-bottom: 1px solid #e2e8f0;
+        }
+
+        .info-item:last-child {
+            margin-bottom: 0;
+            border-bottom: none;
+        }
+
+        .info-label {
+            font-weight: 600;
+            color: #374151;
+        }
+
+        .info-value {
+            font-weight: 500;
+            color: #059669;
+        }
+
+        /* Auto Recognition States */
+        .auto-recognition-status.scanning {
+            background: rgba(59, 130, 246, 0.9);
+        }
+
+        .auto-recognition-status.recognizing {
+            background: rgba(16, 185, 129, 0.9);
+        }
+
+        .auto-recognition-status.error {
+            background: rgba(239, 68, 68, 0.9);
+        }
+
+        /* Recognition Result States */
+        .recognition-result-item.recognized .result-value {
+            color: #10b981;
+        }
+
+        .recognition-result-item.unknown .result-value {
+            color: #f59e0b;
+        }
+
+        .recognition-result-item.error .result-value {
+            color: #ef4444;
+        }
+
+        /* Auto Mode Toggle */
+        .btn-info {
+            background: linear-gradient(135deg, #06b6d4 0%, #0891b2 100%);
+            color: white;
+            border: none;
+            border-radius: 6px;
+            padding: 8px 16px;
+            cursor: pointer;
+            font-weight: 500;
+            transition: all 0.3s ease;
+        }
+
+        .btn-info:hover {
+            background: linear-gradient(135deg, #0891b2 0%, #0e7490 100%);
+            transform: translateY(-1px);
+        }
+
+        .btn-info.manual {
+            background: linear-gradient(135deg, #f59e0b 0%, #d97706 100%);
+        }
+
+        .btn-info.manual:hover {
+            background: linear-gradient(135deg, #d97706 0%, #b45309 100%);
+        }
     </style>
 </head>
 <body>
@@ -952,6 +1115,10 @@
                     <h3>📷 Use Webcam</h3>
                     <p>Take a photo to test recognition</p>
                 </div>
+                <div class="upload-option" onclick="selectRecognitionMethod('auto')">
+                    <h3>🤖 Auto Recognition</h3>
+                    <p>Real-time automatic face recognition</p>
+                </div>
             </div>
 
             <!-- File Recognition Section -->
@@ -967,6 +1134,17 @@
             <div id="webcam-recognition-section" class="hidden">
                 <div class="webcam-container">
                     <video id="recognition-webcam-video" class="webcam-video" autoplay muted></video>
+                    <canvas id="recognition-webcam-canvas" class="webcam-canvas"></canvas>
+                    <div id="recognition-face-detection-overlay" class="face-detection-overlay">
+                        <div id="recognition-face-detection-status" class="face-detection-status">
+                            <span id="recognition-detection-icon">🔍</span>
+                            <span id="recognition-detection-text">No face detected</span>
+                        </div>
+                        <div id="recognition-face-confidence" class="face-confidence hidden">
+                            <span>Confidence: </span>
+                            <span id="recognition-confidence-value">0%</span>
+                        </div>
+                    </div>
                     <button id="recognition-capture-btn" class="capture-btn" onclick="captureRecognitionPhoto()" disabled>📸</button>
                 </div>
                 
@@ -977,6 +1155,55 @@
                 </div>
                 
                 <img id="recognition-captured-image" class="captured-image hidden" alt="Captured photo">
+            </div>
+
+            <!-- Auto Recognition Section -->
+            <div id="auto-recognition-section" class="hidden">
+                <div class="auto-recognition-container">
+                    <video id="auto-recognition-video" class="webcam-video" autoplay muted></video>
+                    <canvas id="auto-recognition-canvas" class="webcam-canvas"></canvas>
+                    <div id="auto-recognition-overlay" class="auto-recognition-overlay">
+                        <div id="auto-recognition-status" class="auto-recognition-status">
+                            <span id="auto-detection-icon">🔍</span>
+                            <span id="auto-detection-text">Scanning for faces...</span>
+                        </div>
+                        <div id="auto-recognition-results" class="auto-recognition-results hidden">
+                            <div class="recognition-result-item">
+                                <span class="result-label">Name:</span>
+                                <span id="auto-recognized-name" class="result-value">-</span>
+                            </div>
+                            <div class="recognition-result-item">
+                                <span class="result-label">Confidence:</span>
+                                <span id="auto-recognition-confidence" class="result-value">-</span>
+                            </div>
+                            <div class="recognition-result-item">
+                                <span class="result-label">Quality:</span>
+                                <span id="auto-recognition-quality" class="result-value">-</span>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+                
+                <div class="auto-recognition-controls">
+                    <button class="btn btn-primary" onclick="startAutoRecognition()">Start Auto Recognition</button>
+                    <button class="btn btn-secondary" onclick="stopAutoRecognition()">Stop Auto Recognition</button>
+                    <button class="btn btn-info" onclick="toggleAutoMode()" id="auto-mode-btn">Manual Mode</button>
+                </div>
+                
+                <div id="auto-recognition-info" class="recognition-info">
+                    <div class="info-item">
+                        <span class="info-label">Status:</span>
+                        <span id="auto-status" class="info-value">Ready</span>
+                    </div>
+                    <div class="info-item">
+                        <span class="info-label">Faces Detected:</span>
+                        <span id="auto-faces-count" class="info-value">0</span>
+                    </div>
+                    <div class="info-item">
+                        <span class="info-label">Recognition Mode:</span>
+                        <span id="auto-mode" class="info-value">Automatic</span>
+                    </div>
+                </div>
             </div>
 
             <div id="recognition-result"></div>
@@ -1027,6 +1254,14 @@
         let faceConfidence = 0;
         let detectedFaces = [];
         let cameraServiceActive = false; // New flag to track camera service status
+
+        // Auto Recognition Variables
+        let autoRecognitionStream = null;
+        let autoRecognitionInterval = null;
+        let autoRecognitionMode = 'automatic'; // 'automatic' or 'manual'
+        let autoRecognitionActive = false;
+        let lastRecognitionTime = 0;
+        let recognitionCooldown = 2000; // 2 seconds cooldown
 
         // Tab management with camera control
         function showTab(tabName) {
@@ -1193,23 +1428,18 @@
 
         // Recognition method selection
         function selectRecognitionMethod(method) {
-            // Remove active class from all options
-            document.querySelectorAll('.upload-option').forEach(option => {
-                option.classList.remove('active');
-            });
-            
-            // Add active class to selected option
-            event.target.closest('.upload-option').classList.add('active');
-            
             // Hide all sections
             document.getElementById('file-recognition-section').classList.add('hidden');
             document.getElementById('webcam-recognition-section').classList.add('hidden');
+            document.getElementById('auto-recognition-section').classList.add('hidden');
             
             // Show selected section
             if (method === 'file') {
                 document.getElementById('file-recognition-section').classList.remove('hidden');
             } else if (method === 'webcam') {
                 document.getElementById('webcam-recognition-section').classList.remove('hidden');
+            } else if (method === 'auto') {
+                document.getElementById('auto-recognition-section').classList.remove('hidden');
             }
         }
 
@@ -2142,6 +2372,366 @@
         document.addEventListener('DOMContentLoaded', function() {
             checkHealth();
         });
+
+        // Auto Recognition Functions
+        async function startAutoRecognition() {
+            try {
+                console.log('🤖 Starting auto recognition...');
+                
+                const video = document.getElementById('auto-recognition-video');
+                const canvas = document.getElementById('auto-recognition-canvas');
+                
+                // Get webcam stream
+                const stream = await navigator.mediaDevices.getUserMedia({ 
+                    video: { 
+                        width: { ideal: 640 },
+                        height: { ideal: 480 },
+                        facingMode: 'user'
+                    } 
+                });
+                
+                video.srcObject = stream;
+                autoRecognitionStream = stream;
+                autoRecognitionActive = true;
+                
+                // Set canvas size
+                video.addEventListener('loadedmetadata', () => {
+                    canvas.width = video.videoWidth;
+                    canvas.height = video.videoHeight;
+                    console.log('📹 Auto recognition video ready');
+                });
+                
+                // Start auto recognition loop
+                startAutoRecognitionLoop();
+                
+                // Update UI
+                updateAutoRecognitionStatus('scanning', 'Scanning for faces...');
+                document.getElementById('auto-status').textContent = 'Active';
+                document.getElementById('auto-faces-count').textContent = '0';
+                
+                console.log('✅ Auto recognition started');
+                
+            } catch (error) {
+                console.error('❌ Failed to start auto recognition:', error);
+                updateAutoRecognitionStatus('error', 'Failed to start camera');
+            }
+        }
+
+        async function stopAutoRecognition() {
+            try {
+                console.log('🛑 Stopping auto recognition...');
+                
+                // Stop stream
+                if (autoRecognitionStream) {
+                    autoRecognitionStream.getTracks().forEach(track => track.stop());
+                    autoRecognitionStream = null;
+                }
+                
+                // Stop recognition loop
+                if (autoRecognitionInterval) {
+                    clearInterval(autoRecognitionInterval);
+                    autoRecognitionInterval = null;
+                }
+                
+                autoRecognitionActive = false;
+                
+                // Clear canvas
+                const canvas = document.getElementById('auto-recognition-canvas');
+                const ctx = canvas.getContext('2d');
+                ctx.clearRect(0, 0, canvas.width, canvas.height);
+                
+                // Update UI
+                updateAutoRecognitionStatus('ready', 'Ready');
+                document.getElementById('auto-status').textContent = 'Stopped';
+                document.getElementById('auto-recognition-results').classList.add('hidden');
+                
+                console.log('✅ Auto recognition stopped');
+                
+            } catch (error) {
+                console.error('❌ Error stopping auto recognition:', error);
+            }
+        }
+
+        function startAutoRecognitionLoop() {
+            if (autoRecognitionInterval) {
+                clearInterval(autoRecognitionInterval);
+            }
+            
+            autoRecognitionInterval = setInterval(async () => {
+                if (!autoRecognitionActive) return;
+                
+                try {
+                    await processAutoRecognitionFrame();
+                } catch (error) {
+                    console.error('❌ Auto recognition frame error:', error);
+                }
+            }, 1000); // Process every second
+        }
+
+        async function processAutoRecognitionFrame() {
+            const video = document.getElementById('auto-recognition-video');
+            const canvas = document.getElementById('auto-recognition-canvas');
+            const ctx = canvas.getContext('2d');
+            
+            // Draw current frame to canvas
+            ctx.drawImage(video, 0, 0, canvas.width, canvas.height);
+            
+            // Get frame data
+            const imageData = canvas.toDataURL('image/jpeg', 0.8);
+            
+            // Check cooldown
+            const now = Date.now();
+            if (now - lastRecognitionTime < recognitionCooldown) {
+                return;
+            }
+            
+            try {
+                // Detect faces in frame
+                const detectResponse = await fetch(`${API_BASE}/api/v1/faces/detect`, {
+                    method: 'POST',
+                    body: createFormDataFromBase64(imageData, 'frame.jpg')
+                });
+                
+                const detectData = await detectResponse.json();
+                
+                if (detectData.success && detectData.data.faces.length > 0) {
+                    console.log(`🎯 Detected ${detectData.data.faces.length} face(s)`);
+                    
+                    // Update face count
+                    document.getElementById('auto-faces-count').textContent = detectData.data.faces.length;
+                    
+                    // Draw bounding boxes
+                    drawAutoRecognitionBoundingBoxes(detectData.data.faces, canvas);
+                    
+                    // Auto recognize if in automatic mode
+                    if (autoRecognitionMode === 'automatic') {
+                        await performAutoRecognition(imageData, detectData.data.faces);
+                    }
+                    
+                    updateAutoRecognitionStatus('recognizing', 'Recognizing faces...');
+                } else {
+                    // Clear bounding boxes
+                    ctx.clearRect(0, 0, canvas.width, canvas.height);
+                    ctx.drawImage(video, 0, 0, canvas.width, canvas.height);
+                    
+                    // Hide results
+                    document.getElementById('auto-recognition-results').classList.add('hidden');
+                    document.getElementById('auto-faces-count').textContent = '0';
+                    
+                    updateAutoRecognitionStatus('scanning', 'Scanning for faces...');
+                }
+                
+            } catch (error) {
+                console.error('❌ Auto recognition error:', error);
+                updateAutoRecognitionStatus('error', 'Recognition failed');
+            }
+        }
+
+        async function performAutoRecognition(imageData, detectedFaces) {
+            try {
+                console.log('🔍 Performing auto recognition...');
+                
+                // Use the first detected face for recognition
+                const face = detectedFaces[0];
+                
+                // Crop the face from the image
+                const croppedImageData = cropFaceFromImage(imageData, face.bounding_box);
+                
+                // Perform recognition
+                const response = await fetch(`${API_BASE}/api/v1/faces/recognize`, {
+                    method: 'POST',
+                    body: createFormDataFromBase64(croppedImageData, 'face.jpg')
+                });
+                
+                const data = await response.json();
+                
+                if (data.success && data.data.recognized) {
+                    // Update recognition results
+                    document.getElementById('auto-recognized-name').textContent = data.data.name;
+                    document.getElementById('auto-recognition-confidence').textContent = `${(data.data.confidence * 100).toFixed(1)}%`;
+                    document.getElementById('auto-recognition-quality').textContent = `${(data.data.quality_score * 100).toFixed(1)}%`;
+                    
+                    // Show results
+                    document.getElementById('auto-recognition-results').classList.remove('hidden');
+                    
+                    // Add recognized class
+                    document.getElementById('auto-recognized-name').classList.add('recognized');
+                    document.getElementById('auto-recognition-confidence').classList.add('recognized');
+                    document.getElementById('auto-recognition-quality').classList.add('recognized');
+                    
+                    console.log(`✅ Recognized: ${data.data.name} (${(data.data.confidence * 100).toFixed(1)}%)`);
+                    
+                } else {
+                    // Update for unknown face
+                    document.getElementById('auto-recognized-name').textContent = 'Unknown';
+                    document.getElementById('auto-recognition-confidence').textContent = 'N/A';
+                    document.getElementById('auto-recognition-quality').textContent = 'N/A';
+                    
+                    // Show results
+                    document.getElementById('auto-recognition-results').classList.remove('hidden');
+                    
+                    // Add unknown class
+                    document.getElementById('auto-recognized-name').classList.add('unknown');
+                    document.getElementById('auto-recognition-confidence').classList.add('unknown');
+                    document.getElementById('auto-recognition-quality').classList.add('unknown');
+                    
+                    console.log('❓ Face not recognized');
+                }
+                
+                lastRecognitionTime = Date.now();
+                
+            } catch (error) {
+                console.error('❌ Auto recognition failed:', error);
+                
+                // Update for error
+                document.getElementById('auto-recognized-name').textContent = 'Error';
+                document.getElementById('auto-recognition-confidence').textContent = 'N/A';
+                document.getElementById('auto-recognition-quality').textContent = 'N/A';
+                
+                // Show results
+                document.getElementById('auto-recognition-results').classList.remove('hidden');
+                
+                // Add error class
+                document.getElementById('auto-recognized-name').classList.add('error');
+                document.getElementById('auto-recognition-confidence').classList.add('error');
+                document.getElementById('auto-recognition-quality').classList.add('error');
+            }
+        }
+
+        function drawAutoRecognitionBoundingBoxes(faces, canvas) {
+            const ctx = canvas.getContext('2d');
+            const video = document.getElementById('auto-recognition-video');
+            
+            // Clear and redraw video frame
+            ctx.clearRect(0, 0, canvas.width, canvas.height);
+            ctx.drawImage(video, 0, 0, canvas.width, canvas.height);
+            
+            faces.forEach((face, index) => {
+                const box = face.bounding_box;
+                
+                // Draw bounding box
+                ctx.strokeStyle = '#10b981';
+                ctx.lineWidth = 2;
+                ctx.strokeRect(box.left, box.top, box.width, box.height);
+                
+                // Draw label background
+                const label = `Face ${index + 1}`;
+                const labelWidth = ctx.measureText(label).width + 8;
+                const labelHeight = 20;
+                
+                ctx.fillStyle = 'rgba(16, 185, 129, 0.9)';
+                ctx.fillRect(box.left, box.top - labelHeight - 5, labelWidth, labelHeight);
+                
+                // Draw label text
+                ctx.fillStyle = 'white';
+                ctx.font = '12px Arial';
+                ctx.fillText(label, box.left + 4, box.top - 8);
+                
+                // Draw confidence
+                if (face.confidence) {
+                    const confidenceText = `${(face.confidence * 100).toFixed(1)}%`;
+                    ctx.fillStyle = 'rgba(0, 0, 0, 0.7)';
+                    ctx.fillRect(box.left, box.top + box.height + 2, ctx.measureText(confidenceText).width + 8, 16);
+                    
+                    ctx.fillStyle = 'white';
+                    ctx.font = '11px Arial';
+                    ctx.fillText(confidenceText, box.left + 4, box.top + box.height + 14);
+                }
+            });
+        }
+
+        function cropFaceFromImage(imageData, boundingBox) {
+            return new Promise((resolve) => {
+                const img = new Image();
+                img.onload = () => {
+                    const canvas = document.createElement('canvas');
+                    const ctx = canvas.getContext('2d');
+                    
+                    // Set canvas size to face dimensions
+                    canvas.width = boundingBox.width;
+                    canvas.height = boundingBox.height;
+                    
+                    // Crop the face
+                    ctx.drawImage(img, 
+                        boundingBox.left, boundingBox.top, boundingBox.width, boundingBox.height,
+                        0, 0, boundingBox.width, boundingBox.height
+                    );
+                    
+                    // Convert to base64
+                    const croppedData = canvas.toDataURL('image/jpeg', 0.8);
+                    resolve(croppedData);
+                };
+                img.src = imageData;
+            });
+        }
+
+        function updateAutoRecognitionStatus(state, message) {
+            const statusElement = document.getElementById('auto-recognition-status');
+            const iconElement = document.getElementById('auto-detection-icon');
+            const textElement = document.getElementById('auto-detection-text');
+            
+            // Remove all state classes
+            statusElement.classList.remove('scanning', 'recognizing', 'error', 'ready');
+            
+            // Add current state class
+            statusElement.classList.add(state);
+            
+            // Update icon and text
+            switch (state) {
+                case 'scanning':
+                    iconElement.textContent = '🔍';
+                    break;
+                case 'recognizing':
+                    iconElement.textContent = '🤖';
+                    break;
+                case 'error':
+                    iconElement.textContent = '❌';
+                    break;
+                case 'ready':
+                    iconElement.textContent = '✅';
+                    break;
+            }
+            
+            textElement.textContent = message;
+        }
+
+        function toggleAutoMode() {
+            const btn = document.getElementById('auto-mode-btn');
+            
+            if (autoRecognitionMode === 'automatic') {
+                autoRecognitionMode = 'manual';
+                btn.textContent = 'Automatic Mode';
+                btn.classList.add('manual');
+                document.getElementById('auto-mode').textContent = 'Manual';
+                console.log('🔄 Switched to manual mode');
+            } else {
+                autoRecognitionMode = 'automatic';
+                btn.textContent = 'Manual Mode';
+                btn.classList.remove('manual');
+                document.getElementById('auto-mode').textContent = 'Automatic';
+                console.log('🔄 Switched to automatic mode');
+            }
+        }
+
+        // Helper Functions
+        function createFormDataFromBase64(base64Data, filename) {
+            const formData = new FormData();
+            
+            // Convert base64 to blob
+            const byteString = atob(base64Data.split(',')[1]);
+            const mimeString = base64Data.split(',')[0].split(':')[1].split(';')[0];
+            const ab = new ArrayBuffer(byteString.length);
+            const ia = new Uint8Array(ab);
+            
+            for (let i = 0; i < byteString.length; i++) {
+                ia[i] = byteString.charCodeAt(i);
+            }
+            
+            const blob = new Blob([ab], { type: mimeString });
+            formData.append('file', blob, filename);
+            
+            return formData;
+        }
     </script>
 </body>
 </html>
