@@ -1,0 +1,100 @@
+2025-07-31 20:50:44,476 | INFO | 🔍 Starting Comprehensive Debug Session
+2025-07-31 20:50:44,476 | INFO | ================================================================================
+2025-07-31 20:50:44,476 | INFO | ============================================================
+2025-07-31 20:50:44,476 | INFO | 🚀 TEST 1: API Server Startup
+2025-07-31 20:50:44,476 | INFO | ============================================================
+2025-07-31 20:50:44,476 | INFO | 🔍 STEP: 1.1 | STATUS: START | TIME: 2025-07-31 20:50:44.476
+2025-07-31 20:50:44,476 | DEBUG | 📝 DETAILS: Checking if API server is running
+2025-07-31 20:50:44,490 | DEBUG | Starting new HTTP connection (1): localhost:8000
+2025-07-31 20:50:44,492 | DEBUG | http://localhost:8000 "GET /health HTTP/1.1" 200 242
+2025-07-31 20:50:44,493 | INFO | 🔍 STEP: 1.1 | STATUS: PASS | TIME: 2025-07-31 20:50:44.493
+2025-07-31 20:50:44,493 | DEBUG | 📝 DETAILS: Server is running, status: 200
+2025-07-31 20:50:44,493 | DEBUG | Health response: {
+  "success": true,
+  "message": "Health check completed",
+  "data": {
+    "status": "healthy",
+    "services": {
+      "face_processing": true,
+      "camera_service": true,
+      "vector_database": true
+    },
+    "timestamp": "2025-07-31T20:50:44.492072"
+  },
+  "timestamp": "2025-07-31T20:50:44.492100"
+}
+2025-07-31 20:50:44,493 | INFO | ============================================================
+2025-07-31 20:50:44,493 | INFO | 📤 TEST 2: Face Upload Workflow
+2025-07-31 20:50:44,494 | INFO | ============================================================
+2025-07-31 20:50:44,494 | INFO | 🔍 STEP: 2.1 | STATUS: START | TIME: 2025-07-31 20:50:44.494
+2025-07-31 20:50:44,494 | DEBUG | 📝 DETAILS: Creating test image
+2025-07-31 20:50:44,540 | INFO | 🔍 STEP: 2.1 | STATUS: PASS | TIME: 2025-07-31 20:50:44.540
+2025-07-31 20:50:44,540 | DEBUG | 📝 DETAILS: Test image created: debug_test_image.jpg
+2025-07-31 20:50:44,540 | INFO | 🔍 STEP: 2.2 | STATUS: START | TIME: 2025-07-31 20:50:44.540
+2025-07-31 20:50:44,540 | DEBUG | 📝 DETAILS: Preparing upload data
+2025-07-31 20:50:44,540 | INFO | 🔍 STEP: 2.2 | STATUS: PASS | TIME: 2025-07-31 20:50:44.540
+2025-07-31 20:50:44,540 | DEBUG | 📝 DETAILS: Upload data prepared: {'name': 'DebugTestUser', 'email': 'debug@test.com'}
+2025-07-31 20:50:44,541 | INFO | 🔍 STEP: 2.3 | STATUS: START | TIME: 2025-07-31 20:50:44.540
+2025-07-31 20:50:44,541 | DEBUG | 📝 DETAILS: Uploading image to API
+2025-07-31 20:50:44,541 | DEBUG | Files: ['file']
+2025-07-31 20:50:44,541 | DEBUG | Data: {'name': 'DebugTestUser', 'email': 'debug@test.com'}
+2025-07-31 20:50:44,543 | DEBUG | Starting new HTTP connection (1): localhost:8000
+2025-07-31 20:50:44,547 | DEBUG | http://localhost:8000 "POST /api/v1/faces/upload HTTP/1.1" 400 34
+2025-07-31 20:50:44,548 | INFO | 🔍 STEP: 2.4 | STATUS: START | TIME: 2025-07-31 20:50:44.548
+2025-07-31 20:50:44,548 | DEBUG | 📝 DETAILS: Analyzing response (status: 400)
+2025-07-31 20:50:44,549 | DEBUG | Response headers: {'date': 'Thu, 31 Jul 2025 13:50:44 GMT', 'server': 'uvicorn', 'content-length': '34', 'content-type': 'application/json'}
+2025-07-31 20:50:44,549 | DEBUG | Response content: {"detail":"File must be an image"}
+2025-07-31 20:50:44,549 | INFO | 🔍 STEP: 2.4 | STATUS: FAIL | TIME: 2025-07-31 20:50:44.549
+2025-07-31 20:50:44,549 | DEBUG | 📝 DETAILS: Upload failed with status: 400
+2025-07-31 20:50:44,549 | ERROR | Error response: {"detail":"File must be an image"}
+2025-07-31 20:50:44,551 | INFO | 🔍 STEP: 2.5 | STATUS: PASS | TIME: 2025-07-31 20:50:44.550
+2025-07-31 20:50:44,551 | DEBUG | 📝 DETAILS: Test image cleaned up
+2025-07-31 20:50:44,552 | INFO | ============================================================
+2025-07-31 20:50:44,552 | INFO | 🔍 TEST 3: Face Recognition Workflow
+2025-07-31 20:50:44,552 | INFO | ============================================================
+2025-07-31 20:50:44,552 | INFO | 🔍 STEP: 3.1 | STATUS: START | TIME: 2025-07-31 20:50:44.552
+2025-07-31 20:50:44,552 | DEBUG | 📝 DETAILS: Creating test image for recognition
+2025-07-31 20:50:44,554 | INFO | 🔍 STEP: 3.1 | STATUS: PASS | TIME: 2025-07-31 20:50:44.554
+2025-07-31 20:50:44,554 | DEBUG | 📝 DETAILS: Recognition test image created: debug_recognition_image.jpg
+2025-07-31 20:50:44,554 | INFO | 🔍 STEP: 3.2 | STATUS: START | TIME: 2025-07-31 20:50:44.554
+2025-07-31 20:50:44,554 | DEBUG | 📝 DETAILS: Sending recognition request
+2025-07-31 20:50:44,554 | DEBUG | Recognition files: ['file']
+2025-07-31 20:50:44,556 | DEBUG | Starting new HTTP connection (1): localhost:8000
+2025-07-31 20:50:44,561 | DEBUG | http://localhost:8000 "POST /api/v1/faces/recognize HTTP/1.1" 400 34
+2025-07-31 20:50:44,562 | INFO | 🔍 STEP: 3.3 | STATUS: START | TIME: 2025-07-31 20:50:44.562
+2025-07-31 20:50:44,562 | DEBUG | 📝 DETAILS: Analyzing recognition response (status: 400)
+2025-07-31 20:50:44,562 | DEBUG | Recognition response headers: {'date': 'Thu, 31 Jul 2025 13:50:44 GMT', 'server': 'uvicorn', 'content-length': '34', 'content-type': 'application/json'}
+2025-07-31 20:50:44,562 | DEBUG | Recognition response content: {"detail":"File must be an image"}
+2025-07-31 20:50:44,563 | INFO | 🔍 STEP: 3.3 | STATUS: FAIL | TIME: 2025-07-31 20:50:44.563
+2025-07-31 20:50:44,563 | DEBUG | 📝 DETAILS: Recognition failed with status: 400
+2025-07-31 20:50:44,563 | ERROR | Recognition error response: {"detail":"File must be an image"}
+2025-07-31 20:50:44,563 | INFO | 🔍 STEP: 3.4 | STATUS: PASS | TIME: 2025-07-31 20:50:44.563
+2025-07-31 20:50:44,563 | DEBUG | 📝 DETAILS: Recognition test image cleaned up
+2025-07-31 20:50:44,564 | INFO | ============================================================
+2025-07-31 20:50:44,564 | INFO | 🗄️ TEST 4: Database Operations
+2025-07-31 20:50:44,564 | INFO | ============================================================
+2025-07-31 20:50:44,564 | INFO | 🔍 STEP: 4.1 | STATUS: START | TIME: 2025-07-31 20:50:44.564
+2025-07-31 20:50:44,564 | DEBUG | 📝 DETAILS: Testing face list endpoint
+2025-07-31 20:50:44,566 | DEBUG | Starting new HTTP connection (1): localhost:8000
+2025-07-31 20:50:44,569 | DEBUG | http://localhost:8000 "GET /api/v1/faces/list HTTP/1.1" 200 118
+2025-07-31 20:50:44,570 | INFO | 🔍 STEP: 4.1 | STATUS: START | TIME: 2025-07-31 20:50:44.570
+2025-07-31 20:50:44,570 | DEBUG | 📝 DETAILS: Analyzing list response (status: 200)
+2025-07-31 20:50:44,570 | DEBUG | List response headers: {'date': 'Thu, 31 Jul 2025 13:50:44 GMT', 'server': 'uvicorn', 'content-length': '118', 'content-type': 'application/json'}
+2025-07-31 20:50:44,570 | DEBUG | List response content: {"success":true,"message":"Faces retrieved successfully","data":{"faces":[]},"timestamp":"2025-07-31T20:50:44.568604"}
+2025-07-31 20:50:44,570 | INFO | 🔍 STEP: 4.1 | STATUS: PASS | TIME: 2025-07-31 20:50:44.570
+2025-07-31 20:50:44,570 | DEBUG | 📝 DETAILS: List faces successful, found 0 faces
+2025-07-31 20:50:44,570 | DEBUG | Faces data: {
+  "success": true,
+  "message": "Faces retrieved successfully",
+  "data": {
+    "faces": []
+  },
+  "timestamp": "2025-07-31T20:50:44.568604"
+}
+2025-07-31 20:50:44,571 | INFO | ================================================================================
+2025-07-31 20:50:44,571 | INFO | 📊 DEBUG SUMMARY:
+2025-07-31 20:50:44,571 | INFO | ✅ API Server: PASS
+2025-07-31 20:50:44,571 | INFO | ✅ Upload Workflow: FAIL
+2025-07-31 20:50:44,571 | INFO | ✅ Recognition Workflow: FAIL
+2025-07-31 20:50:44,571 | INFO | ✅ Database Operations: PASS
+2025-07-31 20:50:44,572 | INFO | 💾 Detailed results saved to: debug_results.json

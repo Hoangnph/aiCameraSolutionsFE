@@ -1,0 +1,2147 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Face Detection System</title>
+    <style>
+        * {
+            margin: 0;
+            padding: 0;
+            box-sizing: border-box;
+        }
+
+        body {
+            font-family: 'Inter', system-ui, sans-serif;
+            background-color: #f5f5f5;
+            color: #333;
+        }
+
+        .container {
+            max-width: 1200px;
+            margin: 0 auto;
+            padding: 20px;
+        }
+
+        .header {
+            background-color: white;
+            border-bottom: 1px solid #e5e7eb;
+            padding: 16px 0;
+            margin-bottom: 24px;
+        }
+
+        .header h1 {
+            font-size: 24px;
+            font-weight: bold;
+            color: #2563eb;
+        }
+
+        .tabs {
+            display: flex;
+            gap: 8px;
+            margin-bottom: 24px;
+            border-bottom: 1px solid #e5e7eb;
+        }
+
+        .tab {
+            padding: 12px 24px;
+            background: none;
+            border: none;
+            cursor: pointer;
+            border-bottom: 2px solid transparent;
+            font-weight: 500;
+        }
+
+        .tab.active {
+            border-bottom-color: #2563eb;
+            color: #2563eb;
+        }
+
+        .tab:hover {
+            background-color: #f3f4f6;
+        }
+
+        .content {
+            background-color: white;
+            border-radius: 8px;
+            padding: 24px;
+            box-shadow: 0 1px 3px rgba(0, 0, 0, 0.1);
+        }
+
+        .btn {
+            padding: 8px 16px;
+            border: none;
+            border-radius: 6px;
+            cursor: pointer;
+            font-weight: 500;
+            margin: 4px;
+        }
+
+        .btn-primary {
+            background-color: #2563eb;
+            color: white;
+        }
+
+        .btn-primary:hover {
+            background-color: #1d4ed8;
+        }
+
+        .btn-secondary {
+            background-color: #e5e7eb;
+            color: #374151;
+        }
+
+        .btn-secondary:hover {
+            background-color: #d1d5db;
+        }
+
+        .btn-success {
+            background-color: #059669;
+            color: white;
+        }
+
+        .btn-success:hover {
+            background-color: #047857;
+        }
+
+        .btn-danger {
+            background-color: #dc2626;
+            color: white;
+        }
+
+        .btn-danger:hover {
+            background-color: #b91c1c;
+        }
+
+        .status-grid {
+            display: grid;
+            grid-template-columns: repeat(auto-fit, minmax(250px, 1fr));
+            gap: 16px;
+            margin-bottom: 24px;
+        }
+
+        .status-card {
+            background-color: #f9fafb;
+            border: 1px solid #e5e7eb;
+            border-radius: 8px;
+            padding: 16px;
+        }
+
+        .status-card h3 {
+            margin-bottom: 8px;
+            font-size: 16px;
+            font-weight: 600;
+        }
+
+        .status-success {
+            color: #059669;
+            font-weight: 500;
+            padding: 8px 12px;
+            background: #d1fae5;
+            border-radius: 6px;
+            border-left: 4px solid #059669;
+        }
+
+        .status-error {
+            color: #dc2626;
+            font-weight: 500;
+            padding: 8px 12px;
+            background: #fee2e2;
+            border-radius: 6px;
+            border-left: 4px solid #dc2626;
+        }
+
+        .status-loading {
+            color: #f59e0b;
+            font-weight: 500;
+            padding: 8px 12px;
+            background: #fef3c7;
+            border-radius: 6px;
+            border-left: 4px solid #f59e0b;
+        }
+
+        .form-group {
+            margin-bottom: 16px;
+        }
+
+        .form-group label {
+            display: block;
+            margin-bottom: 4px;
+            font-weight: 500;
+        }
+
+        .form-group input, .form-group select {
+            width: 100%;
+            padding: 8px 12px;
+            border: 1px solid #d1d5db;
+            border-radius: 6px;
+            font-size: 14px;
+        }
+
+        .form-group input:focus, .form-group select:focus {
+            outline: none;
+            border-color: #2563eb;
+            box-shadow: 0 0 0 3px rgba(37, 99, 235, 0.1);
+        }
+
+        .video-container {
+            width: 100%;
+            max-width: 640px;
+            margin: 16px 0;
+        }
+
+        .video-container video {
+            width: 100%;
+            border-radius: 8px;
+            border: 1px solid #e5e7eb;
+        }
+
+        .camera-controls {
+            display: flex;
+            gap: 8px;
+            margin: 16px 0;
+            flex-wrap: wrap;
+        }
+
+        .webcam-container {
+            position: relative;
+            display: inline-block;
+            margin: 20px 0;
+        }
+
+        .webcam-video {
+            width: 640px;
+            height: 480px;
+            border: 2px solid #ddd;
+            border-radius: 8px;
+            background-color: #f5f5f5;
+        }
+
+        .webcam-canvas {
+            position: absolute;
+            top: 0;
+            left: 0;
+            width: 640px;
+            height: 480px;
+            pointer-events: none;
+        }
+
+        .face-detection-overlay {
+            position: absolute;
+            top: 10px;
+            left: 10px;
+            background: rgba(0, 0, 0, 0.7);
+            color: white;
+            padding: 10px;
+            border-radius: 5px;
+            font-size: 14px;
+            z-index: 10;
+        }
+
+        .face-detection-status {
+            display: flex;
+            align-items: center;
+            gap: 8px;
+            margin-bottom: 5px;
+        }
+
+        .face-confidence {
+            font-size: 12px;
+            opacity: 0.9;
+        }
+
+        .face-confidence.hidden {
+            display: none;
+        }
+
+        .detection-success {
+            color: #4CAF50;
+        }
+
+        .detection-error {
+            color: #f44336;
+        }
+
+        .detection-warning {
+            color: #ff9800;
+        }
+
+        .capture-btn {
+            position: absolute;
+            bottom: 16px;
+            left: 50%;
+            transform: translateX(-50%);
+            background-color: #dc2626;
+            color: white;
+            border: none;
+            border-radius: 50%;
+            width: 60px;
+            height: 60px;
+            cursor: pointer;
+            font-size: 24px;
+            box-shadow: 0 4px 8px rgba(0, 0, 0, 0.3);
+        }
+
+        .capture-btn:hover {
+            background-color: #b91c1c;
+        }
+
+        .capture-btn:disabled {
+            opacity: 0.5;
+            cursor: not-allowed;
+        }
+
+        .captured-image {
+            width: 100%;
+            max-width: 640px;
+            border-radius: 8px;
+            border: 1px solid #e5e7eb;
+            margin: 16px 0;
+        }
+
+        .face-list {
+            display: grid;
+            grid-template-columns: repeat(auto-fill, minmax(200px, 1fr));
+            gap: 16px;
+        }
+
+        .face-item {
+            border: 1px solid #ddd;
+            border-radius: 8px;
+            padding: 15px;
+            margin: 10px 0;
+            background: white;
+            box-shadow: 0 2px 4px rgba(0,0,0,0.1);
+            display: flex;
+            align-items: flex-start;
+            gap: 15px;
+        }
+
+        .face-image {
+            flex-shrink: 0;
+        }
+
+        .face-image img {
+            width: 80px;
+            height: 80px;
+            border-radius: 8px;
+            object-fit: cover;
+            border: 2px solid #e0e0e0;
+        }
+
+        .face-info {
+            flex: 1;
+        }
+
+        .face-info h4 {
+            margin: 0 0 8px 0;
+            color: #333;
+            font-size: 18px;
+        }
+
+        .face-info p {
+            margin: 4px 0;
+            font-size: 14px;
+            color: #666;
+        }
+
+        .face-actions {
+            flex-shrink: 0;
+            display: flex;
+            flex-direction: column;
+            gap: 8px;
+        }
+
+        .loading {
+            display: inline-block;
+            width: 16px;
+            height: 16px;
+            border: 2px solid #e5e7eb;
+            border-top: 2px solid #2563eb;
+            border-radius: 50%;
+            animation: spin 1s linear infinite;
+        }
+
+        @keyframes spin {
+            0% { transform: rotate(0deg); }
+            100% { transform: rotate(360deg); }
+        }
+
+        .hidden {
+            display: none;
+        }
+
+        .upload-options {
+            display: flex;
+            gap: 16px;
+            margin-bottom: 16px;
+            flex-wrap: wrap;
+        }
+
+        .upload-option {
+            flex: 1;
+            min-width: 200px;
+            padding: 16px;
+            border: 2px solid #e5e7eb;
+            border-radius: 8px;
+            text-align: center;
+            cursor: pointer;
+            transition: all 0.2s;
+        }
+
+        .upload-option:hover {
+            border-color: #2563eb;
+            background-color: #f8fafc;
+        }
+
+        .upload-option.active {
+            border-color: #2563eb;
+            background-color: #eff6ff;
+        }
+
+        .upload-option h3 {
+            margin-bottom: 8px;
+            color: #374151;
+        }
+
+        .upload-option p {
+            color: #6b7280;
+            font-size: 14px;
+        }
+
+        /* New styles for face detection overlay */
+        .face-detection-overlay {
+            position: absolute;
+            top: 10px;
+            left: 10px;
+            background-color: rgba(0, 0, 0, 0.5);
+            color: white;
+            padding: 8px 12px;
+            border-radius: 6px;
+            display: flex;
+            align-items: center;
+            gap: 8px;
+            z-index: 10;
+        }
+
+        .face-detection-status {
+            display: flex;
+            align-items: center;
+        }
+
+        #detection-icon {
+            font-size: 20px;
+        }
+
+        .face-confidence {
+            display: flex;
+            align-items: baseline;
+            font-size: 14px;
+            color: #e0e7ff; /* A light blue color for confidence */
+        }
+
+        .face-confidence span:first-child {
+            margin-right: 4px;
+        }
+
+        .crop-info {
+            background: #f0f8ff;
+            border: 1px solid #4CAF50;
+            border-radius: 5px;
+            padding: 10px;
+            margin: 10px 0;
+            font-size: 14px;
+        }
+
+        .crop-info p {
+            margin: 5px 0;
+        }
+
+        /* Professional Table Styles */
+        .faces-table-container {
+            background: white;
+            border-radius: 8px;
+            box-shadow: 0 2px 8px rgba(0,0,0,0.1);
+            overflow: hidden;
+            margin: 20px 0;
+        }
+
+        .faces-table {
+            width: 100%;
+            border-collapse: collapse;
+            font-size: 14px;
+        }
+
+        .faces-table thead {
+            background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+            color: white;
+        }
+
+        .faces-table th {
+            padding: 16px 12px;
+            text-align: left;
+            font-weight: 600;
+            font-size: 13px;
+            text-transform: uppercase;
+            letter-spacing: 0.5px;
+        }
+
+        .faces-table td {
+            padding: 16px 12px;
+            border-bottom: 1px solid #f0f0f0;
+            vertical-align: middle;
+        }
+
+        .faces-table tbody tr:hover {
+            background-color: #f8f9fa;
+            transition: background-color 0.2s ease;
+        }
+
+        .faces-table tbody tr:last-child td {
+            border-bottom: none;
+        }
+
+        /* Face Image Column */
+        .face-image-cell {
+            width: 80px;
+            text-align: center;
+        }
+
+        .face-image-table {
+            width: 60px;
+            height: 60px;
+            border-radius: 50%;
+            object-fit: cover;
+            border: 3px solid #e9ecef;
+            box-shadow: 0 2px 4px rgba(0,0,0,0.1);
+            transition: transform 0.2s ease, box-shadow 0.2s ease;
+        }
+
+        .face-image-table:hover {
+            transform: scale(1.1);
+            box-shadow: 0 4px 8px rgba(0,0,0,0.2);
+        }
+
+        /* Name Column */
+        .face-name-cell {
+            font-weight: 600;
+            color: #2c3e50;
+            font-size: 16px;
+        }
+
+        /* Info Columns */
+        .face-info-cell {
+            color: #6c757d;
+            font-size: 13px;
+        }
+
+        .face-info-label {
+            font-weight: 500;
+            color: #495057;
+            margin-right: 4px;
+        }
+
+        /* Quality Score */
+        .quality-score {
+            display: inline-flex;
+            align-items: center;
+            padding: 4px 8px;
+            border-radius: 12px;
+            font-size: 12px;
+            font-weight: 600;
+        }
+
+        .quality-excellent {
+            background-color: #d4edda;
+            color: #155724;
+        }
+
+        .quality-good {
+            background-color: #d1ecf1;
+            color: #0c5460;
+        }
+
+        .quality-fair {
+            background-color: #fff3cd;
+            color: #856404;
+        }
+
+        .quality-poor {
+            background-color: #f8d7da;
+            color: #721c24;
+        }
+
+        /* Actions Column */
+        .face-actions-cell {
+            text-align: center;
+            width: 120px;
+        }
+
+        .delete-btn {
+            background: linear-gradient(135deg, #ff6b6b 0%, #ee5a52 100%);
+            color: white;
+            border: none;
+            padding: 8px 16px;
+            border-radius: 6px;
+            font-size: 12px;
+            font-weight: 600;
+            cursor: pointer;
+            transition: all 0.2s ease;
+            display: inline-flex;
+            align-items: center;
+            gap: 6px;
+            box-shadow: 0 2px 4px rgba(255, 107, 107, 0.3);
+        }
+
+        .delete-btn:hover {
+            background: linear-gradient(135deg, #ff5252 0%, #d32f2f 100%);
+            transform: translateY(-1px);
+            box-shadow: 0 4px 8px rgba(255, 107, 107, 0.4);
+        }
+
+        .delete-btn:active {
+            transform: translateY(0);
+            box-shadow: 0 2px 4px rgba(255, 107, 107, 0.3);
+        }
+
+        /* Status Indicators */
+        .status-indicator {
+            display: inline-block;
+            width: 8px;
+            height: 8px;
+            border-radius: 50%;
+            margin-right: 8px;
+        }
+
+        .status-active {
+            background-color: #28a745;
+        }
+
+        .status-inactive {
+            background-color: #6c757d;
+        }
+
+        /* Empty State */
+        .empty-state {
+            text-align: center;
+            padding: 40px 20px;
+            color: #6c757d;
+        }
+
+        .empty-state-icon {
+            font-size: 48px;
+            margin-bottom: 16px;
+            opacity: 0.5;
+        }
+
+        .empty-state-text {
+            font-size: 16px;
+            margin-bottom: 8px;
+        }
+
+        .empty-state-subtext {
+            font-size: 14px;
+            opacity: 0.7;
+        }
+
+        /* Modern Minimalist Refresh Button Styles */
+        .refresh-btn {
+            background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+            color: white;
+            border: none;
+            border-radius: 50px;
+            padding: 10px 20px;
+            font-size: 13px;
+            font-weight: 600;
+            display: inline-flex;
+            align-items: center;
+            gap: 8px;
+            cursor: pointer;
+            transition: all 0.3s cubic-bezier(0.4, 0, 0.2, 1);
+            box-shadow: 0 2px 8px rgba(102, 126, 234, 0.3);
+            position: relative;
+            overflow: hidden;
+        }
+
+        .refresh-btn::before {
+            content: '';
+            position: absolute;
+            top: 0;
+            left: -100%;
+            width: 100%;
+            height: 100%;
+            background: linear-gradient(90deg, transparent, rgba(255, 255, 255, 0.2), transparent);
+            transition: left 0.5s;
+        }
+
+        .refresh-btn:hover {
+            transform: translateY(-2px);
+            box-shadow: 0 4px 16px rgba(102, 126, 234, 0.4);
+        }
+
+        .refresh-btn:hover::before {
+            left: 100%;
+        }
+
+        .refresh-btn:active {
+            transform: translateY(0);
+            box-shadow: 0 2px 8px rgba(102, 126, 234, 0.3);
+        }
+
+        .refresh-btn:disabled {
+            background: linear-gradient(135deg, #9ca3af 0%, #6b7280 100%);
+            cursor: not-allowed;
+            transform: none;
+            box-shadow: 0 2px 8px rgba(156, 163, 175, 0.3);
+        }
+
+        .refresh-btn:disabled:hover {
+            transform: none;
+            box-shadow: 0 2px 8px rgba(156, 163, 175, 0.3);
+        }
+
+        .refresh-icon {
+            font-size: 16px;
+            transition: transform 0.3s ease;
+        }
+
+        .refresh-btn:hover .refresh-icon {
+            transform: rotate(180deg);
+        }
+
+        .refresh-btn:disabled .refresh-icon {
+            animation: spin 1s linear infinite;
+        }
+
+        @keyframes spin {
+            from { transform: rotate(0deg); }
+            to { transform: rotate(360deg); }
+        }
+
+        /* Section header with modern spacing */
+        .section-header {
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            margin-bottom: 24px;
+            padding: 0 4px;
+        }
+
+        .section-header h2 {
+            margin: 0;
+            font-size: 24px;
+            font-weight: 700;
+            color: #1f2937;
+            letter-spacing: -0.025em;
+        }
+
+        /* Loading state with modern animation */
+        .refresh-btn.loading {
+            background: linear-gradient(135deg, #10b981 0%, #059669 100%);
+            box-shadow: 0 2px 8px rgba(16, 185, 129, 0.3);
+        }
+
+        .refresh-btn.loading .refresh-icon {
+            animation: spin 1s linear infinite;
+        }
+
+        /* Success state */
+        .refresh-btn.success {
+            background: linear-gradient(135deg, #10b981 0%, #059669 100%);
+            box-shadow: 0 2px 8px rgba(16, 185, 129, 0.3);
+        }
+
+        /* Error state */
+        .refresh-btn.error {
+            background: linear-gradient(135deg, #ef4444 0%, #dc2626 100%);
+            box-shadow: 0 2px 8px rgba(239, 68, 68, 0.3);
+        }
+
+        .camera-placeholder {
+            display: flex;
+            flex-direction: column;
+            align-items: center;
+            justify-content: center;
+            height: 300px;
+            background: linear-gradient(135deg, #f8fafc 0%, #e2e8f0 100%);
+            border: 2px dashed #cbd5e1;
+            border-radius: 12px;
+            color: #64748b;
+            text-align: center;
+            transition: all 0.3s ease;
+        }
+
+        .camera-placeholder:hover {
+            border-color: #94a3b8;
+            background: linear-gradient(135deg, #f1f5f9 0%, #e2e8f0 100%);
+        }
+
+        .placeholder-icon {
+            font-size: 48px;
+            margin-bottom: 16px;
+            opacity: 0.7;
+        }
+
+        .placeholder-text {
+            font-size: 16px;
+            font-weight: 500;
+            color: #64748b;
+        }
+
+        .camera-stream {
+            width: 100%;
+            max-width: 640px;
+            height: auto;
+            border-radius: 12px;
+            box-shadow: 0 8px 32px rgba(0, 0, 0, 0.1);
+            transition: all 0.3s ease;
+        }
+
+        .camera-stream:hover {
+            transform: scale(1.02);
+            box-shadow: 0 12px 40px rgba(0, 0, 0, 0.15);
+        }
+
+        .video-container {
+            margin: 20px 0;
+            display: flex;
+            justify-content: center;
+            align-items: center;
+            min-height: 300px;
+        }
+    </style>
+</head>
+<body>
+    <div class="header">
+        <div class="container">
+            <h1>🎯 Face Detection System</h1>
+        </div>
+    </div>
+
+    <div class="container">
+        <div class="tabs">
+            <button class="tab active" onclick="showTab('dashboard')">Dashboard</button>
+            <button class="tab" onclick="showTab('camera')">Camera Control</button>
+            <button class="tab" onclick="showTab('upload')">Register Face</button>
+            <button class="tab" onclick="showTab('recognition')">Face Recognition</button>
+            <button class="tab" onclick="showTab('faces')">Face List</button>
+        </div>
+
+        <!-- Dashboard Tab -->
+        <div id="dashboard" class="content">
+            <h2>System Status</h2>
+            <div class="status-grid">
+                <div class="status-card">
+                    <h3>API Health</h3>
+                    <div id="api-status">Checking...</div>
+                </div>
+                <div class="status-card">
+                    <h3>Camera Service</h3>
+                    <div id="camera-status">Checking...</div>
+                </div>
+                <div class="status-card">
+                    <h3>Face Processing</h3>
+                    <div id="face-status">Checking...</div>
+                </div>
+                <div class="status-card">
+                    <h3>Vector Database</h3>
+                    <div id="db-status">Checking...</div>
+                </div>
+            </div>
+            <button class="btn btn-primary" onclick="checkHealth()">Refresh Status</button>
+        </div>
+
+        <!-- Camera Control Tab -->
+        <div id="camera" class="content hidden">
+            <h2>Camera Control</h2>
+            <div class="form-group">
+                <label>Camera Selection:</label>
+                <select id="camera-select">
+                    <option value="0">Camera 0</option>
+                    <option value="1">Camera 1</option>
+                </select>
+            </div>
+            <div class="camera-controls">
+                <button class="btn btn-primary" onclick="startCamera()">Start Camera</button>
+                <button class="btn btn-secondary" onclick="stopCamera()">Stop Camera</button>
+            </div>
+            <div class="video-container">
+                <img id="camera-stream" class="camera-stream" style="display: none; max-width: 100%; border-radius: 8px; box-shadow: 0 4px 12px rgba(0,0,0,0.1);" alt="Camera Stream">
+                <video id="camera-video" autoplay muted style="display: none; max-width: 100%; border-radius: 8px; box-shadow: 0 4px 12px rgba(0,0,0,0.1);"></video>
+                <div id="camera-placeholder" class="camera-placeholder">
+                    <div class="placeholder-icon">📷</div>
+                    <div class="placeholder-text">Click "Start Camera" to view the stream</div>
+                </div>
+            </div>
+            <div id="camera-info"></div>
+        </div>
+
+        <!-- Upload Face Tab -->
+        <div id="upload" class="content hidden">
+            <h2>Register New Face</h2>
+            
+            <div class="upload-options">
+                <div class="upload-option" onclick="selectUploadMethod('file')">
+                    <h3>📁 Upload File</h3>
+                    <p>Choose an image file from your device</p>
+                </div>
+                <div class="upload-option" onclick="selectUploadMethod('webcam')">
+                    <h3>📷 Use Webcam</h3>
+                    <p>Take a photo using your camera</p>
+                </div>
+            </div>
+
+            <!-- File Upload Section -->
+            <div id="file-upload-section" class="hidden">
+                <div class="form-group">
+                    <label>Name:</label>
+                    <input type="text" id="face-name" placeholder="Enter person's name">
+                </div>
+                <div class="form-group">
+                    <label>Image File:</label>
+                    <input type="file" id="face-image" accept="image/*">
+                </div>
+                <button class="btn btn-primary" onclick="uploadFace()">Register Face</button>
+            </div>
+
+            <!-- Webcam Section -->
+            <div id="webcam-section" class="hidden">
+                <div class="form-group">
+                    <label>Name:</label>
+                    <input type="text" id="webcam-face-name" placeholder="Enter person's name">
+                </div>
+                
+                <div class="webcam-container">
+                    <video id="webcam-video" class="webcam-video" autoplay muted></video>
+                    <canvas id="webcam-canvas" class="webcam-canvas"></canvas>
+                    <div id="face-detection-overlay" class="face-detection-overlay">
+                        <div id="face-detection-status" class="face-detection-status">
+                            <span id="detection-icon">🔍</span>
+                            <span id="detection-text">No face detected</span>
+                        </div>
+                        <div id="face-confidence" class="face-confidence hidden">
+                            <span>Confidence: </span>
+                            <span id="confidence-value">0%</span>
+                        </div>
+                    </div>
+                    <button id="capture-btn" class="capture-btn" onclick="capturePhoto()" disabled>📸</button>
+                </div>
+                
+                <div class="camera-controls">
+                    <button class="btn btn-primary" onclick="startWebcam()">Start Webcam</button>
+                    <button class="btn btn-secondary" onclick="stopWebcam()">Stop Webcam</button>
+                    <button class="btn btn-success" onclick="uploadCapturedFace()" id="upload-captured-btn" disabled>Register Captured Face</button>
+                </div>
+                
+                <img id="captured-image" class="captured-image hidden" alt="Captured photo">
+            </div>
+
+            <div id="upload-result"></div>
+        </div>
+
+        <!-- Face Recognition Tab -->
+        <div id="recognition" class="content hidden">
+            <h2>Face Recognition Test</h2>
+            
+            <div class="upload-options">
+                <div class="upload-option" onclick="selectRecognitionMethod('file')">
+                    <h3>📁 Upload File</h3>
+                    <p>Choose an image file to test</p>
+                </div>
+                <div class="upload-option" onclick="selectRecognitionMethod('webcam')">
+                    <h3>📷 Use Webcam</h3>
+                    <p>Take a photo to test recognition</p>
+                </div>
+            </div>
+
+            <!-- File Recognition Section -->
+            <div id="file-recognition-section" class="hidden">
+                <div class="form-group">
+                    <label>Test Image:</label>
+                    <input type="file" id="test-image" accept="image/*">
+                </div>
+                <button class="btn btn-primary" onclick="recognizeFace()">Test Recognition</button>
+            </div>
+
+            <!-- Webcam Recognition Section -->
+            <div id="webcam-recognition-section" class="hidden">
+                <div class="webcam-container">
+                    <video id="recognition-webcam-video" class="webcam-video" autoplay muted></video>
+                    <button id="recognition-capture-btn" class="capture-btn" onclick="captureRecognitionPhoto()" disabled>📸</button>
+                </div>
+                
+                <div class="camera-controls">
+                    <button class="btn btn-primary" onclick="startRecognitionWebcam()">Start Webcam</button>
+                    <button class="btn btn-secondary" onclick="stopRecognitionWebcam()">Stop Webcam</button>
+                    <button class="btn btn-success" onclick="recognizeCapturedFace()" id="recognize-captured-btn" disabled>Test Recognition</button>
+                </div>
+                
+                <img id="recognition-captured-image" class="captured-image hidden" alt="Captured photo">
+            </div>
+
+            <div id="recognition-result"></div>
+        </div>
+
+        <!-- Face List Tab -->
+        <div id="faces" class="content hidden">
+            <div class="section-header">
+                <h2>Registered Faces</h2>
+                <button class="refresh-btn" onclick="loadFaces()" title="Refresh face list">
+                    <span class="refresh-icon">↻</span>
+                    <span class="refresh-text">Refresh</span>
+                </button>
+            </div>
+            <div class="faces-table-container">
+                <table class="faces-table">
+                    <thead>
+                        <tr>
+                            <th>Face</th>
+                            <th>Name</th>
+                            <th>Contact</th>
+                            <th>Quality</th>
+                            <th>Registered</th>
+                            <th>Actions</th>
+                        </tr>
+                    </thead>
+                    <tbody id="faces-table-body">
+                        <!-- Face rows will be populated here -->
+                    </tbody>
+                </table>
+                <div id="faces-empty-state" class="empty-state hidden">
+                    <div class="empty-state-icon">👤</div>
+                    <div class="empty-state-text">No faces registered yet</div>
+                    <div class="empty-state-subtext">Register your first face to get started</div>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <script>
+        const API_BASE = 'http://localhost:8000';
+        let webcamStream = null;
+        let recognitionWebcamStream = null;
+        let capturedImageData = null;
+        let recognitionCapturedImageData = null;
+        let faceDetectionInterval = null;
+        let isFaceDetected = false;
+        let faceConfidence = 0;
+        let detectedFaces = [];
+        let cameraServiceActive = false; // New flag to track camera service status
+
+        // Tab management with camera control
+        function showTab(tabName) {
+            console.log('🔄 Switching to tab:', tabName);
+            
+            // Stop all cameras before switching tabs
+            stopAllCameras();
+            
+            // Hide all content
+            document.querySelectorAll('.content').forEach(content => {
+                content.classList.add('hidden');
+            });
+            
+            // Remove active class from all tabs
+            document.querySelectorAll('.tab').forEach(tab => {
+                tab.classList.remove('active');
+            });
+            
+            // Show selected content and activate tab
+            document.getElementById(tabName).classList.remove('hidden');
+            event.target.classList.add('active');
+            
+            // Auto-load faces when faces tab is opened
+            if (tabName === 'faces') {
+                loadFaces();
+            }
+            
+            console.log('✅ Tab switched successfully:', tabName);
+        }
+
+        // Stop all cameras function
+        function stopAllCameras() {
+            console.log('📹 Stopping all cameras...');
+            
+            // Stop webcam stream (Register Face tab)
+            if (webcamStream) {
+                console.log('🛑 Stopping webcam stream...');
+                webcamStream.getTracks().forEach(track => {
+                    track.stop();
+                    console.log('✅ Stopped webcam track:', track.kind);
+                });
+                webcamStream = null;
+                
+                // Stop face detection
+                stopFaceDetection();
+                
+                // Reset webcam video
+                const webcamVideo = document.getElementById('webcam-video');
+                if (webcamVideo) {
+                    webcamVideo.srcObject = null;
+                }
+                
+                // Clear captured image
+                const capturedImage = document.getElementById('captured-image');
+                if (capturedImage) {
+                    capturedImage.src = '';
+                    capturedImage.classList.add('hidden');
+                }
+                
+                // Reset captured image data
+                capturedImageData = null;
+                
+                // Disable buttons
+                const captureBtn = document.getElementById('capture-btn');
+                const uploadBtn = document.getElementById('upload-captured-btn');
+                if (captureBtn) captureBtn.disabled = true;
+                if (uploadBtn) uploadBtn.disabled = true;
+                
+                console.log('✅ Webcam stopped and reset');
+            }
+            
+            // Stop recognition webcam stream (Face Recognition tab)
+            if (recognitionWebcamStream) {
+                console.log('🛑 Stopping recognition webcam stream...');
+                recognitionWebcamStream.getTracks().forEach(track => {
+                    track.stop();
+                    console.log('✅ Stopped recognition track:', track.kind);
+                });
+                recognitionWebcamStream = null;
+                
+                // Reset recognition video
+                const recognitionVideo = document.getElementById('recognition-webcam-video');
+                if (recognitionVideo) {
+                    recognitionVideo.srcObject = null;
+                }
+                
+                // Clear recognition captured image
+                const recognitionCapturedImage = document.getElementById('recognition-captured-image');
+                if (recognitionCapturedImage) {
+                    recognitionCapturedImage.src = '';
+                    recognitionCapturedImage.classList.add('hidden');
+                }
+                
+                // Reset recognition captured image data
+                recognitionCapturedImageData = null;
+                
+                // Disable recognition buttons
+                const recognitionCaptureBtn = document.getElementById('recognition-capture-btn');
+                const recognizeBtn = document.getElementById('recognize-captured-btn');
+                if (recognitionCaptureBtn) recognitionCaptureBtn.disabled = true;
+                if (recognizeBtn) recognizeBtn.disabled = true;
+                
+                console.log('✅ Recognition webcam stopped and reset');
+            }
+            
+            // Stop camera service (Camera Control tab)
+            if (cameraServiceActive) {
+                console.log('🛑 Stopping camera service...');
+                stopCameraService();
+                cameraServiceActive = false;
+                console.log('✅ Camera service stopped');
+            }
+            
+            // Clear face detection status
+            updateFaceDetectionStatus(false, 0, []);
+            
+            // Clear any existing results
+            const uploadResult = document.getElementById('upload-result');
+            const recognitionResult = document.getElementById('recognition-result');
+            if (uploadResult) uploadResult.innerHTML = '';
+            if (recognitionResult) recognitionResult.innerHTML = '';
+            
+            console.log('✅ All cameras stopped successfully');
+        }
+
+        // Stop camera service function
+        async function stopCameraService() {
+            try {
+                const response = await fetch(`${API_BASE}/api/v1/camera/stop`, {
+                    method: 'POST'
+                });
+                
+                if (response.ok) {
+                    console.log('✅ Camera service stopped via API');
+                } else {
+                    console.warn('⚠️ Camera service stop API failed');
+                }
+            } catch (error) {
+                console.warn('⚠️ Error stopping camera service:', error);
+            }
+        }
+
+        // Upload method selection
+        function selectUploadMethod(method) {
+            // Remove active class from all options
+            document.querySelectorAll('.upload-option').forEach(option => {
+                option.classList.remove('active');
+            });
+            
+            // Add active class to selected option
+            event.target.closest('.upload-option').classList.add('active');
+            
+            // Hide all sections
+            document.getElementById('file-upload-section').classList.add('hidden');
+            document.getElementById('webcam-section').classList.add('hidden');
+            
+            // Show selected section
+            if (method === 'file') {
+                document.getElementById('file-upload-section').classList.remove('hidden');
+            } else if (method === 'webcam') {
+                document.getElementById('webcam-section').classList.remove('hidden');
+            }
+        }
+
+        // Recognition method selection
+        function selectRecognitionMethod(method) {
+            // Remove active class from all options
+            document.querySelectorAll('.upload-option').forEach(option => {
+                option.classList.remove('active');
+            });
+            
+            // Add active class to selected option
+            event.target.closest('.upload-option').classList.add('active');
+            
+            // Hide all sections
+            document.getElementById('file-recognition-section').classList.add('hidden');
+            document.getElementById('webcam-recognition-section').classList.add('hidden');
+            
+            // Show selected section
+            if (method === 'file') {
+                document.getElementById('file-recognition-section').classList.remove('hidden');
+            } else if (method === 'webcam') {
+                document.getElementById('webcam-recognition-section').classList.remove('hidden');
+            }
+        }
+
+        // Webcam functions
+        async function startWebcam() {
+            try {
+                const stream = await navigator.mediaDevices.getUserMedia({ 
+                    video: { 
+                        width: 640, 
+                        height: 480,
+                        facingMode: 'user'
+                    } 
+                });
+                
+                const video = document.getElementById('webcam-video');
+                video.srcObject = stream;
+                webcamStream = stream;
+                
+                // Start face detection when webcam starts
+                video.onloadedmetadata = () => {
+                    startFaceDetection();
+                };
+                
+                document.getElementById('capture-btn').disabled = true;
+                document.getElementById('upload-captured-btn').disabled = true;
+                
+                console.log('✅ Webcam started successfully');
+                
+            } catch (error) {
+                console.error('Error accessing webcam:', error);
+                alert('Error accessing webcam. Please make sure you have granted camera permissions.');
+            }
+        }
+
+        function stopWebcam() {
+            if (webcamStream) {
+                webcamStream.getTracks().forEach(track => track.stop());
+                webcamStream = null;
+            }
+            
+            // Stop face detection
+            stopFaceDetection();
+            
+            const video = document.getElementById('webcam-video');
+            if (video) {
+                video.srcObject = null;
+            }
+            
+            console.log('✅ Webcam stopped successfully');
+        }
+
+        // Recognition webcam functions
+        async function startRecognitionWebcam() {
+            try {
+                const video = document.getElementById('recognition-webcam-video');
+                const stream = await navigator.mediaDevices.getUserMedia({ 
+                    video: { 
+                        width: { ideal: 640 },
+                        height: { ideal: 480 }
+                    } 
+                });
+                
+                video.srcObject = stream;
+                recognitionWebcamStream = stream;
+                document.getElementById('recognition-capture-btn').disabled = false;
+                
+                document.getElementById('recognition-result').innerHTML = 
+                    '<p class="status-success">✅ Webcam started successfully</p>';
+                
+                console.log('✅ Recognition webcam started successfully');
+                
+            } catch (error) {
+                console.error('Error starting webcam:', error);
+                document.getElementById('recognition-result').innerHTML = 
+                    '<p class="status-error">❌ Failed to start webcam. Please check camera permissions.</p>';
+            }
+        }
+
+        function stopRecognitionWebcam() {
+            if (recognitionWebcamStream) {
+                recognitionWebcamStream.getTracks().forEach(track => track.stop());
+                recognitionWebcamStream = null;
+                document.getElementById('recognition-webcam-video').srcObject = null;
+                document.getElementById('recognition-capture-btn').disabled = true;
+                document.getElementById('recognize-captured-btn').disabled = true;
+                document.getElementById('recognition-captured-image').classList.add('hidden');
+                recognitionCapturedImageData = null;
+                
+                console.log('✅ Recognition webcam stopped successfully');
+            }
+        }
+
+        function capturePhoto() {
+            if (!isFaceDetected || detectedFaces.length === 0) {
+                alert('Please wait for face detection before capturing photo.');
+                return;
+            }
+            
+            const video = document.getElementById('webcam-video');
+            const canvas = document.createElement('canvas');
+            const ctx = canvas.getContext('2d');
+            
+            // Get the first detected face
+            const face = detectedFaces[0];
+            const box = face.bounding_box;
+            
+            // Debug info
+            console.log('=== FACE CAPTURE DEBUG ===');
+            console.log('videoSize:', { width: video.videoWidth, height: video.videoHeight });
+            console.log('Original box:', box);
+            
+            // Use original coordinates directly - NO SCALING
+            const cropX = box.left;
+            const cropY = box.top;
+            const cropWidth = box.width;
+            const cropHeight = box.height;
+            
+            console.log('Using original crop coordinates:', { cropX, cropY, cropWidth, cropHeight });
+            
+            // Set canvas size to face dimensions
+            canvas.width = cropWidth;
+            canvas.height = cropHeight;
+            
+            // Draw only the face region using original coordinates
+            ctx.drawImage(
+                video,
+                cropX, cropY, cropWidth, cropHeight,  // Source rectangle (from video)
+                0, 0, cropWidth, cropHeight            // Destination rectangle (on canvas)
+            );
+            
+            capturedImageData = canvas.toDataURL('image/jpeg');
+            document.getElementById('captured-image').src = capturedImageData;
+            document.getElementById('captured-image').classList.remove('hidden');
+            
+            // Enable upload button if face is detected
+            if (isFaceDetected) {
+                document.getElementById('upload-captured-btn').disabled = false;
+            }
+            
+            // Show crop info with debug data
+            const cropInfo = document.createElement('div');
+            cropInfo.innerHTML = `
+                <p><strong>Face Cropped:</strong></p>
+                <p>Original Box: (${box.left}, ${box.top}) to (${box.left + box.width}, ${box.top + box.height})</p>
+                <p>Crop Size: ${cropWidth.toFixed(0)} x ${cropHeight.toFixed(0)} pixels</p>
+                <p>Confidence: ${(face.confidence * 100).toFixed(1)}%</p>
+                <p>Quality: ${(face.quality_score * 100).toFixed(1)}%</p>
+                <p>Using original coordinates (no scaling)</p>
+            `;
+            cropInfo.className = 'crop-info';
+            
+            // Remove previous crop info if exists
+            const existingCropInfo = document.querySelector('.crop-info');
+            if (existingCropInfo) {
+                existingCropInfo.remove();
+            }
+            
+            document.getElementById('webcam-section').appendChild(cropInfo);
+        }
+
+        // Recognition webcam functions
+        async function startRecognitionWebcam() {
+            try {
+                const video = document.getElementById('recognition-webcam-video');
+                const stream = await navigator.mediaDevices.getUserMedia({ 
+                    video: { 
+                        width: { ideal: 640 },
+                        height: { ideal: 480 }
+                    } 
+                });
+                
+                video.srcObject = stream;
+                recognitionWebcamStream = stream;
+                document.getElementById('recognition-capture-btn').disabled = false;
+                
+                document.getElementById('recognition-result').innerHTML = 
+                    '<p class="status-success">✅ Webcam started successfully</p>';
+                
+                console.log('✅ Recognition webcam started successfully');
+                
+            } catch (error) {
+                console.error('Error starting webcam:', error);
+                document.getElementById('recognition-result').innerHTML = 
+                    '<p class="status-error">❌ Failed to start webcam. Please check camera permissions.</p>';
+            }
+        }
+
+        function stopRecognitionWebcam() {
+            if (recognitionWebcamStream) {
+                recognitionWebcamStream.getTracks().forEach(track => track.stop());
+                recognitionWebcamStream = null;
+                document.getElementById('recognition-webcam-video').srcObject = null;
+                document.getElementById('recognition-capture-btn').disabled = true;
+                document.getElementById('recognize-captured-btn').disabled = true;
+                document.getElementById('recognition-captured-image').classList.add('hidden');
+                recognitionCapturedImageData = null;
+                
+                console.log('✅ Recognition webcam stopped successfully');
+            }
+        }
+
+        function captureRecognitionPhoto() {
+            const video = document.getElementById('recognition-webcam-video');
+            const canvas = document.createElement('canvas');
+            const context = canvas.getContext('2d');
+            
+            canvas.width = video.videoWidth;
+            canvas.height = video.videoHeight;
+            context.drawImage(video, 0, 0);
+            
+            const imageData = canvas.toDataURL('image/jpeg');
+            recognitionCapturedImageData = imageData;
+            
+            const capturedImage = document.getElementById('recognition-captured-image');
+            capturedImage.src = imageData;
+            capturedImage.classList.remove('hidden');
+            
+            document.getElementById('recognize-captured-btn').disabled = false;
+            
+            document.getElementById('recognition-result').innerHTML = 
+                '<p class="status-success">✅ Photo captured successfully</p>';
+        }
+
+        // Reset form after successful registration
+        function resetRegistrationForm() {
+            // Clear name input
+            document.getElementById('webcam-face-name').value = '';
+            
+            // Clear captured image
+            const capturedImage = document.getElementById('captured-image');
+            capturedImage.src = '';
+            capturedImage.classList.add('hidden');
+            
+            // Reset captured image data
+            capturedImageData = null;
+            
+            // Disable upload button
+            document.getElementById('upload-captured-btn').disabled = true;
+            
+            // Clear crop info
+            const existingCropInfo = document.querySelector('.crop-info');
+            if (existingCropInfo) {
+                existingCropInfo.remove();
+            }
+            
+            // Clear upload result
+            document.getElementById('upload-result').innerHTML = '';
+            
+            // Reset face detection status
+            updateFaceDetectionStatus(false, 0, []);
+            
+            // Clear face detection overlay
+            const canvas = document.getElementById('webcam-canvas');
+            if (canvas) {
+                const ctx = canvas.getContext('2d');
+                ctx.clearRect(0, 0, canvas.width, canvas.height);
+            }
+            
+            console.log('✅ Registration form reset successfully');
+        }
+
+        // Reset file upload form
+        function resetFileUploadForm() {
+            // Clear name input
+            document.getElementById('face-name').value = '';
+            
+            // Clear file input
+            document.getElementById('face-image').value = '';
+            
+            // Clear upload result
+            document.getElementById('upload-result').innerHTML = '';
+            
+            console.log('✅ File upload form reset successfully');
+        }
+
+        // Upload captured face
+        async function uploadCapturedFace() {
+            const name = document.getElementById('webcam-face-name').value;
+            
+            if (!name || !capturedImageData) {
+                document.getElementById('upload-result').innerHTML = 
+                    '<p class="status-error">❌ Please provide both name and capture a photo</p>';
+                return;
+            }
+
+            try {
+                // Convert data URL to blob
+                const response = await fetch(capturedImageData);
+                const blob = await response.blob();
+                
+                const formData = new FormData();
+                formData.append('name', name);
+                formData.append('file', blob, 'captured_photo.jpg');
+
+                const apiResponse = await fetch(`${API_BASE}/api/v1/faces/upload`, {
+                    method: 'POST',
+                    body: formData
+                });
+                
+                const data = await apiResponse.json();
+                if (data.success) {
+                    document.getElementById('upload-result').innerHTML = 
+                        `<p class="status-success">✅ Face registered successfully: ${data.data.name}</p>`;
+                    
+                    // Reset form after successful registration
+                    setTimeout(() => {
+                        resetRegistrationForm();
+                    }, 2000); // Reset after 2 seconds to show success message
+                    
+                } else {
+                    document.getElementById('upload-result').innerHTML = 
+                        `<p class="status-error">❌ ${data.message}</p>`;
+                }
+            } catch (error) {
+                console.error('Upload captured face failed:', error);
+                document.getElementById('upload-result').innerHTML = 
+                    '<p class="status-error">❌ Connection failed</p>';
+            }
+        }
+
+        // Recognize captured face
+        async function recognizeCapturedFace() {
+            if (!recognitionCapturedImageData) {
+                document.getElementById('recognition-result').innerHTML = 
+                    '<p class="status-error">❌ Please capture a photo first</p>';
+                return;
+            }
+
+            try {
+                // Convert data URL to blob
+                const response = await fetch(recognitionCapturedImageData);
+                const blob = await response.blob();
+                
+                const formData = new FormData();
+                formData.append('file', blob, 'test_photo.jpg');
+
+                const apiResponse = await fetch(`${API_BASE}/api/v1/faces/recognize`, {
+                    method: 'POST',
+                    body: formData
+                });
+                
+                const data = await apiResponse.json();
+                if (data.success) {
+                    const result = data.data;
+                    if (result.recognized) {
+                        document.getElementById('recognition-result').innerHTML = 
+                            `<p class="status-success">✅ Recognition successful!</p>
+                             <p><strong>Name:</strong> ${result.person ? result.person.name : 'Unknown'}</p>
+                             <p><strong>Confidence:</strong> ${(result.confidence * 100).toFixed(2)}%</p>
+                             <p><strong>Person ID:</strong> ${result.person ? result.person.id : 'N/A'}</p>`;
+                    } else {
+                        document.getElementById('recognition-result').innerHTML = 
+                            `<p class="status-error">❌ No face detected in image</p>
+                             <p><em>Tip: Make sure your face is clearly visible and well-lit</em></p>`;
+                    }
+                } else {
+                    document.getElementById('recognition-result').innerHTML = 
+                        `<p class="status-error">❌ ${data.message}</p>`;
+                }
+            } catch (error) {
+                console.error('Face recognition failed:', error);
+                document.getElementById('recognition-result').innerHTML = 
+                    '<p class="status-error">❌ Connection failed</p>';
+            }
+        }
+
+        // Real-time face detection
+        async function startFaceDetection() {
+            if (!webcamStream) return;
+            
+            faceDetectionInterval = setInterval(async () => {
+                await detectFaceInWebcam();
+            }, 1000); // Check every second
+        }
+
+        async function stopFaceDetection() {
+            if (faceDetectionInterval) {
+                clearInterval(faceDetectionInterval);
+                faceDetectionInterval = null;
+            }
+            updateFaceDetectionStatus(false, 0, []);
+        }
+
+        async function detectFaceInWebcam() {
+            try {
+                const video = document.getElementById('webcam-video');
+                const canvas = document.getElementById('webcam-canvas');
+                const ctx = canvas.getContext('2d');
+                
+                // Draw video frame to canvas
+                ctx.drawImage(video, 0, 0, canvas.width, canvas.height);
+                
+                // Convert canvas to blob
+                canvas.toBlob(async (blob) => {
+                    if (!blob) return;
+                    
+                    const formData = new FormData();
+                    formData.append('file', blob, 'detection_frame.jpg');
+                    
+                    try {
+                        // Use the new detect endpoint
+                        const response = await fetch(`${API_BASE}/api/v1/faces/detect`, {
+                            method: 'POST',
+                            body: formData
+                        });
+                        
+                        const data = await response.json();
+                        if (data.success) {
+                            const faces = data.data.faces;
+                            const detected = faces.length > 0;
+                            const confidence = detected ? faces[0].confidence : 0;
+                            
+                            // Draw bounding boxes
+                            drawBoundingBoxes(faces, canvas);
+                            
+                            updateFaceDetectionStatus(detected, confidence, faces);
+                        } else {
+                            updateFaceDetectionStatus(false, 0, []);
+                        }
+                    } catch (error) {
+                        console.error('Face detection error:', error);
+                        updateFaceDetectionStatus(false, 0, []);
+                    }
+                }, 'image/jpeg');
+                
+            } catch (error) {
+                console.error('Face detection failed:', error);
+                updateFaceDetectionStatus(false, 0, []);
+            }
+        }
+
+        function drawBoundingBoxes(faces, canvas) {
+            const ctx = canvas.getContext('2d');
+            const video = document.getElementById('webcam-video');
+            
+            // Ensure canvas matches video dimensions exactly
+            canvas.width = video.videoWidth;
+            canvas.height = video.videoHeight;
+            
+            // Clear previous drawings and redraw video frame
+            ctx.clearRect(0, 0, canvas.width, canvas.height);
+            ctx.drawImage(video, 0, 0, canvas.width, canvas.height);
+            
+            // Debug video and canvas properties
+            debugVideoAndCanvas();
+            
+            faces.forEach((face, index) => {
+                const box = face.bounding_box;
+                
+                console.log('=== FACE DETECTION DEBUG ===');
+                console.log('videoSize:', { width: video.videoWidth, height: video.videoHeight });
+                console.log('canvasSize:', { width: canvas.width, height: canvas.height });
+                console.log('Original box:', box);
+                
+                // Use original coordinates directly - NO SCALING
+                const x = box.left;
+                const y = box.top;
+                const width = box.width;
+                const height = box.height;
+                
+                console.log('Using original coordinates:', { x, y, width, height });
+                
+                // Draw bounding box with original coordinates
+                ctx.strokeStyle = '#00ff00';
+                ctx.lineWidth = 2;
+                ctx.strokeRect(x, y, width, height);
+                
+                // Draw corner indicators for better visibility
+                const cornerSize = 8;
+                ctx.fillStyle = '#00ff00';
+                ctx.fillRect(x - 1, y - 1, cornerSize, 2); // Top left horizontal
+                ctx.fillRect(x - 1, y - 1, 2, cornerSize); // Top left vertical
+                ctx.fillRect(x + width - cornerSize + 1, y - 1, cornerSize, 2); // Top right horizontal
+                ctx.fillRect(x + width - 1, y - 1, 2, cornerSize); // Top right vertical
+                ctx.fillRect(x - 1, y + height - cornerSize + 1, cornerSize, 2); // Bottom left horizontal
+                ctx.fillRect(x - 1, y + height - 1, 2, cornerSize); // Bottom left vertical
+                ctx.fillRect(x + width - cornerSize + 1, y + height - cornerSize + 1, cornerSize, 2); // Bottom right horizontal
+                ctx.fillRect(x + width - 1, y + height - 1, 2, cornerSize); // Bottom right vertical
+                
+                // Draw confidence text
+                ctx.fillStyle = '#00ff00';
+                ctx.font = '14px Arial';
+                ctx.fillText(`Face ${index + 1}: ${(face.confidence * 100).toFixed(1)}%`, x, y - 5);
+                
+                // Draw quality score below the box
+                ctx.fillText(`Quality: ${(face.quality_score * 100).toFixed(1)}%`, x, y + height + 15);
+            });
+        }
+        
+        function debugVideoAndCanvas() {
+            const video = document.getElementById('webcam-video');
+            const canvas = document.getElementById('webcam-canvas');
+            
+            console.log('=== VIDEO DEBUG ===');
+            console.log('video.videoWidth:', video.videoWidth);
+            console.log('video.videoHeight:', video.videoHeight);
+            console.log('video.offsetWidth:', video.offsetWidth);
+            console.log('video.offsetHeight:', video.offsetHeight);
+            console.log('video.clientWidth:', video.clientWidth);
+            console.log('video.clientHeight:', video.clientHeight);
+            
+            console.log('=== CANVAS DEBUG ===');
+            console.log('canvas.width:', canvas.width);
+            console.log('canvas.height:', canvas.height);
+            console.log('canvas.offsetWidth:', canvas.offsetWidth);
+            console.log('canvas.offsetHeight:', canvas.offsetHeight);
+            
+            console.log('=== BROWSER DEBUG ===');
+            console.log('window.devicePixelRatio:', window.devicePixelRatio);
+            console.log('window.visualViewport.scale:', window.visualViewport?.scale);
+            
+            const rect = video.getBoundingClientRect();
+            console.log('video.getBoundingClientRect():', rect);
+            
+            const style = window.getComputedStyle(video);
+            console.log('video transform:', style.transform);
+            console.log('video scale:', style.scale);
+        }
+
+        function updateFaceDetectionStatus(detected, confidence, faces = []) {
+            const statusElement = document.getElementById('detection-text');
+            const iconElement = document.getElementById('detection-icon');
+            const confidenceElement = document.getElementById('face-confidence');
+            const confidenceValue = document.getElementById('confidence-value');
+            const captureBtn = document.getElementById('capture-btn');
+            const uploadBtn = document.getElementById('upload-captured-btn');
+            
+            isFaceDetected = detected;
+            faceConfidence = confidence;
+            detectedFaces = faces;
+            
+            if (detected) {
+                statusElement.textContent = `Face detected (${faces.length} face${faces.length > 1 ? 's' : ''})`;
+                statusElement.className = 'detection-success';
+                iconElement.textContent = '✅';
+                confidenceElement.classList.remove('hidden');
+                confidenceValue.textContent = `${(confidence * 100).toFixed(1)}%`;
+                captureBtn.disabled = false;
+                
+                // Enable upload button if we have a captured image
+                if (capturedImageData) {
+                    uploadBtn.disabled = false;
+                }
+            } else {
+                statusElement.textContent = 'No face detected';
+                statusElement.className = 'detection-error';
+                iconElement.textContent = '❌';
+                confidenceElement.classList.add('hidden');
+                captureBtn.disabled = true;
+                uploadBtn.disabled = true;
+            }
+        }
+
+        // Determine quality class based on score
+        function getQualityClass(score) {
+            if (score >= 0.8) return 'quality-excellent';
+            if (score >= 0.6) return 'quality-good';
+            if (score >= 0.4) return 'quality-fair';
+            return 'quality-poor';
+        }
+
+        // Get quality label
+        function getQualityLabel(score) {
+            if (score >= 0.8) return 'Excellent';
+            if (score >= 0.6) return 'Good';
+            if (score >= 0.4) return 'Fair';
+            return 'Poor';
+        }
+
+        // API functions
+        async function checkHealth() {
+            try {
+                const response = await fetch(`${API_BASE}/health`);
+                const data = await response.json();
+                
+                if (data.success) {
+                    const services = data.data.services;
+                    document.getElementById('api-status').innerHTML = '<span class="status-success">✅ Healthy</span>';
+                    document.getElementById('camera-status').innerHTML = services.camera_service ? 
+                        '<span class="status-success">✅ Running</span>' : 
+                        '<span class="status-error">❌ Error</span>';
+                    document.getElementById('face-status').innerHTML = services.face_processing ? 
+                        '<span class="status-success">✅ Running</span>' : 
+                        '<span class="status-error">❌ Error</span>';
+                    document.getElementById('db-status').innerHTML = services.vector_database ? 
+                        '<span class="status-success">✅ Connected</span>' : 
+                        '<span class="status-error">❌ Error</span>';
+                } else {
+                    document.getElementById('api-status').innerHTML = '<span class="status-error">❌ Error</span>';
+                }
+            } catch (error) {
+                console.error('Health check failed:', error);
+                document.getElementById('api-status').innerHTML = '<span class="status-error">❌ Connection Failed</span>';
+            }
+        }
+
+        async function startCamera() {
+            try {
+                const cameraId = document.getElementById('camera-select').value;
+                console.log('🎥 Starting camera with ID:', cameraId);
+                
+                // Show loading state
+                document.getElementById('camera-info').innerHTML = 
+                    '<p class="status-loading">⏳ Starting camera...</p>';
+                
+                const response = await fetch(`${API_BASE}/api/v1/camera/start`, {
+                    method: 'POST',
+                    headers: {
+                        'Content-Type': 'application/json'
+                    },
+                    body: JSON.stringify({ camera_id: parseInt(cameraId) })
+                });
+                
+                const data = await response.json();
+                if (data.success) {
+                    console.log('✅ Camera started successfully');
+                    document.getElementById('camera-info').innerHTML = 
+                        '<p class="status-success">✅ Camera started successfully</p>';
+                    cameraServiceActive = true;
+                    
+                    // Start displaying video stream
+                    startVideoStream();
+                    
+                } else {
+                    console.error('❌ Camera start failed:', data.message);
+                    document.getElementById('camera-info').innerHTML = 
+                        `<p class="status-error">❌ ${data.message}</p>`;
+                }
+            } catch (error) {
+                console.error('❌ Start camera failed:', error);
+                document.getElementById('camera-info').innerHTML = 
+                    '<p class="status-error">❌ Connection failed</p>';
+            }
+        }
+
+        async function stopCamera() {
+            try {
+                console.log('🛑 Stopping camera...');
+                
+                // Hide video stream first
+                stopVideoStream();
+                
+                const response = await fetch(`${API_BASE}/api/v1/camera/stop`, {
+                    method: 'POST'
+                });
+                
+                const data = await response.json();
+                if (data.success) {
+                    console.log('✅ Camera stopped successfully');
+                    document.getElementById('camera-info').innerHTML = 
+                        '<p class="status-success">✅ Camera stopped successfully</p>';
+                    cameraServiceActive = false;
+                } else {
+                    console.error('❌ Camera stop failed:', data.message);
+                    document.getElementById('camera-info').innerHTML = 
+                        `<p class="status-error">❌ ${data.message}</p>`;
+                }
+            } catch (error) {
+                console.error('❌ Stop camera failed:', error);
+                document.getElementById('camera-info').innerHTML = 
+                    '<p class="status-error">❌ Connection failed</p>';
+            }
+        }
+
+        function startVideoStream() {
+            console.log('📹 Starting video stream display...');
+            
+            // Hide placeholder and show stream
+            document.getElementById('camera-placeholder').style.display = 'none';
+            document.getElementById('camera-stream').style.display = 'block';
+            
+            // Set up the video stream from backend
+            const streamImg = document.getElementById('camera-stream');
+            streamImg.src = `${API_BASE}/api/v1/camera/stream`;
+            
+            // Add error handling for stream
+            streamImg.onerror = function() {
+                console.error('❌ Failed to load camera stream');
+                document.getElementById('camera-info').innerHTML = 
+                    '<p class="status-error">❌ Failed to load camera stream</p>';
+                stopVideoStream();
+            };
+            
+            // Add load success handling
+            streamImg.onload = function() {
+                console.log('✅ Camera stream loaded successfully');
+                document.getElementById('camera-info').innerHTML = 
+                    '<p class="status-success">✅ Camera stream active</p>';
+            };
+            
+            console.log('🎬 Video stream started');
+        }
+
+        function stopVideoStream() {
+            console.log('🛑 Stopping video stream display...');
+            
+            // Hide stream and show placeholder
+            document.getElementById('camera-stream').style.display = 'none';
+            document.getElementById('camera-placeholder').style.display = 'flex';
+            
+            // Clear the stream source
+            const streamImg = document.getElementById('camera-stream');
+            streamImg.src = '';
+            
+            console.log('✅ Video stream stopped');
+        }
+
+        async function uploadFace() {
+            const name = document.getElementById('face-name').value;
+            const fileInput = document.getElementById('face-image');
+            
+            if (!name || !fileInput.files[0]) {
+                document.getElementById('upload-result').innerHTML = 
+                    '<p class="status-error">❌ Please provide both name and image</p>';
+                return;
+            }
+
+            try {
+                const formData = new FormData();
+                formData.append('name', name);
+                formData.append('file', fileInput.files[0]);
+
+                const response = await fetch(`${API_BASE}/api/v1/faces/upload`, {
+                    method: 'POST',
+                    body: formData
+                });
+                
+                const data = await response.json();
+                if (data.success) {
+                    document.getElementById('upload-result').innerHTML = 
+                        `<p class="status-success">✅ Face registered successfully: ${data.data.name}</p>`;
+                    
+                    // Reset form after successful registration
+                    setTimeout(() => {
+                        resetFileUploadForm();
+                    }, 2000); // Reset after 2 seconds to show success message
+                    
+                } else {
+                    document.getElementById('upload-result').innerHTML = 
+                        `<p class="status-error">❌ ${data.message}</p>`;
+                }
+            } catch (error) {
+                console.error('Upload face failed:', error);
+                document.getElementById('upload-result').innerHTML = 
+                    '<p class="status-error">❌ Connection failed</p>';
+            }
+        }
+
+        async function recognizeFace() {
+            const fileInput = document.getElementById('test-image');
+            
+            if (!fileInput.files[0]) {
+                document.getElementById('recognition-result').innerHTML = 
+                    '<p class="status-error">❌ Please select an image</p>';
+                return;
+            }
+
+            try {
+                const formData = new FormData();
+                formData.append('file', fileInput.files[0]);
+
+                const response = await fetch(`${API_BASE}/api/v1/faces/recognize`, {
+                    method: 'POST',
+                    body: formData
+                });
+                
+                const data = await response.json();
+                if (data.success) {
+                    const result = data.data;
+                    document.getElementById('recognition-result').innerHTML = 
+                        `<p class="status-success">✅ Recognition successful!</p>
+                         <p><strong>Name:</strong> ${result.person ? result.person.name : 'Unknown'}</p>
+                         <p><strong>Confidence:</strong> ${(result.confidence * 100).toFixed(2)}%</p>
+                         <p><strong>Person ID:</strong> ${result.person ? result.person.id : 'N/A'}</p>`;
+                } else {
+                    document.getElementById('recognition-result').innerHTML = 
+                        `<p class="status-error">❌ ${data.message}</p>`;
+                }
+            } catch (error) {
+                console.error('Face recognition failed:', error);
+                document.getElementById('recognition-result').innerHTML = 
+                    '<p class="status-error">❌ Connection failed</p>';
+            }
+        }
+
+        async function loadFaces() {
+            console.log('🔄 Loading faces...');
+            
+            // Get refresh button and add loading state
+            const refreshBtn = document.querySelector('.refresh-btn');
+            const refreshIcon = document.querySelector('.refresh-icon');
+            const refreshText = document.querySelector('.refresh-text');
+            
+            // Set loading state with modern classes
+            refreshBtn.disabled = true;
+            refreshBtn.classList.add('loading');
+            refreshIcon.textContent = '↻';
+            refreshText.textContent = 'Loading...';
+            
+            try {
+                const response = await fetch(`${API_BASE}/api/v1/faces/list`);
+                console.log('📡 API Response status:', response.status);
+                
+                const data = await response.json();
+                console.log('📊 API Response data:', data);
+                
+                if (data.success) {
+                    const facesList = document.getElementById('faces-table-body');
+                    console.log('�� Table body element:', facesList);
+                    
+                    facesList.innerHTML = '';
+                    console.log('🧹 Cleared table body');
+                    
+                    if (data.data.faces.length === 0) {
+                        console.log('📭 No faces found, showing empty state');
+                        document.getElementById('faces-empty-state').classList.remove('hidden');
+                    } else {
+                        console.log(`📋 Found ${data.data.faces.length} faces, building table`);
+                        document.getElementById('faces-empty-state').classList.add('hidden');
+                        
+                        data.data.faces.forEach((face, index) => {
+                            console.log(`👤 Processing face ${index + 1}:`, face.metadata.name);
+                            
+                            const qualityScore = face.metadata.quality_score;
+                            const qualityClass = getQualityClass(qualityScore);
+                            const qualityLabel = getQualityLabel(qualityScore);
+                            
+                            console.log(`   Quality: ${qualityLabel} (${(qualityScore * 100).toFixed(1)}%)`);
+                            
+                            const faceRow = document.createElement('tr');
+                            faceRow.innerHTML = `
+                                <td class="face-image-cell">
+                                    <img src="${API_BASE}${face.image_url}" alt="${face.metadata.name}" 
+                                         class="face-image-table"
+                                         onerror="this.src='data:image/svg+xml;base64,PHN2ZyB3aWR0aD0iMTAwIiBoZWlnaHQ9IjEwMCIgdmlld0JveD0iMCAwIDEwMCAxMDAiIGZpbGw9Im5vbmUiIHhtbG5zPSJodHRwOi8vd3d3LnczLm9yZy8yMDAwL3N2ZyI+CjxyZWN0IHdpZHRoPSIxMDAiIGhlaWdodD0iMTAwIiBmaWxsPSIjRjNGNEY2Ii8+CjxwYXRoIGQ9Ik01MCAyNUMzNS4zNjQ5IDI1IDI1IDM1LjM2NDkgMjUgNTBDMjUgNjQuNjM1MSAzNS4zNjQ5IDc1IDUwIDc1QzY0LjYzNTEgNzUgNzUgNjQuNjM1MSA3NSA1MEM3NSAzNS4zNjQ5IDY0LjYzNTEgMjUgNTAgMjVaIiBmaWxsPSIjOUI5QkEwIi8+CjxwYXRoIGQ9Ik0zMCA0MEMzMCAzNS4zNjQ5IDM0LjM2NDkgMzEgMzkgMzFIMjVDMjAuMzY0OSAzMSAxNiAzNS4zNjQ5IDE2IDQwVjQ0QzE2IDQ4LjYzNTEgMjAuMzY0OSA1MyAyNSA1M0gyOUMzMy42MzUxIDUzIDM4IDQ4LjYzNTEgMzggNDRWMzBaIiBmaWxsPSIjOUI5QkEwIi8+CjxwYXRoIGQ9Ik04NCA0MEM4NCAzNS4zNjQ5IDc5LjYzNTEgMzEgNzUgMzFIMzFDMjYuMzY0OSAzMSAyMiAzNS4zNjQ5IDIyIDQwVjQ0QzIyIDQ4LjYzNTEgMjYuMzY0OSA1MyAzMSA1M0g3NUM3OS42MzUxIDUzIDg0IDQ4LjYzNTEgODQgNDRWMzBaIiBmaWxsPSIjOUI5QkEwIi8+Cjwvc3ZnPgo='">
+                                </td>
+                                <td class="face-name-cell">
+                                    <span class="status-indicator status-active"></span>
+                                    ${face.metadata.name}
+                                </td>
+                                <td class="face-info-cell">
+                                    ${face.metadata.email ? `<div><span class="face-info-label">Email:</span>${face.metadata.email}</div>` : ''}
+                                    ${face.metadata.phone ? `<div><span class="face-info-label">Phone:</span>${face.metadata.phone}</div>` : ''}
+                                    ${!face.metadata.email && !face.metadata.phone ? '<div style="color: #adb5bd; font-style: italic;">No contact info</div>' : ''}
+                                </td>
+                                <td class="face-info-cell">
+                                    <span class="quality-score ${qualityClass}">${qualityLabel}</span>
+                                    <div style="font-size: 11px; color: #6c757d; margin-top: 2px;">
+                                        ${(qualityScore * 100).toFixed(1)}%
+                                    </div>
+                                </td>
+                                <td class="face-info-cell">${new Date(face.created_at).toLocaleDateString()}</td>
+                                <td class="face-actions-cell">
+                                    <button class="delete-btn" onclick="deleteFace('${face.metadata.person_id}', '${face.metadata.name}', '${face.id}')">
+                                        🗑️ Delete
+                                    </button>
+                                </td>
+                            `;
+                            facesList.appendChild(faceRow);
+                            console.log(`✅ Added face row ${index + 1}`);
+                        });
+                        
+                        console.log('🎉 Face table built successfully');
+                        
+                        // Show success state briefly
+                        refreshBtn.classList.remove('loading');
+                        refreshBtn.classList.add('success');
+                        setTimeout(() => {
+                            refreshBtn.classList.remove('success');
+                        }, 1000);
+                    }
+                } else {
+                    console.error('❌ API returned error:', data.message);
+                    document.getElementById('faces-table-body').innerHTML = 
+                        '<tr><td colspan="6" style="text-align: center; color: #dc3545;">❌ Failed to load faces</td></tr>';
+                    
+                    // Show error state
+                    refreshBtn.classList.remove('loading');
+                    refreshBtn.classList.add('error');
+                    setTimeout(() => {
+                        refreshBtn.classList.remove('error');
+                    }, 2000);
+                }
+            } catch (error) {
+                console.error('❌ Load faces failed:', error);
+                document.getElementById('faces-table-body').innerHTML = 
+                    '<tr><td colspan="6" style="text-align: center; color: #dc3545;">❌ Connection failed</td></tr>';
+                
+                // Show error state
+                refreshBtn.classList.remove('loading');
+                refreshBtn.classList.add('error');
+                setTimeout(() => {
+                    refreshBtn.classList.remove('error');
+                }, 2000);
+            } finally {
+                // Reset refresh button state
+                refreshBtn.disabled = false;
+                refreshBtn.classList.remove('loading', 'success', 'error');
+                refreshIcon.textContent = '↻';
+                refreshText.textContent = 'Refresh';
+                console.log('✅ Refresh button reset');
+            }
+        }
+
+        async function deleteFace(personId, faceName, faceId) {
+            if (!confirm(`Are you sure you want to delete ${faceName}?`)) {
+                return;
+            }
+
+            try {
+                const response = await fetch(`${API_BASE}/api/v1/faces/${faceId}`, {
+                    method: 'DELETE'
+                });
+                
+                const data = await response.json();
+                if (data.success) {
+                    // Reload faces list after successful deletion
+                    loadFaces();
+                    alert(`✅ ${faceName} deleted successfully!`);
+                } else {
+                    alert(`❌ Failed to delete ${faceName}: ${data.message}`);
+                }
+            } catch (error) {
+                console.error('Delete face failed:', error);
+                alert(`❌ Connection failed when deleting ${faceName}`);
+            }
+        }
+
+        // Initialize
+        document.addEventListener('DOMContentLoaded', function() {
+            checkHealth();
+        });
+    </script>
+</body>
+</html>

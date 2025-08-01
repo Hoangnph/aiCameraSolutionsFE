@@ -1,0 +1,38 @@
+[
+  {
+    "test": "API Health Check",
+    "status": "\u2705 PASS",
+    "message": "Server is healthy",
+    "timestamp": "2025-07-31 20:37:16"
+  },
+  {
+    "test": "Database Connection",
+    "status": "\u2705 PASS",
+    "message": "Vector DB: 0 faces",
+    "timestamp": "2025-07-31 20:37:16"
+  },
+  {
+    "test": "Face Upload Workflow",
+    "status": "\u274c FAIL",
+    "message": "Status code: 500",
+    "timestamp": "2025-07-31 20:37:16"
+  },
+  {
+    "test": "Face Recognition Workflow",
+    "status": "\u274c FAIL",
+    "message": "Status code: 500",
+    "timestamp": "2025-07-31 20:37:16"
+  },
+  {
+    "test": "Face List Endpoint",
+    "status": "\u2705 PASS",
+    "message": "Found 0 faces",
+    "timestamp": "2025-07-31 20:37:16"
+  },
+  {
+    "test": "Frontend Server",
+    "status": "\u2705 PASS",
+    "message": "Frontend is accessible",
+    "timestamp": "2025-07-31 20:37:16"
+  }
+]

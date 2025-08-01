@@ -1,0 +1,155 @@
+{
+  "summary": {
+    "total_tests": 12,
+    "passed_tests": 10,
+    "failed_tests": 2,
+    "security_score": 83.33333333333334,
+    "timestamp": "2025-07-31T11:53:11.805613",
+    "base_url": "http://localhost:8000"
+  },
+  "test_results": [
+    {
+      "test_name": "CORS Configuration",
+      "success": true,
+      "message": "CORS headers present: True",
+      "timestamp": "2025-07-31T11:53:03.701584",
+      "data": {
+        "cors_headers": {
+          "date": "Thu, 31 Jul 2025 04:53:03 GMT",
+          "server": "uvicorn",
+          "vary": "Origin",
+          "access-control-allow-methods": "DELETE, GET, HEAD, OPTIONS, PATCH, POST, PUT",
+          "access-control-max-age": "600",
+          "access-control-allow-credentials": "true",
+          "access-control-allow-origin": "http://malicious-site.com",
+          "access-control-allow-headers": "Content-Type",
+          "content-length": "2",
+          "content-type": "text/plain; charset=utf-8"
+        }
+      }
+    },
+    {
+      "test_name": "Input Validation - Invalid File Type",
+      "success": true,
+      "message": "Status: 400, Expected: 400",
+      "timestamp": "2025-07-31T11:53:03.706301",
+      "data": {}
+    },
+    {
+      "test_name": "Input Validation - Missing Required Fields",
+      "success": true,
+      "message": "Status: 422, Expected: 422",
+      "timestamp": "2025-07-31T11:53:03.714684",
+      "data": {}
+    },
+    {
+      "test_name": "Input Validation - SQL Injection Protection",
+      "success": true,
+      "message": "Status: 200, Handled gracefully",
+      "timestamp": "2025-07-31T11:53:03.887627",
+      "data": {}
+    },
+    {
+      "test_name": "File Upload Security - Large File",
+      "success": false,
+      "message": "Status: 500, Large file handled",
+      "timestamp": "2025-07-31T11:53:09.606433",
+      "data": {}
+    },
+    {
+      "test_name": "File Upload Security - Malicious Extension",
+      "success": true,
+      "message": "Status: 400, Expected: 400",
+      "timestamp": "2025-07-31T11:53:09.613812",
+      "data": {}
+    },
+    {
+      "test_name": "Rate Limiting",
+      "success": true,
+      "message": "All 20 requests successful (no rate limiting detected)",
+      "timestamp": "2025-07-31T11:53:11.775649",
+      "data": {
+        "response_codes": [
+          200,
+          200,
+          200,
+          200,
+          200,
+          200,
+          200,
+          200,
+          200,
+          200,
+          200,
+          200,
+          200,
+          200,
+          200,
+          200,
+          200,
+          200,
+          200,
+          200
+        ]
+      }
+    },
+    {
+      "test_name": "Authentication - /api/v1/faces/upload",
+      "success": true,
+      "message": "Status: 405, Expected: 405",
+      "timestamp": "2025-07-31T11:53:11.782373",
+      "data": {
+        "endpoint": "/api/v1/faces/upload",
+        "status_code": 405
+      }
+    },
+    {
+      "test_name": "Authentication - /api/v1/faces/recognize",
+      "success": true,
+      "message": "Status: 405, Expected: 405",
+      "timestamp": "2025-07-31T11:53:11.787686",
+      "data": {
+        "endpoint": "/api/v1/faces/recognize",
+        "status_code": 405
+      }
+    },
+    {
+      "test_name": "Authentication - /api/v1/faces/list",
+      "success": true,
+      "message": "Status: 200, Expected: 200",
+      "timestamp": "2025-07-31T11:53:11.795490",
+      "data": {
+        "endpoint": "/api/v1/faces/list",
+        "status_code": 200
+      }
+    },
+    {
+      "test_name": "Data Exposure - Error Messages",
+      "success": true,
+      "message": "Sensitive data exposed: False",
+      "timestamp": "2025-07-31T11:53:11.800364",
+      "data": {
+        "response_length": 22
+      }
+    },
+    {
+      "test_name": "Security Headers",
+      "success": false,
+      "message": "Missing headers: ['X-Content-Type-Options', 'X-Frame-Options', 'X-XSS-Protection', 'Strict-Transport-Security', 'Content-Security-Policy']",
+      "timestamp": "2025-07-31T11:53:11.805463",
+      "data": {
+        "headers": {
+          "date": "Thu, 31 Jul 2025 04:53:11 GMT",
+          "server": "uvicorn",
+          "content-length": "242",
+          "content-type": "application/json"
+        }
+      }
+    }
+  ],
+  "recommendations": [
+    "Implement missing security measures.",
+    "Good security posture. Consider additional hardening.",
+    "Implement file upload security measures."
+  ]
+}

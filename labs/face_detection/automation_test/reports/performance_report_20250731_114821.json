@@ -1,0 +1,508 @@
+{
+  "health_check": {
+    "endpoint": "/health",
+    "method": "GET",
+    "iterations": 20,
+    "success_count": 20,
+    "success_rate": 100.0,
+    "min_response_time_ms": 4.0760040283203125,
+    "max_response_time_ms": 3196.2411403656006,
+    "avg_response_time_ms": 165.40098190307617,
+    "median_response_time_ms": 6.345510482788086,
+    "std_deviation_ms": 713.3867963286525,
+    "total_size_bytes": 4840,
+    "avg_size_bytes": 242.0,
+    "response_times": [
+      3196.2411403656006,
+      8.133172988891602,
+      6.474018096923828,
+      4.776954650878906,
+      6.385087966918945,
+      4.446983337402344,
+      6.746768951416016,
+      5.101203918457031,
+      7.821083068847656,
+      5.729913711547852,
+      4.991054534912109,
+      6.438016891479492,
+      4.890918731689453,
+      6.515026092529297,
+      4.355192184448242,
+      7.3871612548828125,
+      6.942987442016602,
+      4.0760040283203125,
+      6.305932998657227,
+      4.261016845703125
+    ]
+  },
+  "root_endpoint": {
+    "endpoint": "/",
+    "method": "GET",
+    "iterations": 20,
+    "success_count": 20,
+    "success_rate": 100.0,
+    "min_response_time_ms": 4.034996032714844,
+    "max_response_time_ms": 7.424116134643555,
+    "avg_response_time_ms": 5.67934513092041,
+    "median_response_time_ms": 5.367040634155273,
+    "std_deviation_ms": 1.1101012000118375,
+    "total_size_bytes": 8040,
+    "avg_size_bytes": 402.0,
+    "response_times": [
+      6.162881851196289,
+      4.308938980102539,
+      7.341146469116211,
+      4.621028900146484,
+      6.948947906494141,
+      5.303621292114258,
+      6.542205810546875,
+      4.805088043212891,
+      6.567955017089844,
+      4.594087600708008,
+      7.072925567626953,
+      4.721879959106445,
+      7.424116134643555,
+      5.36799430847168,
+      4.586935043334961,
+      5.366086959838867,
+      6.865024566650391,
+      4.034996032714844,
+      6.070137023925781,
+      4.8809051513671875
+    ]
+  },
+  "camera_status": {
+    "endpoint": "/api/v1/camera/status",
+    "method": "GET",
+    "iterations": 20,
+    "success_count": 20,
+    "success_rate": 100.0,
+    "min_response_time_ms": 3.1752586364746094,
+    "max_response_time_ms": 7.403850555419922,
+    "avg_response_time_ms": 5.409550666809082,
+    "median_response_time_ms": 5.577445030212402,
+    "std_deviation_ms": 1.3354331190741513,
+    "total_size_bytes": 3520,
+    "avg_size_bytes": 176.0,
+    "response_times": [
+      6.761789321899414,
+      4.455804824829102,
+      5.842924118041992,
+      4.415988922119141,
+      7.403850555419922,
+      5.3119659423828125,
+      4.678010940551758,
+      6.0749053955078125,
+      3.3278465270996094,
+      6.813287734985352,
+      4.240751266479492,
+      6.656885147094727,
+      3.6230087280273438,
+      7.311820983886719,
+      3.1752586364746094,
+      6.075859069824219,
+      4.8770904541015625,
+      6.855010986328125,
+      4.430055618286133,
+      5.858898162841797
+    ]
+  },
+  "face_list": {
+    "endpoint": "/api/v1/faces/list",
+    "method": "GET",
+    "iterations": 20,
+    "success_count": 20,
+    "success_rate": 100.0,
+    "min_response_time_ms": 5.129814147949219,
+    "max_response_time_ms": 8.53109359741211,
+    "avg_response_time_ms": 6.658875942230225,
+    "median_response_time_ms": 7.012009620666504,
+    "std_deviation_ms": 1.0073935813535357,
+    "total_size_bytes": 37420,
+    "avg_size_bytes": 1871.0,
+    "response_times": [
+      5.763053894042969,
+      6.94584846496582,
+      7.287025451660156,
+      5.607128143310547,
+      6.394863128662109,
+      5.129814147949219,
+      7.180213928222656,
+      5.788087844848633,
+      8.53109359741211,
+      6.670236587524414,
+      5.18488883972168,
+      7.0781707763671875,
+      7.275104522705078,
+      7.611989974975586,
+      7.095813751220703,
+      5.157232284545898,
+      8.188724517822266,
+      7.196903228759766,
+      5.766153335571289,
+      7.325172424316406
+    ]
+  },
+  "face_recognition": {
+    "endpoint": "/api/v1/faces/recognize",
+    "method": "POST",
+    "iterations": 5,
+    "success_count": 1,
+    "success_rate": 20.0,
+    "min_response_time_ms": 5.788326263427734,
+    "max_response_time_ms": 2222.2208976745605,
+    "avg_response_time_ms": 483.829927444458,
+    "median_response_time_ms": 7.824897766113281,
+    "std_deviation_ms": 974.5414522386857,
+    "total_size_bytes": 386,
+    "avg_size_bytes": 386.0,
+    "response_times": [
+      175.97389221191406,
+      2222.2208976745605,
+      7.824897766113281,
+      5.788326263427734,
+      7.341623306274414
+    ]
+  },
+  "face_registration": {
+    "endpoint": "/api/v1/faces/upload",
+    "method": "POST",
+    "iterations": 3,
+    "success_count": 1,
+    "success_rate": 33.33333333333333,
+    "min_response_time_ms": 5.908012390136719,
+    "max_response_time_ms": 560.2099895477295,
+    "avg_response_time_ms": 191.5442943572998,
+    "median_response_time_ms": 8.514881134033203,
+    "std_deviation_ms": 319.276518160738,
+    "total_size_bytes": 321,
+    "avg_size_bytes": 321.0,
+    "response_times": [
+      560.2099895477295,
+      8.514881134033203,
+      5.908012390136719
+    ]
+  },
+  "concurrent_health": {
+    "endpoint": "/health",
+    "method": "GET",
+    "concurrent_users": 3,
+    "requests_per_user": 5,
+    "total_requests": 15,
+    "success_count": 15,
+    "success_rate": 100.0,
+    "min_response_time_ms": 3.6690235137939453,
+    "max_response_time_ms": 9.703874588012695,
+    "avg_response_time_ms": 7.116095225016276,
+    "median_response_time_ms": 7.254838943481445,
+    "std_deviation_ms": 1.521143316780369,
+    "throughput_rps": 1545.774305299624,
+    "all_results": [
+      {
+        "success": true,
+        "response_time_ms": 6.692171096801758,
+        "status_code": 200,
+        "response_size_bytes": 242,
+        "timestamp": "2025-07-31T11:48:19.954679",
+        "user_id": 2,
+        "request_id": 0
+      },
+      {
+        "success": true,
+        "response_time_ms": 7.442951202392578,
+        "status_code": 200,
+        "response_size_bytes": 242,
+        "timestamp": "2025-07-31T11:48:20.064783",
+        "user_id": 2,
+        "request_id": 1
+      },
+      {
+        "success": true,
+        "response_time_ms": 7.371187210083008,
+        "status_code": 200,
+        "response_size_bytes": 242,
+        "timestamp": "2025-07-31T11:48:20.173999",
+        "user_id": 2,
+        "request_id": 2
+      },
+      {
+        "success": true,
+        "response_time_ms": 5.934000015258789,
+        "status_code": 200,
+        "response_size_bytes": 242,
+        "timestamp": "2025-07-31T11:48:20.281298",
+        "user_id": 2,
+        "request_id": 3
+      },
+      {
+        "success": true,
+        "response_time_ms": 6.978034973144531,
+        "status_code": 200,
+        "response_size_bytes": 242,
+        "timestamp": "2025-07-31T11:48:20.391678",
+        "user_id": 2,
+        "request_id": 4
+      },
+      {
+        "success": true,
+        "response_time_ms": 6.965160369873047,
+        "status_code": 200,
+        "response_size_bytes": 242,
+        "timestamp": "2025-07-31T11:48:19.954208",
+        "user_id": 1,
+        "request_id": 0
+      },
+      {
+        "success": true,
+        "response_time_ms": 8.738994598388672,
+        "status_code": 200,
+        "response_size_bytes": 242,
+        "timestamp": "2025-07-31T11:48:20.065284",
+        "user_id": 1,
+        "request_id": 1
+      },
+      {
+        "success": true,
+        "response_time_ms": 8.065938949584961,
+        "status_code": 200,
+        "response_size_bytes": 242,
+        "timestamp": "2025-07-31T11:48:20.175582",
+        "user_id": 1,
+        "request_id": 2
+      },
+      {
+        "success": true,
+        "response_time_ms": 4.693031311035156,
+        "status_code": 200,
+        "response_size_bytes": 242,
+        "timestamp": "2025-07-31T11:48:20.281877",
+        "user_id": 1,
+        "request_id": 3
+      },
+      {
+        "success": true,
+        "response_time_ms": 7.254838943481445,
+        "status_code": 200,
+        "response_size_bytes": 242,
+        "timestamp": "2025-07-31T11:48:20.393046",
+        "user_id": 1,
+        "request_id": 4
+      },
+      {
+        "success": true,
+        "response_time_ms": 7.105112075805664,
+        "status_code": 200,
+        "response_size_bytes": 242,
+        "timestamp": "2025-07-31T11:48:19.953571",
+        "user_id": 0,
+        "request_id": 0
+      },
+      {
+        "success": true,
+        "response_time_ms": 9.703874588012695,
+        "status_code": 200,
+        "response_size_bytes": 242,
+        "timestamp": "2025-07-31T11:48:20.065772",
+        "user_id": 0,
+        "request_id": 1
+      },
+      {
+        "success": true,
+        "response_time_ms": 8.697032928466797,
+        "status_code": 200,
+        "response_size_bytes": 242,
+        "timestamp": "2025-07-31T11:48:20.176805",
+        "user_id": 0,
+        "request_id": 2
+      },
+      {
+        "success": true,
+        "response_time_ms": 3.6690235137939453,
+        "status_code": 200,
+        "response_size_bytes": 242,
+        "timestamp": "2025-07-31T11:48:20.285081",
+        "user_id": 0,
+        "request_id": 3
+      },
+      {
+        "success": true,
+        "response_time_ms": 7.430076599121094,
+        "status_code": 200,
+        "response_size_bytes": 242,
+        "timestamp": "2025-07-31T11:48:20.396831",
+        "user_id": 0,
+        "request_id": 4
+      }
+    ]
+  },
+  "concurrent_face_list": {
+    "endpoint": "/api/v1/faces/list",
+    "method": "GET",
+    "concurrent_users": 3,
+    "requests_per_user": 5,
+    "total_requests": 15,
+    "success_count": 15,
+    "success_rate": 100.0,
+    "min_response_time_ms": 5.897045135498047,
+    "max_response_time_ms": 10.40506362915039,
+    "avg_response_time_ms": 8.774820963541666,
+    "median_response_time_ms": 9.11402702331543,
+    "std_deviation_ms": 1.1859980069091665,
+    "throughput_rps": 1441.6057925851244,
+    "all_results": [
+      {
+        "success": true,
+        "response_time_ms": 8.160114288330078,
+        "status_code": 200,
+        "response_size_bytes": 2199,
+        "timestamp": "2025-07-31T11:48:20.510039",
+        "user_id": 0,
+        "request_id": 0
+      },
+      {
+        "success": true,
+        "response_time_ms": 9.256839752197266,
+        "status_code": 200,
+        "response_size_bytes": 2199,
+        "timestamp": "2025-07-31T11:48:20.624102",
+        "user_id": 0,
+        "request_id": 1
+      },
+      {
+        "success": true,
+        "response_time_ms": 9.11402702331543,
+        "status_code": 200,
+        "response_size_bytes": 2199,
+        "timestamp": "2025-07-31T11:48:20.736034",
+        "user_id": 0,
+        "request_id": 2
+      },
+      {
+        "success": true,
+        "response_time_ms": 8.748054504394531,
+        "status_code": 200,
+        "response_size_bytes": 2199,
+        "timestamp": "2025-07-31T11:48:20.848063",
+        "user_id": 0,
+        "request_id": 3
+      },
+      {
+        "success": true,
+        "response_time_ms": 7.512092590332031,
+        "status_code": 200,
+        "response_size_bytes": 2199,
+        "timestamp": "2025-07-31T11:48:20.958727",
+        "user_id": 0,
+        "request_id": 4
+      },
+      {
+        "success": true,
+        "response_time_ms": 10.202169418334961,
+        "status_code": 200,
+        "response_size_bytes": 2199,
+        "timestamp": "2025-07-31T11:48:20.513594",
+        "user_id": 2,
+        "request_id": 0
+      },
+      {
+        "success": true,
+        "response_time_ms": 7.721185684204102,
+        "status_code": 200,
+        "response_size_bytes": 2199,
+        "timestamp": "2025-07-31T11:48:20.626772",
+        "user_id": 2,
+        "request_id": 1
+      },
+      {
+        "success": true,
+        "response_time_ms": 8.449077606201172,
+        "status_code": 200,
+        "response_size_bytes": 2199,
+        "timestamp": "2025-07-31T11:48:20.737435",
+        "user_id": 2,
+        "request_id": 2
+      },
+      {
+        "success": true,
+        "response_time_ms": 9.29117202758789,
+        "status_code": 200,
+        "response_size_bytes": 2199,
+        "timestamp": "2025-07-31T11:48:20.849229",
+        "user_id": 2,
+        "request_id": 3
+      },
+      {
+        "success": true,
+        "response_time_ms": 8.022069931030273,
+        "status_code": 200,
+        "response_size_bytes": 2199,
+        "timestamp": "2025-07-31T11:48:20.962166",
+        "user_id": 2,
+        "request_id": 4
+      },
+      {
+        "success": true,
+        "response_time_ms": 9.770393371582031,
+        "status_code": 200,
+        "response_size_bytes": 2199,
+        "timestamp": "2025-07-31T11:48:20.512371",
+        "user_id": 1,
+        "request_id": 0
+      },
+      {
+        "success": true,
+        "response_time_ms": 5.897045135498047,
+        "status_code": 200,
+        "response_size_bytes": 2199,
+        "timestamp": "2025-07-31T11:48:20.622056",
+        "user_id": 1,
+        "request_id": 1
+      },
+      {
+        "success": true,
+        "response_time_ms": 10.40506362915039,
+        "status_code": 200,
+        "response_size_bytes": 2199,
+        "timestamp": "2025-07-31T11:48:20.738521",
+        "user_id": 1,
+        "request_id": 2
+      },
+      {
+        "success": true,
+        "response_time_ms": 9.84811782836914,
+        "status_code": 200,
+        "response_size_bytes": 2199,
+        "timestamp": "2025-07-31T11:48:20.850374",
+        "user_id": 1,
+        "request_id": 3
+      },
+      {
+        "success": true,
+        "response_time_ms": 9.224891662597656,
+        "status_code": 200,
+        "response_size_bytes": 2199,
+        "timestamp": "2025-07-31T11:48:20.963191",
+        "user_id": 1,
+        "request_id": 4
+      }
+    ]
+  },
+  "summary": {
+    "timestamp": "2025-07-31T11:48:21.067505",
+    "total_tests": 8,
+    "successful_tests": 8,
+    "average_response_times": {
+      "health_check": 165.40098190307617,
+      "root_endpoint": 5.67934513092041,
+      "camera_status": 5.409550666809082,
+      "face_list": 6.658875942230225,
+      "face_recognition": 483.829927444458,
+      "face_registration": 191.5442943572998,
+      "concurrent_health": 7.116095225016276,
+      "concurrent_face_list": 8.774820963541666
+    },
+    "recommendations": [
+      "All endpoints performing well!"
+    ]
+  }
+}

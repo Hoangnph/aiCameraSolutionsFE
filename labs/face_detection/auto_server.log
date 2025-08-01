@@ -1,0 +1,9 @@
+2025-07-31 20:58:31,042 | INFO | 🚀 Starting Auto Server Management
+2025-07-31 20:58:31,043 | INFO | ==================================================
+2025-07-31 20:58:43,931 | INFO | 🔧 Killed all existing processes
+2025-07-31 20:58:45,932 | INFO | 📁 Working directory: /Users/macintoshhd/Project/Project/AI_OCR/feMain/labs/face_detection
+2025-07-31 20:58:45,938 | INFO | ⏳ Waiting for server to start...
+2025-07-31 20:58:55,939 | INFO | ✅ API server started successfully
+2025-07-31 20:58:55,960 | INFO | ✅ Health check passed
+2025-07-31 20:58:55,960 | INFO | 🔄 Starting auto-monitoring...
+2025-07-31 20:58:55,965 | INFO | ✅ Server is healthy

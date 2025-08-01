@@ -1,0 +1,65 @@
+{
+  "total_tests": 8,
+  "passed": 0,
+  "failed": 8,
+  "success_rate": 0.0,
+  "test_results": [
+    {
+      "test_name": "Health Check",
+      "success": false,
+      "timestamp": "2025-07-30 17:24:58",
+      "details": "Exception: HTTPConnectionPool(host='localhost', port=8000): Max retries exceeded with url: /health (Caused by ConnectTimeoutError(<urllib3.connection.HTTPConnection object at 0x12883d520>, 'Connection to localhost timed out. (connect timeout=None)'))",
+      "data": {}
+    },
+    {
+      "test_name": "Root Endpoint",
+      "success": false,
+      "timestamp": "2025-07-30 17:25:06",
+      "details": "Exception: HTTPConnectionPool(host='localhost', port=8000): Max retries exceeded with url: / (Caused by ConnectTimeoutError(<urllib3.connection.HTTPConnection object at 0x12883d790>, 'Connection to localhost timed out. (connect timeout=None)'))",
+      "data": {}
+    },
+    {
+      "test_name": "Face Registration",
+      "success": false,
+      "timestamp": "2025-07-30 17:25:14",
+      "details": "Exception: HTTPConnectionPool(host='localhost', port=8000): Max retries exceeded with url: /api/v1/faces/upload (Caused by ConnectTimeoutError(<urllib3.connection.HTTPConnection object at 0x12883dc40>, 'Connection to localhost timed out. (connect timeout=None)'))",
+      "data": {}
+    },
+    {
+      "test_name": "Face Recognition",
+      "success": false,
+      "timestamp": "2025-07-30 17:25:21",
+      "details": "Exception: HTTPConnectionPool(host='localhost', port=8000): Max retries exceeded with url: /api/v1/faces/recognize (Caused by ConnectTimeoutError(<urllib3.connection.HTTPConnection object at 0x12883d5b0>, 'Connection to localhost timed out. (connect timeout=None)'))",
+      "data": {}
+    },
+    {
+      "test_name": "Camera Status",
+      "success": false,
+      "timestamp": "2025-07-30 17:25:29",
+      "details": "Exception: HTTPConnectionPool(host='localhost', port=8000): Max retries exceeded with url: /api/v1/camera/status (Caused by ConnectTimeoutError(<urllib3.connection.HTTPConnection object at 0x12883d310>, 'Connection to localhost timed out. (connect timeout=None)'))",
+      "data": {}
+    },
+    {
+      "test_name": "Camera Control",
+      "success": false,
+      "timestamp": "2025-07-30 17:25:37",
+      "details": "Exception: HTTPConnectionPool(host='localhost', port=8000): Max retries exceeded with url: /api/v1/camera/start (Caused by ConnectTimeoutError(<urllib3.connection.HTTPConnection object at 0x12883dfd0>, 'Connection to localhost timed out. (connect timeout=None)'))",
+      "data": {}
+    },
+    {
+      "test_name": "Faces List",
+      "success": false,
+      "timestamp": "2025-07-30 17:25:45",
+      "details": "Exception: HTTPConnectionPool(host='localhost', port=8000): Max retries exceeded with url: /api/v1/faces/list (Caused by ConnectTimeoutError(<urllib3.connection.HTTPConnection object at 0x12883e2d0>, 'Connection to localhost timed out. (connect timeout=None)'))",
+      "data": {}
+    },
+    {
+      "test_name": "Error Handling",
+      "success": false,
+      "timestamp": "2025-07-30 17:25:53",
+      "details": "Exception: HTTPConnectionPool(host='localhost', port=8000): Max retries exceeded with url: /api/v1/faces/upload (Caused by ConnectTimeoutError(<urllib3.connection.HTTPConnection object at 0x12883e570>, 'Connection to localhost timed out. (connect timeout=None)'))",
+      "data": {}
+    }
+  ],
+  "timestamp": "2025-07-30 17:25:53"
+}

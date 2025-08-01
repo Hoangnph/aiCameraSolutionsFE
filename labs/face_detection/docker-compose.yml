@@ -1,0 +1,67 @@
+version: '3.8'
+
+services:
+  face-detection-api:
+    build:
+      context: .
+      dockerfile: Dockerfile
+      target: development
+    container_name: face-detection-system
+    ports:
+      - "8000:8000"
+    volumes:
+      - ./data:/app/data
+      - ./uploads:/app/uploads
+      - ./logs:/app/logs
+      - ./automation_test:/app/automation_test
+      - .:/app
+    environment:
+      - PYTHONPATH=/app
+      - DEBUG=true
+      - HOST=0.0.0.0
+      - PORT=8000
+    restart: unless-stopped
+    healthcheck:
+      test: ["CMD", "curl", "-f", "http://localhost:8000/health"]
+      interval: 30s
+      timeout: 10s
+      retries: 3
+      start_period: 40s
+    networks:
+      - face-detection-network
+
+  # Optional: Redis for caching (future enhancement)
+  # redis:
+  #   image: redis:7-alpine
+  #   container_name: face-detection-redis
+  #   ports:
+  #     - "6379:6379"
+  #   volumes:
+  #     - redis_data:/data
+  #   restart: unless-stopped
+  #   networks:
+  #     - face-detection-network
+
+  # Optional: PostgreSQL for production database (future enhancement)
+  # postgres:
+  #   image: postgres:15-alpine
+  #   container_name: face-detection-db
+  #   environment:
+  #     POSTGRES_DB: face_detection
+  #     POSTGRES_USER: face_user
+  #     POSTGRES_PASSWORD: face_password
+  #   ports:
+  #     - "5432:5432"
+  #   volumes:
+  #     - postgres_data:/var/lib/postgresql/data
+  #   restart: unless-stopped
+  #   networks:
+  #     - face-detection-network
+
+networks:
+  face-detection-network:
+    driver: bridge
+
+# volumes:
+#   redis_data:
+#   postgres_data: 

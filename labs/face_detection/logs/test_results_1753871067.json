@@ -1,0 +1,65 @@
+{
+  "total_tests": 8,
+  "passed": 0,
+  "failed": 8,
+  "success_rate": 0.0,
+  "test_results": [
+    {
+      "test_name": "Health Check",
+      "success": false,
+      "timestamp": "2025-07-30 17:24:27",
+      "details": "Exception: HTTPConnectionPool(host='localhost', port=8000): Max retries exceeded with url: /health (Caused by NewConnectionError('<urllib3.connection.HTTPConnection object at 0x12d091940>: Failed to establish a new connection: [Errno 61] Connection refused'))",
+      "data": {}
+    },
+    {
+      "test_name": "Root Endpoint",
+      "success": false,
+      "timestamp": "2025-07-30 17:24:27",
+      "details": "Exception: HTTPConnectionPool(host='localhost', port=8000): Max retries exceeded with url: / (Caused by NewConnectionError('<urllib3.connection.HTTPConnection object at 0x12d091a30>: Failed to establish a new connection: [Errno 61] Connection refused'))",
+      "data": {}
+    },
+    {
+      "test_name": "Face Registration",
+      "success": false,
+      "timestamp": "2025-07-30 17:24:27",
+      "details": "Exception: HTTPConnectionPool(host='localhost', port=8000): Max retries exceeded with url: /api/v1/faces/upload (Caused by NewConnectionError('<urllib3.connection.HTTPConnection object at 0x12d091f40>: Failed to establish a new connection: [Errno 61] Connection refused'))",
+      "data": {}
+    },
+    {
+      "test_name": "Face Recognition",
+      "success": false,
+      "timestamp": "2025-07-30 17:24:27",
+      "details": "Exception: HTTPConnectionPool(host='localhost', port=8000): Max retries exceeded with url: /api/v1/faces/recognize (Caused by NewConnectionError('<urllib3.connection.HTTPConnection object at 0x12d091d00>: Failed to establish a new connection: [Errno 61] Connection refused'))",
+      "data": {}
+    },
+    {
+      "test_name": "Camera Status",
+      "success": false,
+      "timestamp": "2025-07-30 17:24:27",
+      "details": "Exception: HTTPConnectionPool(host='localhost', port=8000): Max retries exceeded with url: /api/v1/camera/status (Caused by NewConnectionError('<urllib3.connection.HTTPConnection object at 0x12d0918b0>: Failed to establish a new connection: [Errno 61] Connection refused'))",
+      "data": {}
+    },
+    {
+      "test_name": "Camera Control",
+      "success": false,
+      "timestamp": "2025-07-30 17:24:27",
+      "details": "Exception: HTTPConnectionPool(host='localhost', port=8000): Max retries exceeded with url: /api/v1/camera/start (Caused by NewConnectionError('<urllib3.connection.HTTPConnection object at 0x12d092300>: Failed to establish a new connection: [Errno 61] Connection refused'))",
+      "data": {}
+    },
+    {
+      "test_name": "Faces List",
+      "success": false,
+      "timestamp": "2025-07-30 17:24:27",
+      "details": "Exception: HTTPConnectionPool(host='localhost', port=8000): Max retries exceeded with url: /api/v1/faces/list (Caused by NewConnectionError('<urllib3.connection.HTTPConnection object at 0x12d092600>: Failed to establish a new connection: [Errno 61] Connection refused'))",
+      "data": {}
+    },
+    {
+      "test_name": "Error Handling",
+      "success": false,
+      "timestamp": "2025-07-30 17:24:27",
+      "details": "Exception: HTTPConnectionPool(host='localhost', port=8000): Max retries exceeded with url: /api/v1/faces/upload (Caused by NewConnectionError('<urllib3.connection.HTTPConnection object at 0x12d092900>: Failed to establish a new connection: [Errno 61] Connection refused'))",
+      "data": {}
+    }
+  ],
+  "timestamp": "2025-07-30 17:24:27"
+}

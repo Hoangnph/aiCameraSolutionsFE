@@ -1,0 +1,20 @@
+[
+  {
+    "test": "Upload with Real Image",
+    "status": "\u274c FAIL",
+    "message": "Upload error: HTTPConnectionPool(host='localhost', port=8000): Max retries exceeded with url: /api/v1/faces/upload (Caused by NewConnectionError('<urllib3.connection.HTTPConnection object at 0x10594c980>: Failed to establish a new connection: [Errno 61] Connection refused'))",
+    "timestamp": "2025-07-31 20:38:06"
+  },
+  {
+    "test": "Recognition with Real Image",
+    "status": "\u274c FAIL",
+    "message": "Recognition error: HTTPConnectionPool(host='localhost', port=8000): Max retries exceeded with url: /api/v1/faces/recognize (Caused by NewConnectionError('<urllib3.connection.HTTPConnection object at 0x105d2f410>: Failed to establish a new connection: [Errno 61] Connection refused'))",
+    "timestamp": "2025-07-31 20:38:06"
+  },
+  {
+    "test": "Database Operations",
+    "status": "\u274c FAIL",
+    "message": "Database error: HTTPConnectionPool(host='localhost', port=8000): Max retries exceeded with url: /api/v1/faces/list (Caused by NewConnectionError('<urllib3.connection.HTTPConnection object at 0x105d2d310>: Failed to establish a new connection: [Errno 61] Connection refused'))",
+    "timestamp": "2025-07-31 20:38:06"
+  }
+]

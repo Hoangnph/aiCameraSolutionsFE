@@ -1,0 +1,26 @@
+[
+  {
+    "test": "Upload Realistic Face",
+    "status": "\u274c FAIL",
+    "message": "Upload error: HTTPConnectionPool(host='localhost', port=8000): Max retries exceeded with url: /api/v1/faces/upload (Caused by NewConnectionError('<urllib3.connection.HTTPConnection object at 0x1028bcec0>: Failed to establish a new connection: [Errno 61] Connection refused'))",
+    "timestamp": "2025-07-31 20:42:42"
+  },
+  {
+    "test": "Recognition Realistic Face",
+    "status": "\u274c FAIL",
+    "message": "Recognition error: HTTPConnectionPool(host='localhost', port=8000): Max retries exceeded with url: /api/v1/faces/recognize (Caused by NewConnectionError('<urllib3.connection.HTTPConnection object at 0x102913e90>: Failed to establish a new connection: [Errno 61] Connection refused'))",
+    "timestamp": "2025-07-31 20:42:42"
+  },
+  {
+    "test": "Upload Realistic Face",
+    "status": "\u274c FAIL",
+    "message": "Upload error: HTTPConnectionPool(host='localhost', port=8000): Max retries exceeded with url: /api/v1/faces/upload (Caused by NewConnectionError('<urllib3.connection.HTTPConnection object at 0x102912cf0>: Failed to establish a new connection: [Errno 61] Connection refused'))",
+    "timestamp": "2025-07-31 20:42:42"
+  },
+  {
+    "test": "End-to-End Workflow",
+    "status": "\u274c FAIL",
+    "message": "Upload failed",
+    "timestamp": "2025-07-31 20:42:42"
+  }
+]

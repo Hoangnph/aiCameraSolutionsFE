@@ -1,0 +1,308 @@
+{
+  "summary": {
+    "total_tests": 12,
+    "passed_tests": 11,
+    "failed_tests": 1,
+    "success_rate": 91.66666666666666,
+    "timestamp": "2025-07-31T11:46:24.505041",
+    "base_url": "http://localhost:8000"
+  },
+  "test_results": [
+    {
+      "test_name": "API Health Check",
+      "success": true,
+      "message": "All services healthy: ['face_processing', 'camera_service', 'vector_database']",
+      "timestamp": "2025-07-31T11:46:19.881132",
+      "data": {
+        "face_processing": true,
+        "camera_service": true,
+        "vector_database": true
+      }
+    },
+    {
+      "test_name": "Root Endpoint",
+      "success": true,
+      "message": "API version: 1.0.0",
+      "timestamp": "2025-07-31T11:46:19.884980",
+      "data": {
+        "success": true,
+        "message": "Face Detection System API",
+        "data": {
+          "version": "1.0.0",
+          "status": "running",
+          "timestamp": "2025-07-31T11:46:19.883797",
+          "endpoints": {
+            "docs": "/docs",
+            "health": "/health",
+            "upload": "/api/v1/faces/upload",
+            "register": "/api/v1/faces/register",
+            "recognize": "/api/v1/faces/recognize",
+            "camera": "/api/v1/camera/status",
+            "stream": "/api/v1/camera/stream"
+          }
+        },
+        "timestamp": "2025-07-31T11:46:19.883821"
+      }
+    },
+    {
+      "test_name": "Camera Status",
+      "success": true,
+      "message": "Device 0, Active: False",
+      "timestamp": "2025-07-31T11:46:19.890996",
+      "data": {
+        "device_id": 0,
+        "active": false,
+        "resolution": [
+          640,
+          480
+        ],
+        "fps": 30
+      }
+    },
+    {
+      "test_name": "Camera Start",
+      "success": true,
+      "message": "Camera started successfully",
+      "timestamp": "2025-07-31T11:46:21.752434",
+      "data": {
+        "success": true,
+        "message": "Camera started successfully",
+        "data": {
+          "status": "started"
+        },
+        "timestamp": "2025-07-31T11:46:21.750633"
+      }
+    },
+    {
+      "test_name": "Camera Stop",
+      "success": true,
+      "message": "Camera stopped successfully",
+      "timestamp": "2025-07-31T11:46:23.845444",
+      "data": {
+        "success": true,
+        "message": "Camera stopped successfully",
+        "data": {
+          "status": "stopped"
+        },
+        "timestamp": "2025-07-31T11:46:23.842849"
+      }
+    },
+    {
+      "test_name": "Face Registration - Test User 1",
+      "success": true,
+      "message": "Person ID: p_3520df96, Confidence: 0.46",
+      "timestamp": "2025-07-31T11:46:24.116356",
+      "data": {
+        "person_id": "p_3520df96",
+        "name": "Test User 1",
+        "face_id": "emb_284fd7f9",
+        "confidence": 0.4611175140796827,
+        "image_path": "uploads/face_20250731_114624.jpg",
+        "created_at": "2025-07-31T11:46:24.115041"
+      }
+    },
+    {
+      "test_name": "Face Registration - Test User 2",
+      "success": true,
+      "message": "Person ID: p_7a80d487, Confidence: 0.46",
+      "timestamp": "2025-07-31T11:46:24.243109",
+      "data": {
+        "person_id": "p_7a80d487",
+        "name": "Test User 2",
+        "face_id": "emb_0fe28767",
+        "confidence": 0.4611175140796827,
+        "image_path": "uploads/face_20250731_114624.jpg",
+        "created_at": "2025-07-31T11:46:24.240093"
+      }
+    },
+    {
+      "test_name": "Face Registration - Test User 3",
+      "success": false,
+      "message": "HTTP 500",
+      "timestamp": "2025-07-31T11:46:24.365914",
+      "data": {}
+    },
+    {
+      "test_name": "Face Recognition",
+      "success": true,
+      "message": "Recognized: Test User (Confidence: 1.00)",
+      "timestamp": "2025-07-31T11:46:24.488329",
+      "data": {
+        "recognized": true,
+        "person": {
+          "id": null,
+          "name": "Test User",
+          "email": "test@example.com",
+          "phone": "1234567890",
+          "notes": "Test registration"
+        },
+        "confidence": 1.0,
+        "matches": [
+          {
+            "name": "Test User",
+            "confidence": 1.0
+          },
+          {
+            "name": "Test User",
+            "confidence": 1.0
+          },
+          {
+            "name": "Test User 3",
+            "confidence": 1.0
+          }
+        ]
+      }
+    },
+    {
+      "test_name": "Face List",
+      "success": true,
+      "message": "Found 6 registered faces",
+      "timestamp": "2025-07-31T11:46:24.495964",
+      "data": {
+        "face_count": 6,
+        "faces": [
+          {
+            "id": 6,
+            "metadata": {
+              "person_id": "p_7a80d487",
+              "name": "Test User 2",
+              "email": "test2@example.com",
+              "phone": "1234567891",
+              "department": null,
+              "position": null,
+              "face_location": [
+                82,
+                210,
+                211,
+                81
+              ],
+              "confidence": 0.4611175140796827,
+              "image_path": "uploads/face_20250731_114624.jpg"
+            },
+            "created_at": "2025-07-31 04:46:24"
+          },
+          {
+            "id": 5,
+            "metadata": {
+              "person_id": "p_3520df96",
+              "name": "Test User 1",
+              "email": "test1@example.com",
+              "phone": "1234567890",
+              "department": null,
+              "position": null,
+              "face_location": [
+                82,
+                210,
+                211,
+                81
+              ],
+              "confidence": 0.4611175140796827,
+              "image_path": "uploads/face_20250731_114624.jpg"
+            },
+            "created_at": "2025-07-31 04:46:24"
+          },
+          {
+            "id": 4,
+            "metadata": {
+              "person_id": "p_05d1b2c3",
+              "name": "Test User 4",
+              "email": "test4@example.com",
+              "phone": "1234567890",
+              "department": null,
+              "position": null,
+              "face_location": [
+                82,
+                210,
+                211,
+                81
+              ],
+              "confidence": 0.4611175140796827,
+              "image_path": "uploads/face_20250731_112846.jpg"
+            },
+            "created_at": "2025-07-31 04:28:46"
+          },
+          {
+            "id": 3,
+            "metadata": {
+              "person_id": "p_055df073",
+              "name": "Test User 3",
+              "email": "test3@example.com",
+              "phone": "1234567890",
+              "department": null,
+              "position": null,
+              "face_location": [
+                82,
+                210,
+                211,
+                81
+              ],
+              "confidence": 0.4611175140796827,
+              "image_path": "uploads/face_20250731_112821.jpg"
+            },
+            "created_at": "2025-07-31 04:28:21"
+          },
+          {
+            "id": 2,
+            "metadata": {
+              "person_id": null,
+              "name": "Test User",
+              "email": "test@example.com",
+              "phone": "1234567890",
+              "notes": "Test registration",
+              "face_location": [
+                82,
+                210,
+                211,
+                81
+              ],
+              "confidence": 0.4611175140796827,
+              "image_path": "uploads/face_20250731_100806.jpg"
+            },
+            "created_at": "2025-07-31 03:08:06"
+          },
+          {
+            "id": 1,
+            "metadata": {
+              "person_id": null,
+              "name": "Test User",
+              "email": "test@example.com",
+              "phone": "1234567890",
+              "notes": "Test registration",
+              "face_location": [
+                82,
+                210,
+                211,
+                81
+              ],
+              "confidence": 0.4611175140796827,
+              "image_path": "uploads/face_20250731_100749.jpg"
+            },
+            "created_at": "2025-07-31 03:07:49"
+          }
+        ]
+      }
+    },
+    {
+      "test_name": "Performance - Health Check",
+      "success": true,
+      "message": "Response time: 3.7ms",
+      "timestamp": "2025-07-31T11:46:24.499773",
+      "data": {
+        "response_time_ms": 3.6547183990478516
+      }
+    },
+    {
+      "test_name": "Performance - Face List",
+      "success": true,
+      "message": "Response time: 5.1ms",
+      "timestamp": "2025-07-31T11:46:24.504930",
+      "data": {
+        "response_time_ms": 5.115032196044922
+      }
+    }
+  ],
+  "recommendations": [
+    "Some tests failed. Check server logs and system status.",
+    "System needs improvement. Review failed tests."
+  ]
+}

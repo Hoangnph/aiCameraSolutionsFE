@@ -1,0 +1,116 @@
+[
+  {
+    "step": "1.1",
+    "status": "START",
+    "details": "Checking if API server is running",
+    "timestamp": "2025-07-31 20:50:44.476"
+  },
+  {
+    "step": "1.1",
+    "status": "PASS",
+    "details": "Server is running, status: 200",
+    "timestamp": "2025-07-31 20:50:44.493"
+  },
+  {
+    "step": "2.1",
+    "status": "START",
+    "details": "Creating test image",
+    "timestamp": "2025-07-31 20:50:44.494"
+  },
+  {
+    "step": "2.1",
+    "status": "PASS",
+    "details": "Test image created: debug_test_image.jpg",
+    "timestamp": "2025-07-31 20:50:44.540"
+  },
+  {
+    "step": "2.2",
+    "status": "START",
+    "details": "Preparing upload data",
+    "timestamp": "2025-07-31 20:50:44.540"
+  },
+  {
+    "step": "2.2",
+    "status": "PASS",
+    "details": "Upload data prepared: {'name': 'DebugTestUser', 'email': 'debug@test.com'}",
+    "timestamp": "2025-07-31 20:50:44.540"
+  },
+  {
+    "step": "2.3",
+    "status": "START",
+    "details": "Uploading image to API",
+    "timestamp": "2025-07-31 20:50:44.540"
+  },
+  {
+    "step": "2.4",
+    "status": "START",
+    "details": "Analyzing response (status: 400)",
+    "timestamp": "2025-07-31 20:50:44.548"
+  },
+  {
+    "step": "2.4",
+    "status": "FAIL",
+    "details": "Upload failed with status: 400",
+    "timestamp": "2025-07-31 20:50:44.549"
+  },
+  {
+    "step": "2.5",
+    "status": "PASS",
+    "details": "Test image cleaned up",
+    "timestamp": "2025-07-31 20:50:44.550"
+  },
+  {
+    "step": "3.1",
+    "status": "START",
+    "details": "Creating test image for recognition",
+    "timestamp": "2025-07-31 20:50:44.552"
+  },
+  {
+    "step": "3.1",
+    "status": "PASS",
+    "details": "Recognition test image created: debug_recognition_image.jpg",
+    "timestamp": "2025-07-31 20:50:44.554"
+  },
+  {
+    "step": "3.2",
+    "status": "START",
+    "details": "Sending recognition request",
+    "timestamp": "2025-07-31 20:50:44.554"
+  },
+  {
+    "step": "3.3",
+    "status": "START",
+    "details": "Analyzing recognition response (status: 400)",
+    "timestamp": "2025-07-31 20:50:44.562"
+  },
+  {
+    "step": "3.3",
+    "status": "FAIL",
+    "details": "Recognition failed with status: 400",
+    "timestamp": "2025-07-31 20:50:44.563"
+  },
+  {
+    "step": "3.4",
+    "status": "PASS",
+    "details": "Recognition test image cleaned up",
+    "timestamp": "2025-07-31 20:50:44.563"
+  },
+  {
+    "step": "4.1",
+    "status": "START",
+    "details": "Testing face list endpoint",
+    "timestamp": "2025-07-31 20:50:44.564"
+  },
+  {
+    "step": "4.1",
+    "status": "START",
+    "details": "Analyzing list response (status: 200)",
+    "timestamp": "2025-07-31 20:50:44.570"
+  },
+  {
+    "step": "4.1",
+    "status": "PASS",
+    "details": "List faces successful, found 0 faces",
+    "timestamp": "2025-07-31 20:50:44.570"
+  }
+]
