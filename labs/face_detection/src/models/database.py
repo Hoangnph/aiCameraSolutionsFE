@@ -1,14 +1,16 @@
 """
-Database models for Face Detection System
+Database models and operations
 """
+import sqlite3
+import json
+from typing import List, Dict, Any, Optional
 from datetime import datetime
-from typing import Optional, List
-from sqlalchemy import create_engine, Column, String, Integer, Float, DateTime, Text, Boolean, ForeignKey
-from sqlalchemy.ext.declarative import declarative_base
-from sqlalchemy.orm import sessionmaker, relationship
-from sqlalchemy.sql import func
-import uuid
+from loguru import logger
+import sys
+import os
 
+# Add project root to path for imports
+sys.path.append(os.path.dirname(os.path.dirname(os.path.dirname(os.path.abspath(__file__)))))
 from config import settings
 
 # Create database engine

@@ -1,13 +1,16 @@
 """
-Vector database service using ChromaDB
+Simple vector database for face embeddings
 """
-import json
 import numpy as np
-from typing import List, Dict, Any, Optional, Tuple
-import chromadb
-from chromadb.config import Settings
+import sqlite3
+import json
+from typing import List, Dict, Any, Optional
 from loguru import logger
+import sys
+import os
 
+# Add project root to path for imports
+sys.path.append(os.path.dirname(os.path.dirname(os.path.dirname(os.path.abspath(__file__)))))
 from config import settings
 
 class VectorDatabaseService:

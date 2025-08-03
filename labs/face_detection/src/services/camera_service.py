@@ -1,13 +1,15 @@
 """
-Camera service for managing camera/webcam operations
+Camera service for handling camera operations
 """
 import cv2
 import numpy as np
-from typing import List, Dict, Any, Optional, Tuple, Generator
-import threading
-import time
+from typing import Optional, Generator, Tuple
 from loguru import logger
+import sys
+import os
 
+# Add project root to path for imports
+sys.path.append(os.path.dirname(os.path.dirname(os.path.dirname(os.path.abspath(__file__)))))
 from config import settings
 
 class CameraService:
@@ -56,25 +58,24 @@ class CameraService:
         try:
             available_cameras = []
             
-            # Check first 10 camera indices
-            for i in range(10):
-                cap = cv2.VideoCapture(i)
-                if cap.isOpened():
-                    # Get camera properties
-                    width = int(cap.get(cv2.CAP_PROP_FRAME_WIDTH))
-                    height = int(cap.get(cv2.CAP_PROP_FRAME_HEIGHT))
-                    fps = cap.get(cv2.CAP_PROP_FPS)
-                    
-                    camera_info = {
-                        "id": i,
-                        "name": f"Camera {i}",
-                        "resolution": [width, height],
-                        "fps": fps,
-                        "status": "available"
-                    }
-                    available_cameras.append(camera_info)
-                    
-                    cap.release()
+            # Only check Camera 0 since it's the only available camera
+            cap = cv2.VideoCapture(0)
+            if cap.isOpened():
+                # Get camera properties
+                width = int(cap.get(cv2.CAP_PROP_FRAME_WIDTH))
+                height = int(cap.get(cv2.CAP_PROP_FRAME_HEIGHT))
+                fps = cap.get(cv2.CAP_PROP_FPS)
+                
+                camera_info = {
+                    "id": 0,
+                    "name": "Camera 0 (Built-in Webcam)",
+                    "resolution": [width, height],
+                    "fps": fps,
+                    "status": "available"
+                }
+                available_cameras.append(camera_info)
+                
+                cap.release()
             
             logger.info(f"Found {len(available_cameras)} available cameras")
             return available_cameras
@@ -292,9 +293,11 @@ class CameraService:
         Yields:
             Frames as numpy arrays
         """
+        cap = None
         try:
             cap = self.open_camera(device_id)
             if cap is None:
+                logger.error(f"Failed to open camera {device_id}")
                 return
             
             frame_count = 0
@@ -306,15 +309,22 @@ class CameraService:
                     frame_count += 1
                     
                     if max_frames and frame_count >= max_frames:
+                        logger.info(f"Reached max frames limit: {max_frames}")
                         break
                 else:
-                    logger.warning("Failed to read frame")
+                    logger.warning(f"Failed to read frame from camera {device_id}")
                     break
             
-            cap.release()
-            
         except Exception as e:
-            logger.error(f"Frame generator error: {str(e)}")
+            logger.error(f"Frame generator error for camera {device_id}: {str(e)}")
+        finally:
+            # Always release camera in finally block
+            if cap is not None:
+                try:
+                    cap.release()
+                    logger.info(f"Camera {device_id} released successfully")
+                except Exception as e:
+                    logger.error(f"Failed to release camera {device_id}: {str(e)}")
     
     def save_frame(
         self, 
@@ -472,16 +482,71 @@ class CameraService:
             return {}
     
     def cleanup(self):
-        """Cleanup all camera resources"""
+        """Cleanup camera service"""
         try:
             # Stop all active streams
             for device_id in list(self.active_streams.keys()):
                 self.stop_video_stream(device_id)
             
+            # Clear active streams
+            self.active_streams.clear()
+            
             logger.info("Camera service cleanup completed")
             
         except Exception as e:
-            logger.error(f"Cleanup error: {str(e)}")
+            logger.error(f"Failed to cleanup camera service: {str(e)}")
+
+    def force_cleanup_camera(self, device_id: int = None):
+        """
+        Force cleanup for specific camera
+        
+        Args:
+            device_id: Camera device ID to cleanup
+        """
+        try:
+            if device_id is None:
+                device_id = self.device_id
+            
+            # Stop video stream if active
+            if device_id in self.active_streams:
+                self.stop_video_stream(device_id)
+            
+            # Force release any open camera
+            try:
+                cap = cv2.VideoCapture(device_id)
+                if cap.isOpened():
+                    cap.release()
+                    logger.info(f"Forced cleanup for camera {device_id}")
+            except Exception as e:
+                logger.error(f"Error during forced cleanup for camera {device_id}: {str(e)}")
+                
+        except Exception as e:
+            logger.error(f"Failed to force cleanup camera {device_id}: {str(e)}")
+
+    def is_camera_available(self, device_id: int = None) -> bool:
+        """
+        Check if camera is available
+        
+        Args:
+            device_id: Camera device ID
+        
+        Returns:
+            bool: True if camera is available
+        """
+        try:
+            if device_id is None:
+                device_id = self.device_id
+            
+            cap = cv2.VideoCapture(device_id)
+            if cap.isOpened():
+                ret, frame = cap.read()
+                cap.release()
+                return ret
+            return False
+            
+        except Exception as e:
+            logger.error(f"Failed to check camera availability: {str(e)}")
+            return False
 
 # Global instance
 camera_service = CameraService() 

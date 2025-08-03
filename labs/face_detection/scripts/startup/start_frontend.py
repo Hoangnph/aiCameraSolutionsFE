@@ -18,7 +18,7 @@ class FrontendServer:
         self.process = None
         self.port = 3000
         self.host = "0.0.0.0"
-        self.project_dir = Path(__file__).parent
+        self.project_dir = Path(__file__).parent.parent.parent
         self.frontend_dir = self.project_dir / "fe"
         
     def kill_existing_processes(self):

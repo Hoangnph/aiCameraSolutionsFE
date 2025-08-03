@@ -539,31 +539,51 @@ async def get_camera_status():
         raise HTTPException(status_code=500, detail="Failed to get camera status")
 
 @app.post("/api/v1/camera/start")
-async def start_camera():
-    """Start camera for real-time face recognition"""
+async def start_camera(camera_request: dict):
+    """Start camera service"""
     try:
-        # Start video stream with default device
-        success = camera_service.start_video_stream()
+        camera_id = camera_request.get('camera_id', 0)
+        logger.info(f"Starting camera {camera_id}")
         
-        return SuccessResponse(
-            message="Camera started successfully" if success else "Failed to start camera",
-            data={"status": "started" if success else "failed"}
-        )
+        # Force cleanup any existing camera
+        camera_service.force_cleanup_camera(camera_id)
         
+        # Check if camera is available
+        if not camera_service.is_camera_available(camera_id):
+            raise HTTPException(status_code=400, detail=f"Camera {camera_id} is not available")
+        
+        # Start camera service
+        success = camera_service.start_video_stream(camera_id)
+        
+        if success:
+            logger.info(f"Camera {camera_id} started successfully")
+            return SuccessResponse(
+                message="Camera started successfully",
+                data={"status": "started"}
+            )
+        else:
+            raise HTTPException(status_code=500, detail="Failed to start camera")
+            
+    except HTTPException:
+        raise
     except Exception as e:
         logger.error(f"Failed to start camera: {str(e)}")
         raise HTTPException(status_code=500, detail="Failed to start camera")
 
 @app.post("/api/v1/camera/stop")
 async def stop_camera():
-    """Stop camera"""
+    """Stop camera service"""
     try:
-        # Stop video stream with default device
-        success = camera_service.stop_video_stream()
+        logger.info("Stopping camera service")
         
+        # Force cleanup all cameras
+        camera_service.force_cleanup_camera(0)
+        camera_service.force_cleanup_camera(1)
+        
+        logger.info("Camera service stopped successfully")
         return SuccessResponse(
-            message="Camera stopped successfully" if success else "Failed to stop camera",
-            data={"status": "stopped" if success else "failed"}
+            message="Camera stopped successfully",
+            data={"status": "stopped"}
         )
         
     except Exception as e:

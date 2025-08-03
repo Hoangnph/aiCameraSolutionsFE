@@ -9,7 +9,11 @@ from PIL import Image
 import io
 import base64
 from loguru import logger
+import sys
+import os
 
+# Add project root to path for imports
+sys.path.append(os.path.dirname(os.path.dirname(os.path.dirname(os.path.abspath(__file__)))))
 from config import settings
 
 class FaceProcessingService:
@@ -291,8 +295,8 @@ class FaceProcessingService:
                     "success": False,
                     "error": "Failed to generate embeddings for detected faces",
                     "face_locations": face_locations,
-                    "embeddings": [],
-                    "quality_scores": []
+                    "embeddings": embeddings,
+                    "quality_scores": quality_scores
                 }
             
             # Check quality threshold
@@ -456,24 +460,174 @@ class FaceProcessingService:
             Image as numpy array or None
         """
         try:
-            # Decode base64
-            img_data = base64.b64decode(base64_string)
+            # Remove data URL prefix if present
+            if base64_string.startswith('data:image'):
+                base64_string = base64_string.split(',')[1]
             
-            # Convert to PIL Image
-            pil_image = Image.open(io.BytesIO(img_data))
+            # Decode base64
+            image_data = base64.b64decode(base64_string)
             
             # Convert to numpy array
-            image_array = np.array(pil_image)
-            
-            # Convert RGB to BGR if needed
-            if len(image_array.shape) == 3 and image_array.shape[2] == 3:
-                image_array = cv2.cvtColor(image_array, cv2.COLOR_RGB2BGR)
+            image = Image.open(io.BytesIO(image_data))
+            image_array = np.array(image)
             
             return image_array
             
         except Exception as e:
-            logger.error(f"Failed to decode base64 to image: {str(e)}")
+            logger.error(f"Failed to decode base64 image: {str(e)}")
             return None
+
+    async def process_frame(self, frame: np.ndarray) -> Dict[str, Any]:
+        """
+        Process a single frame for face recognition
+        
+        Args:
+            frame: Input frame as numpy array
+        
+        Returns:
+            Recognition results dictionary
+        """
+        try:
+            # Detect faces in frame
+            face_locations = self.detect_faces(frame)
+            
+            if not face_locations:
+                return {
+                    'success': True,
+                    'faces_detected': 0,
+                    'recognitions': []
+                }
+            
+            # Get known embeddings from vector database
+            from .simple_vector_db import SimpleVectorDB
+            vector_db = SimpleVectorDB()
+            known_faces = vector_db.list_all_faces()
+            
+            if not known_faces:
+                return {
+                    'success': True,
+                    'faces_detected': len(face_locations),
+                    'recognitions': []
+                }
+            
+            # Extract known embeddings
+            known_embeddings = []
+            known_names = []
+            for face in known_faces:
+                embedding_data = face.get('embedding')
+                if embedding_data:
+                    known_embeddings.append(embedding_data)
+                    known_names.append(face.get('metadata', {}).get('name', 'Unknown'))
+            
+            # Process each detected face
+            recognitions = []
+            for i, face_location in enumerate(face_locations):
+                # Generate embedding for detected face
+                embedding = self.generate_embedding(frame, face_location)
+                
+                if embedding is None:
+                    continue
+                
+                # Compare with known faces
+                matches = self.compare_faces(known_embeddings, embedding)
+                
+                # Find best match
+                best_match_index = None
+                best_distance = float('inf')
+                
+                for j, match in enumerate(matches):
+                    if match:
+                        distance = self.calculate_face_distance(known_embeddings[j], embedding)
+                        if distance < best_distance:
+                            best_distance = distance
+                            best_match_index = j
+                
+                # Create recognition result
+                recognition_result = {
+                    'face_id': i,
+                    'location': face_location,
+                    'recognized': best_match_index is not None,
+                    'name': known_names[best_match_index] if best_match_index is not None else 'Unknown',
+                    'confidence': 1.0 - best_distance if best_match_index is not None else 0.0,
+                    'distance': best_distance if best_match_index is not None else float('inf')
+                }
+                
+                recognitions.append(recognition_result)
+            
+            return {
+                'success': True,
+                'faces_detected': len(face_locations),
+                'recognitions': recognitions
+            }
+            
+        except Exception as e:
+            logger.error(f"Failed to process frame: {str(e)}")
+            return {
+                'success': False,
+                'error': str(e),
+                'faces_detected': 0,
+                'recognitions': []
+            }
+
+    async def draw_recognition_results(self, frame: np.ndarray, recognition_results: Dict[str, Any]) -> np.ndarray:
+        """
+        Draw recognition results on frame
+        
+        Args:
+            frame: Input frame as numpy array
+            recognition_results: Results from process_frame
+        
+        Returns:
+            Frame with recognition results drawn
+        """
+        try:
+            # Create a copy of the frame
+            result_frame = frame.copy()
+            
+            if not recognition_results.get('success', False):
+                return result_frame
+            
+            recognitions = recognition_results.get('recognitions', [])
+            
+            for recognition in recognitions:
+                location = recognition.get('location')
+                if not location:
+                    continue
+                
+                top, right, bottom, left = location
+                name = recognition.get('name', 'Unknown')
+                confidence = recognition.get('confidence', 0.0)
+                recognized = recognition.get('recognized', False)
+                
+                # Choose color based on recognition status
+                if recognized:
+                    color = (0, 255, 0)  # Green for recognized
+                else:
+                    color = (0, 0, 255)  # Red for unrecognized
+                
+                # Draw bounding box
+                cv2.rectangle(result_frame, (left, top), (right, bottom), color, 2)
+                
+                # Draw name and confidence
+                label = f"{name}: {confidence:.2%}"
+                label_size = cv2.getTextSize(label, cv2.FONT_HERSHEY_SIMPLEX, 0.5, 2)[0]
+                
+                # Draw label background
+                cv2.rectangle(result_frame, 
+                            (left, top - label_size[1] - 10), 
+                            (left + label_size[0], top), 
+                            color, -1)
+                
+                # Draw label text
+                cv2.putText(result_frame, label, 
+                           (left, top - 5), 
+                           cv2.FONT_HERSHEY_SIMPLEX, 0.5, (255, 255, 255), 2)
+            
+            return result_frame
+            
+        except Exception as e:
+            logger.error(f"Failed to draw recognition results: {str(e)}")
+            return frame
 
 # Global instance
 face_processor = FaceProcessingService() 

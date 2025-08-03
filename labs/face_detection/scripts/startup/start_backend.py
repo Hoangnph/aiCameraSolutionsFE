@@ -17,7 +17,7 @@ class BackendServer:
         self.process = None
         self.port = 8000
         self.host = "0.0.0.0"
-        self.project_dir = Path(__file__).parent
+        self.project_dir = Path(__file__).parent.parent.parent
         self.api_dir = self.project_dir / "src" / "api"
         
     def kill_existing_processes(self):

@@ -36,15 +36,19 @@ def start_frontend():
         print(f"⚠️  Frontend server is already running (PID: {pid})")
         return True
     
+    # Get project directory (3 levels up from scripts/management/)
+    project_dir = os.path.dirname(os.path.dirname(os.path.dirname(os.path.abspath(__file__))))
+    fe_dir = os.path.join(project_dir, "fe")
+    
     # Check if fe directory exists
-    if not os.path.exists("fe"):
+    if not os.path.exists(fe_dir):
         print("❌ 'fe' directory not found!")
-        print("   Please run from face_detection directory")
+        print(f"   Expected: {fe_dir}")
         return False
     
     try:
         # Change to fe directory
-        os.chdir("fe")
+        os.chdir(fe_dir)
         
         print("📂 Serving from: fe/")
         print("🌍 Frontend URL: http://localhost:3000")

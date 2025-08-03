@@ -1018,11 +1018,8 @@
         <div id="camera" class="content hidden">
             <h2>Camera Control</h2>
             <div class="form-group">
-                <label>Camera Selection:</label>
-                <select id="camera-select">
-                    <option value="0">Camera 0</option>
-                    <option value="1">Camera 1</option>
-                </select>
+                <label>Camera:</label>
+                <p class="camera-info">📷 Camera 0 (Built-in Webcam) - 1280x720</p>
             </div>
             <div class="camera-controls">
                 <button class="btn btn-primary" onclick="startCamera()">Start Camera</button>
@@ -2038,12 +2035,16 @@
 
         async function startCamera() {
             try {
-                const cameraId = document.getElementById('camera-select').value;
+                // Use only Camera 0 since it's the only available camera
+                const cameraId = 0;
                 console.log('🎥 Starting camera with ID:', cameraId);
                 
                 // Show loading state
                 document.getElementById('camera-info').innerHTML = 
                     '<p class="status-loading">⏳ Starting camera...</p>';
+                
+                // Stop any existing stream first
+                await stopVideoStream();
                 
                 const response = await fetch(`${API_BASE}/api/v1/camera/start`, {
                     method: 'POST',
@@ -2060,8 +2061,10 @@
                         '<p class="status-success">✅ Camera started successfully</p>';
                     cameraServiceActive = true;
                     
-                    // Start displaying video stream
-                    startVideoStream();
+                    // Wait a bit before starting video stream
+                    setTimeout(() => {
+                        startVideoStream();
+                    }, 500);
                     
                 } else {
                     console.error('❌ Camera start failed:', data.message);
@@ -2080,7 +2083,7 @@
                 console.log('🛑 Stopping camera...');
                 
                 // Hide video stream first
-                stopVideoStream();
+                await stopVideoStream();
                 
                 const response = await fetch(`${API_BASE}/api/v1/camera/stop`, {
                     method: 'POST'
@@ -2113,7 +2116,13 @@
             
             // Set up the video stream from backend
             const streamImg = document.getElementById('camera-stream');
-            streamImg.src = `${API_BASE}/api/v1/camera/stream`;
+            
+            // Clear any existing source
+            streamImg.src = '';
+            
+            // Set new source with timestamp to avoid caching
+            const timestamp = new Date().getTime();
+            streamImg.src = `${API_BASE}/api/v1/camera/stream?t=${timestamp}`;
             
             // Add error handling for stream
             streamImg.onerror = function() {
@@ -2133,7 +2142,7 @@
             console.log('🎬 Video stream started');
         }
 
-        function stopVideoStream() {
+        async function stopVideoStream() {
             console.log('🛑 Stopping video stream display...');
             
             // Hide stream and show placeholder
@@ -2143,6 +2152,9 @@
             // Clear the stream source
             const streamImg = document.getElementById('camera-stream');
             streamImg.src = '';
+            
+            // Wait a bit for cleanup
+            await new Promise(resolve => setTimeout(resolve, 100));
             
             console.log('✅ Video stream stopped');
         }
@@ -2251,7 +2263,7 @@
                     console.log('�� Table body element:', facesList);
                     
                     facesList.innerHTML = '';
-                    console.log('🧹 Cleared table body');
+                    console.log('�� Cleared table body');
                     
                     if (data.data.faces.length === 0) {
                         console.log('📭 No faces found, showing empty state');
@@ -2457,6 +2469,8 @@
                 clearInterval(autoRecognitionInterval);
             }
             
+            console.log('🔄 Starting auto recognition loop...');
+            
             autoRecognitionInterval = setInterval(async () => {
                 if (!autoRecognitionActive) return;
                 
@@ -2486,6 +2500,8 @@
             }
             
             try {
+                console.log('🔍 Processing auto recognition frame...');
+                
                 // Detect faces in frame
                 const detectResponse = await fetch(`${API_BASE}/api/v1/faces/detect`, {
                     method: 'POST',
@@ -2493,6 +2509,7 @@
                 });
                 
                 const detectData = await detectResponse.json();
+                console.log('📊 Detection response:', detectData);
                 
                 if (detectData.success && detectData.data.faces.length > 0) {
                     console.log(`🎯 Detected ${detectData.data.faces.length} face(s)`);
@@ -2530,26 +2547,51 @@
         async function performAutoRecognition(imageData, detectedFaces) {
             try {
                 console.log('🔍 Performing auto recognition...');
+                console.log('📊 Detected faces count:', detectedFaces.length);
                 
                 // Use the first detected face for recognition
                 const face = detectedFaces[0];
+                console.log('👤 Face details:', face);
+                console.log('📐 Bounding box:', face.bounding_box);
                 
                 // Crop the face from the image
-                const croppedImageData = cropFaceFromImage(imageData, face.bounding_box);
+                console.log('✂️ Starting face cropping...');
+                const croppedImageData = await cropFaceFromImage(imageData, face.bounding_box);
+                console.log('✅ Face cropped successfully');
+                console.log('📊 Cropped image data length:', croppedImageData.length);
+                
+                // Create form data for recognition
+                console.log('📦 Creating form data for recognition...');
+                const formData = createFormDataFromBase64(croppedImageData, 'face.jpg');
+                console.log('✅ Form data created');
                 
                 // Perform recognition
+                console.log('🌐 Sending recognition request...');
                 const response = await fetch(`${API_BASE}/api/v1/faces/recognize`, {
                     method: 'POST',
-                    body: createFormDataFromBase64(croppedImageData, 'face.jpg')
+                    body: formData
                 });
                 
+                console.log('📊 Recognition response status:', response.status);
+                
+                if (!response.ok) {
+                    throw new Error(`Recognition API failed with status: ${response.status}`);
+                }
+                
                 const data = await response.json();
+                console.log('📊 Recognition response data:', data);
                 
                 if (data.success && data.data.recognized) {
                     // Update recognition results
-                    document.getElementById('auto-recognized-name').textContent = data.data.name;
-                    document.getElementById('auto-recognition-confidence').textContent = `${(data.data.confidence * 100).toFixed(1)}%`;
-                    document.getElementById('auto-recognition-quality').textContent = `${(data.data.quality_score * 100).toFixed(1)}%`;
+                    const name = data.data.person.name;
+                    const confidence = data.data.confidence;
+                    const quality = data.data.quality_score || 0;
+                    
+                    console.log(`✅ Recognized: ${name} (${(confidence * 100).toFixed(1)}%)`);
+                    
+                    document.getElementById('auto-recognized-name').textContent = name;
+                    document.getElementById('auto-recognition-confidence').textContent = `${(confidence * 100).toFixed(1)}%`;
+                    document.getElementById('auto-recognition-quality').textContent = `${(quality * 100).toFixed(1)}%`;
                     
                     // Show results
                     document.getElementById('auto-recognition-results').classList.remove('hidden');
@@ -2559,10 +2601,10 @@
                     document.getElementById('auto-recognition-confidence').classList.add('recognized');
                     document.getElementById('auto-recognition-quality').classList.add('recognized');
                     
-                    console.log(`✅ Recognized: ${data.data.name} (${(data.data.confidence * 100).toFixed(1)}%)`);
-                    
                 } else {
                     // Update for unknown face
+                    console.log('❓ Face not recognized');
+                    
                     document.getElementById('auto-recognized-name').textContent = 'Unknown';
                     document.getElementById('auto-recognition-confidence').textContent = 'N/A';
                     document.getElementById('auto-recognition-quality').textContent = 'N/A';
@@ -2574,14 +2616,16 @@
                     document.getElementById('auto-recognized-name').classList.add('unknown');
                     document.getElementById('auto-recognition-confidence').classList.add('unknown');
                     document.getElementById('auto-recognition-quality').classList.add('unknown');
-                    
-                    console.log('❓ Face not recognized');
                 }
                 
                 lastRecognitionTime = Date.now();
                 
             } catch (error) {
                 console.error('❌ Auto recognition failed:', error);
+                console.error('❌ Error details:', {
+                    message: error.message,
+                    stack: error.stack
+                });
                 
                 // Update for error
                 document.getElementById('auto-recognized-name').textContent = 'Error';
@@ -2647,18 +2691,45 @@
                     const canvas = document.createElement('canvas');
                     const ctx = canvas.getContext('2d');
                     
+                    // Validate bounding box coordinates
+                    const left = Math.max(0, boundingBox.left);
+                    const top = Math.max(0, boundingBox.top);
+                    const width = Math.min(boundingBox.width, img.width - left);
+                    const height = Math.min(boundingBox.height, img.height - top);
+                    
+                    console.log('🔍 Cropping face with coordinates:', {
+                        original: boundingBox,
+                        validated: { left, top, width, height },
+                        imageSize: { width: img.width, height: img.height }
+                    });
+                    
                     // Set canvas size to face dimensions
-                    canvas.width = boundingBox.width;
-                    canvas.height = boundingBox.height;
+                    canvas.width = width;
+                    canvas.height = height;
+                    
+                    // Crop the face with padding to ensure face is fully included
+                    const padding = Math.min(width, height) * 0.1; // 10% padding
+                    const cropLeft = Math.max(0, left - padding);
+                    const cropTop = Math.max(0, top - padding);
+                    const cropWidth = Math.min(width + 2 * padding, img.width - cropLeft);
+                    const cropHeight = Math.min(height + 2 * padding, img.height - cropTop);
+                    
+                    console.log('🔍 Cropping with padding:', {
+                        cropLeft, cropTop, cropWidth, cropHeight
+                    });
                     
                     // Crop the face
                     ctx.drawImage(img, 
-                        boundingBox.left, boundingBox.top, boundingBox.width, boundingBox.height,
-                        0, 0, boundingBox.width, boundingBox.height
+                        cropLeft, cropTop, cropWidth, cropHeight,
+                        0, 0, cropWidth, cropHeight
                     );
                     
-                    // Convert to base64
-                    const croppedData = canvas.toDataURL('image/jpeg', 0.8);
+                    // Convert to base64 with higher quality
+                    const croppedData = canvas.toDataURL('image/jpeg', 0.95);
+                    
+                    console.log('✂️ Face cropped successfully');
+                    console.log('📊 Cropped image size:', croppedData.length);
+                    
                     resolve(croppedData);
                 };
                 img.src = imageData;
