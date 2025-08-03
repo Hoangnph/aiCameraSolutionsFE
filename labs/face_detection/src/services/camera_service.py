@@ -3,14 +3,15 @@ Camera service for handling camera operations
 """
 import cv2
 import numpy as np
-from typing import Optional, Generator, Tuple
+from typing import Optional, Generator, Tuple, List, Dict, Any
 from loguru import logger
 import sys
 import os
 
 # Add project root to path for imports
-sys.path.append(os.path.dirname(os.path.dirname(os.path.dirname(os.path.abspath(__file__)))))
-from config import settings
+project_root = os.path.dirname(os.path.dirname(os.path.dirname(os.path.abspath(__file__))))
+sys.path.insert(0, project_root)
+from config.config import settings
 
 class CameraService:
     """Service for managing camera operations"""

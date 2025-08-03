@@ -1,18 +1,18 @@
 """
-Automation tests for Core Infrastructure
+Test core infrastructure components
 """
-import pytest
-import numpy as np
-import cv2
+import asyncio
+import aiohttp
 import json
-import os
+import time
+from typing import Dict, Any, List
 import sys
-from pathlib import Path
+import os
 
-# Add src to path
-sys.path.append(str(Path(__file__).parent.parent / "src"))
-
-from config import settings
+# Add project root to path for imports
+project_root = os.path.dirname(os.path.dirname(os.path.abspath(__file__)))
+sys.path.insert(0, project_root)
+from config.config import settings
 from src.models.database import create_tables, init_default_settings, SessionLocal
 from src.services.simple_vector_db import SimpleVectorDatabaseService as VectorDatabaseService
 from src.services.face_processing import FaceProcessingService

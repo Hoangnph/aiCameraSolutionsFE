@@ -1,10 +1,17 @@
+#!/usr/bin/env python3
 """
 Setup script for Face Detection System
 """
 import os
 import sys
 import subprocess
+import shutil
 from pathlib import Path
+
+# Add project root to path for imports
+project_root = os.path.dirname(os.path.dirname(os.path.abspath(__file__)))
+sys.path.insert(0, project_root)
+from config.config import settings
 
 def install_dependencies():
     """Install required dependencies"""
@@ -84,7 +91,6 @@ def run_basic_tests():
     
     try:
         # Test configuration
-        from config import settings
         assert settings.app_name == "Face Detection System"
         print("✅ Configuration test passed")
         
